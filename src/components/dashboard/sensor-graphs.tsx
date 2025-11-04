@@ -9,18 +9,22 @@ import {
   CardDescription,
 } from '@/components/ui/card';
 import {
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  ResponsiveContainer,
+  Tooltip,
+} from 'recharts';
+import { ChartContainer, ChartTooltipContent } from '../ui/chart';
 
 const generateInitialData = () => {
   const data = [];
   const now = new Date();
   for (let i = 10; i >= 0; i--) {
     data.push({
-      time: new Date(now.getTime() - i * 5000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
+      time: new Date(now.getTime() - i * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
       weight: Math.floor(Math.random() * (1500 - 1200 + 1)) + 1200,
       height: Math.floor(Math.random() * (90 - 70 + 1)) + 70,
     });
@@ -41,14 +45,14 @@ export function SensorGraphs() {
         };
         return [...prevData.slice(1), newDataPoint];
       });
-    }, 5000);
+    }, 60000);
 
     return () => clearInterval(interval);
   }, []);
 
   const chartConfig = {
-    weight: { label: "Weight (kg)", color: "hsl(var(--primary))" },
-    height: { label: "Height (cm)", color: "hsl(var(--accent))" },
+    weight: { label: 'Weight (kg)', color: 'hsl(var(--primary))' },
+    height: { label: 'Height (cm)', color: 'hsl(var(--accent))' },
   };
 
   return (
@@ -59,14 +63,12 @@ export function SensorGraphs() {
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" fontSize={12} tickLine={false} axisLine={false} />
-              <YAxis fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 100', 'dataMax + 100']}/>
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
-              />
+              <YAxis fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 100', 'dataMax + 100']} />
+              <Tooltip content={<ChartTooltipContent indicator="line" />} />
               <Line
                 type="monotone"
                 dataKey="weight"
@@ -75,16 +77,15 @@ export function SensorGraphs() {
                 dot={false}
               />
             </LineChart>
+          </ResponsiveContainer>
         </ChartContainer>
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
+          <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 10', 'dataMax + 10']} />
-              <ChartTooltip
-                cursor={false}
-                content={<ChartTooltipContent indicator="line" />}
-              />
+              <Tooltip content={<ChartTooltipContent indicator="line" />} />
               <Line
                 type="monotone"
                 dataKey="height"
@@ -93,6 +94,7 @@ export function SensorGraphs() {
                 dot={false}
               />
             </LineChart>
+          </ResponsiveContainer>
         </ChartContainer>
       </CardContent>
     </Card>

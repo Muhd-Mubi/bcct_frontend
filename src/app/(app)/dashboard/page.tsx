@@ -32,7 +32,7 @@ export default function DashboardPage() {
           };
         })
       );
-    }, 5000); // Update every 5 seconds to simulate real-time data
+    }, 60000); // Update every 1 minute to simulate real-time data
 
     return () => clearInterval(interval);
   }, []);

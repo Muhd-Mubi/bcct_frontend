@@ -44,7 +44,7 @@ const statusConfig: Record<
   },
 };
 
-export function InventoryTable({ materials }: { materials: Material[] }) {
+export function InventoryTable({ materials, isClient }: { materials: Material[], isClient: boolean }) {
   return (
     <Table>
       <TableHeader>
@@ -90,7 +90,7 @@ export function InventoryTable({ materials }: { materials: Material[] }) {
                 </div>
               </TableCell>
               <TableCell>
-                {format(parseISO(material.lastUpdated), "PPp")}
+                {isClient ? format(parseISO(material.lastUpdated), "PPp") : 'Loading...'}
               </TableCell>
             </TableRow>
           );

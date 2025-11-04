@@ -13,8 +13,10 @@ import { Package, AlertTriangle, Weight, Ruler } from 'lucide-react';
 
 export default function DashboardPage() {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     const interval = setInterval(() => {
       setMaterials((prevMaterials) =>
         prevMaterials.map((material) => {
@@ -76,7 +78,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-6">
           <Card>
-            <InventoryTable materials={materials} />
+            <InventoryTable materials={materials} isClient={isClient} />
           </Card>
           <SensorGraphs />
         </div>

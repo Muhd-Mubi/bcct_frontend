@@ -51,8 +51,7 @@ export function InventoryTable({ materials, isClient }: { materials: Material[],
         <TableRow>
           <TableHead>Material Type</TableHead>
           <TableHead>Quality</TableHead>
-          <TableHead className="text-right">Weight (kg)</TableHead>
-          <TableHead className="text-right">Height (cm)</TableHead>
+          <TableHead className="text-right">Current Stock</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Last Updated</TableHead>
         </TableRow>
@@ -62,8 +61,6 @@ export function InventoryTable({ materials, isClient }: { materials: Material[],
           const stockPercentage = (material.currentStock / material.maxStock) * 100;
           const quality = getQualityStatus(stockPercentage);
           const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
-          const weight = material.currentStock * material.unitWeight;
-          const height = material.currentStock * material.unitHeight;
           
           return (
             <TableRow key={material.id}>
@@ -81,8 +78,7 @@ export function InventoryTable({ materials, isClient }: { materials: Material[],
                   {quality}
                 </Badge>
               </TableCell>
-              <TableCell className="text-right">{weight.toFixed(2)}</TableCell>
-              <TableCell className="text-right">{height.toFixed(2)}</TableCell>
+              <TableCell className="text-right">{Math.round(material.currentStock).toLocaleString()}</TableCell>
               <TableCell>
                 <div className="flex items-center gap-2">
                   {statusConfig[liveStatus].icon}

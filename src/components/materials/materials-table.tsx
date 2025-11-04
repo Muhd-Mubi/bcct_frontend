@@ -94,7 +94,6 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
             <TableRow>
               <SortableHeader sortKeyName="name">Name</SortableHeader>
               <SortableHeader sortKeyName="type">Type</SortableHeader>
-              <SortableHeader sortKeyName="supplier">Supplier</SortableHeader>
               <SortableHeader sortKeyName="currentStock">Current Stock</SortableHeader>
               <SortableHeader sortKeyName="maxStock">Max Stock</SortableHeader>
               <TableHead>Actions</TableHead>
@@ -105,7 +104,6 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
               <TableRow key={material.id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
                 <TableCell>{material.type}</TableCell>
-                <TableCell>{material.supplier}</TableCell>
                 <TableCell>{material.currentStock}</TableCell>
                 <TableCell>{material.maxStock}</TableCell>
                 <TableCell>

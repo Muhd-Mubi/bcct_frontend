@@ -9,7 +9,7 @@ import { InventoryCompositionChart } from '@/components/dashboard/inventory-comp
 import { AlertsPanel } from '@/components/dashboard/alerts-panel';
 import { ReorderSuggestions } from '@/components/dashboard/reorder-suggestions';
 import { initialMaterials, Material } from '@/lib/data';
-import { Package, AlertTriangle, Weight, Ruler } from 'lucide-react';
+import { Package, AlertTriangle, FileText, Box } from 'lucide-react';
 
 export default function DashboardPage() {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
@@ -37,14 +37,14 @@ export default function DashboardPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const totalWeight = materials.reduce(
-    (acc, m) => acc + m.currentStock * m.unitWeight,
-    0
-  );
-  const totalHeight = materials.reduce(
-    (acc, m) => acc + m.currentStock * m.unitHeight,
-    0
-  );
+  const totalPaperSheets = materials
+    .filter((m) => m.type === 'Paper')
+    .reduce((acc, m) => acc + m.currentStock, 0);
+
+  const totalCardboardItems = materials
+    .filter((m) => m.type === 'Cardboard')
+    .reduce((acc, m) => acc + m.currentStock, 0);
+    
   const lowStockItems = materials.filter(
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
@@ -58,14 +58,14 @@ export default function DashboardPage() {
           icon={<Package className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Total Weight"
-          value={`${totalWeight.toFixed(2)} kg`}
-          icon={<Weight className="size-6 text-muted-foreground" />}
+          title="Approx. Paper Sheets"
+          value={totalPaperSheets.toLocaleString()}
+          icon={<FileText className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Total Height"
-          value={`${(totalHeight / 100).toFixed(2)} m`}
-          icon={<Ruler className="size-6 text-muted-foreground" />}
+          title="Approx. Cardboard Items"
+          value={totalCardboardItems.toLocaleString()}
+          icon={<Box className="size-6 text-muted-foreground" />}
         />
         <MetricCard
           title="Low Stock Alerts"

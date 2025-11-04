@@ -60,14 +60,13 @@ export default function MaterialsPage() {
           />
         </CardContent>
       </Card>
-      {isAdmin && (
+
         <MaterialFormDialog
           isOpen={isFormOpen}
           onOpenChange={setFormOpen}
           onSave={handleSave}
           material={selectedMaterial}
         />
-      )}
     </div>
   );
 }

@@ -47,8 +47,10 @@ export default function ReportsPage() {
             doc.setGState(new (doc as any).GState({opacity: 1}));
 
             // Redraw header on each page
-            doc.setFontSize(12);
-            doc.text("Monthly Stock Trends Report", 14, 16);
+            if (i > 1) {
+              doc.setFontSize(12);
+              doc.text("Monthly Stock Trends Report", 14, 16);
+            }
         }
     };
 

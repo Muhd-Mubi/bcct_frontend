@@ -9,25 +9,12 @@ import { FileDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import { kuLogoBase64 } from '@/lib/logo';
 
 export default function ReportsPage() {
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
-    const totalPages = (doc as any).internal.getNumberOfPages();
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
-    const imgWidth = 80;
-    const imgHeight = 80;
-    const x = (pageWidth - imgWidth) / 2;
-    const y = (pageHeight - imgHeight) / 2;
-
-    for (let i = 1; i <= totalPages; i++) {
-      doc.setPage(i);
-      doc.addImage(kuLogoBase64, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
-    }
-
+    
     doc.text("Monthly Stock Trends Report", 14, 16);
 
     const tableColumn = ["Month", ...initialMaterials.map(m => m.name)];
@@ -41,15 +28,40 @@ export default function ReportsPage() {
       tableRows.push(rowData);
     });
 
+    const addWatermark = (doc: jsPDF) => {
+        const totalPages = (doc as any).internal.getNumberOfPages();
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        
+        for (let i = 1; i <= totalPages; i++) {
+            doc.setPage(i);
+            // Set watermark properties
+            doc.setFontSize(50);
+            doc.setTextColor(150);
+            doc.setGState(new (doc as any).GState({opacity: 0.2}));
+            doc.text(
+                "KU OFFICIAL",
+                pageWidth / 2,
+                pageHeight / 2,
+                { align: 'center', angle: 45 }
+            );
+            // Reset text properties
+            doc.setGState(new (doc as any).GState({opacity: 1}));
+            doc.setTextColor(0);
+            doc.setFontSize(10);
+        }
+    };
+
     (doc as any).autoTable({
         head: [tableColumn],
         body: tableRows,
         startY: 20,
-        didDrawPage: function (data: any) {
-            // Add watermark to new pages created by autoTable
-            doc.addImage(kuLogoBase64, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+        didDrawPage: function () {
+           addWatermark(doc);
         }
     });
+
+    addWatermark(doc);
 
     doc.save("monthly_stock_trends.pdf");
   };

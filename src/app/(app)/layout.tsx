@@ -43,7 +43,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
                 <Package2 className="size-6 text-primary" />
                 <h1 className="text-md font-bold font-headline whitespace-nowrap">
-                  BCCT STOCK MANAGEMENT
+                  BCCT INVENTORY
                 </h1>
               </div>
             </div>

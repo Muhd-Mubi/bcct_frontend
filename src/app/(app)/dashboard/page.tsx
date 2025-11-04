@@ -81,11 +81,11 @@ export default function DashboardPage() {
             <InventoryTable materials={materials} isClient={isClient} />
           </Card>
           <SensorGraphs />
+          <InventoryCompositionChart materials={materials} />
         </div>
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
           <AlertsPanel lowStockItems={lowStockItems} />
           <ReorderSuggestions materials={materials} />
-          <InventoryCompositionChart materials={materials} />
         </div>
       </div>
     </div>

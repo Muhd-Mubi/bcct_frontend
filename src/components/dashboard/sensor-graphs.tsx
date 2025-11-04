@@ -13,14 +13,14 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from '@/components/ui/chart';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
 
 const generateInitialData = () => {
   const data = [];
   const now = new Date();
   for (let i = 10; i >= 0; i--) {
     data.push({
-      time: new Date(now.getTime() - i * 5000).toLocaleTimeString(),
+      time: new Date(now.getTime() - i * 5000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
       weight: Math.floor(Math.random() * (1500 - 1200 + 1)) + 1200,
       height: Math.floor(Math.random() * (90 - 70 + 1)) + 70,
     });
@@ -35,7 +35,7 @@ export function SensorGraphs() {
     const interval = setInterval(() => {
       setData((prevData) => {
         const newDataPoint = {
-          time: new Date().toLocaleTimeString(),
+          time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
           weight: Math.floor(Math.random() * (1500 - 1200 + 1)) + 1200,
           height: Math.floor(Math.random() * (90 - 70 + 1)) + 70,
         };
@@ -58,8 +58,7 @@ export function SensorGraphs() {
         <CardDescription>Real-time feed of total weight and height.</CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4 sm:grid-cols-2">
-        <div className="h-[250px]">
-          <ResponsiveContainer width="100%" height="100%">
+        <ChartContainer config={chartConfig} className="h-[250px] w-full">
             <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" fontSize={12} tickLine={false} axisLine={false} />
@@ -71,33 +70,30 @@ export function SensorGraphs() {
               <Line
                 type="monotone"
                 dataKey="weight"
-                stroke={chartConfig.weight.color}
+                stroke="var(--color-weight)"
                 strokeWidth={2}
                 dot={false}
               />
             </LineChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="h-[250px]">
-          <ResponsiveContainer width="100%" height="100%">
+        </ChartContainer>
+        <ChartContainer config={chartConfig} className="h-[250px] w-full">
             <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="time" fontSize={12} tickLine={false} axisLine={false} />
               <YAxis fontSize={12} tickLine={false} axisLine={false} domain={['dataMin - 10', 'dataMax + 10']} />
-              <Tooltip
+              <ChartTooltip
                 cursor={false}
                 content={<ChartTooltipContent indicator="line" />}
               />
               <Line
                 type="monotone"
                 dataKey="height"
-                stroke={chartConfig.height.color}
+                stroke="var(--color-height)"
                 strokeWidth={2}
                 dot={false}
               />
             </LineChart>
-          </ResponsiveContainer>
-        </div>
+        </ChartContainer>
       </CardContent>
     </Card>
   );

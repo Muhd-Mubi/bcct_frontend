@@ -35,7 +35,6 @@ const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   type: z.enum(['Paper', 'Cardboard']),
-  supplier: z.string().min(2, 'Supplier must be at least 2 characters.'),
   currentStock: z.coerce.number().min(0, 'Stock cannot be negative.'),
   maxStock: z.coerce.number().min(1, 'Max stock must be at least 1.'),
   unitWeight: z.coerce.number().positive('Weight must be positive.'),
@@ -66,7 +65,6 @@ export function MaterialFormDialog({
     defaultValues: material || {
       name: '',
       type: 'Paper',
-      supplier: '',
       currentStock: 0,
       maxStock: 1000,
       unitWeight: 0,
@@ -80,7 +78,7 @@ export function MaterialFormDialog({
       form.reset(material);
     } else {
       form.reset({
-        name: '', type: 'Paper', supplier: '', currentStock: 0,
+        name: '', type: 'Paper', currentStock: 0,
         maxStock: 1000, unitWeight: 0, unitHeight: 0, reorderThreshold: 20,
       });
     }
@@ -90,6 +88,7 @@ export function MaterialFormDialog({
   const onSubmit = (values: FormValues) => {
     onSave({
       ...values,
+      supplier: '', // Set supplier to empty string
       id: material?.id || `new-${Date.now()}`,
       lastUpdated: new Date().toISOString(),
     } as Material);
@@ -141,19 +140,6 @@ export function MaterialFormDialog({
                       <SelectItem value="Cardboard">Cardboard</SelectItem>
                     </SelectContent>
                   </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="supplier"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Supplier</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
                   <FormMessage />
                 </FormItem>
               )}

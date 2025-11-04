@@ -20,10 +20,10 @@ const COLORS = ['hsl(var(--chart-1))', 'hsl(var(--chart-2))', 'hsl(var(--chart-3
 
 export function InventoryCompositionChart({ materials }: { materials: Material[] }) {
   const data = useMemo(() => {
-    return materials.map(material => ({
+    return materials.map((material, index) => ({
         name: material.name,
         value: material.currentStock,
-        fill: COLORS[Math.floor(Math.random() * COLORS.length)]
+        fill: COLORS[index % COLORS.length]
     }));
   }, [materials]);
 

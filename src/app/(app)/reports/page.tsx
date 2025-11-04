@@ -9,6 +9,7 @@ import { FileDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { kuLogoBase64 } from '@/lib/logo';
 
 export default function ReportsPage() {
 

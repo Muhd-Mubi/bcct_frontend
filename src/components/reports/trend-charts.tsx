@@ -10,7 +10,7 @@ import { initialMaterials } from '@/lib/data';
 
 // Generate more detailed mock data
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
-const trendData = months.map(month => {
+export const trendData = months.map(month => {
     const monthData: { [key: string]: string | number } = { month };
     initialMaterials.forEach(material => {
         // Simulate some trend data
@@ -81,3 +81,5 @@ export function TrendCharts() {
     </div>
   );
 }
+
+export { initialMaterials, trendData };

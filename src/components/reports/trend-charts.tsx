@@ -6,28 +6,49 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from '@/components/ui/chart';
+import { initialMaterials } from '@/lib/data';
 
-const data = [
-  { month: 'Jan', Paper: 4000, Cardboard: 2400 },
-  { month: 'Feb', Paper: 3000, Cardboard: 1398 },
-  { month: 'Mar', Paper: 2000, Cardboard: 9800 },
-  { month: 'Apr', Paper: 2780, Cardboard: 3908 },
-  { month: 'May', Paper: 1890, Cardboard: 4800 },
-  { month: 'Jun', Paper: 2390, Cardboard: 3800 },
-  { month: 'Jul', Paper: 3490, Cardboard: 4300 },
+// Generate more detailed mock data
+const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'];
+const trendData = months.map(month => {
+    const monthData: { [key: string]: string | number } = { month };
+    initialMaterials.forEach(material => {
+        // Simulate some trend data
+        const randomFactor = (Math.random() - 0.2) * 0.3;
+        const trendValue = material.currentStock * (1 + (months.indexOf(month) * 0.05) + randomFactor);
+        monthData[material.name] = Math.max(0, Math.round(trendValue));
+    });
+    return monthData;
+});
+
+const chartColors = [
+    'hsl(var(--chart-1))',
+    'hsl(var(--chart-2))',
+    'hsl(var(--chart-3))',
+    'hsl(var(--chart-4))',
+    'hsl(var(--chart-5))',
+    'hsl(220, 70%, 50%)',
+    'hsl(100, 60%, 45%)',
+    'hsl(340, 80%, 55%)',
+    'hsl(40, 75%, 60%)',
+    'hsl(180, 75%, 55%)',
 ];
 
-const chartConfig = {
-  Paper: { label: "Paper", color: "hsl(var(--chart-1))" },
-  Cardboard: { label: "Cardboard", color: "hsl(var(--chart-2))" },
-};
+const chartConfig = initialMaterials.reduce((config, material, index) => {
+    config[material.name] = {
+        label: material.name,
+        color: chartColors[index % chartColors.length],
+    };
+    return config;
+}, {} as any);
+
 
 export function TrendCharts() {
   return (
-    <div className="h-[350px] w-full">
+    <div className="h-[450px] w-full">
       <ChartContainer config={chartConfig} className="w-full h-full">
         <ResponsiveContainer>
-            <LineChart data={data}>
+            <LineChart data={trendData}>
             <CartesianGrid vertical={false} />
             <XAxis
                 dataKey="month"
@@ -36,22 +57,24 @@ export function TrendCharts() {
                 tickMargin={8}
                 tickFormatter={(value) => value.slice(0, 3)}
             />
+            <YAxis
+              tickLine={false}
+              axisLine={false}
+              tickMargin={8}
+              tickFormatter={(value: number) => value.toLocaleString()}
+            />
             <Tooltip content={<ChartTooltipContent />} />
-            <Legend />
-            <Line
-                dataKey="Paper"
-                type="monotone"
-                stroke={chartConfig.Paper.color}
-                strokeWidth={2}
-                dot={false}
-            />
-            <Line
-                dataKey="Cardboard"
-                type="monotone"
-                stroke={chartConfig.Cardboard.color}
-                strokeWidth={2}
-                dot={false}
-            />
+            <Legend wrapperStyle={{fontSize: '12px'}}/>
+            {initialMaterials.map((material) => (
+                <Line
+                    key={material.id}
+                    dataKey={material.name}
+                    type="monotone"
+                    stroke={chartConfig[material.name].color}
+                    strokeWidth={2}
+                    dot={false}
+                />
+            ))}
             </LineChart>
         </ResponsiveContainer>
       </ChartContainer>

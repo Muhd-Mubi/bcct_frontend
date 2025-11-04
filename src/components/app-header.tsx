@@ -15,10 +15,12 @@ const getPageTitle = (pathname: string) => {
 
 export function AppHeader() {
   const [currentTime, setCurrentTime] = useState('');
+  const [isClient, setIsClient] = useState(false);
   const pathname = usePathname();
   const pageTitle = getPageTitle(pathname);
 
   useEffect(() => {
+    setIsClient(true);
     const timer = setInterval(() => {
       setCurrentTime(new Date().toLocaleString());
     }, 1000);
@@ -35,7 +37,7 @@ export function AppHeader() {
       </div>
       <div className="flex items-center gap-4 ml-auto">
         <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-          {currentTime}
+          {isClient ? currentTime : 'Loading...'}
         </div>
         <div className="hidden sm:flex items-center gap-2">
             <Badge variant="secondary" className="gap-1">

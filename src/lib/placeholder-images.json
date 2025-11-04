@@ -1,3 +1,10 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "logo",
+      "description": "StockSight Application Logo",
+      "imageUrl": "https://images.unsplash.com/photo-1556227996-370b60576b84?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHx3YXJlaG91c2UlMjBib3h8ZW58MHx8fHwxNzYyMjQyMTkwfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "warehouse box"
+    }
+  ]
 }

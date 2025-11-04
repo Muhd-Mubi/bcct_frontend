@@ -34,22 +34,19 @@ export default function ReportsPage() {
         const pageWidth = doc.internal.pageSize.getWidth();
         const pageHeight = doc.internal.pageSize.getHeight();
         
+        // Watermark image properties
+        const imgWidth = 100;
+        const imgHeight = 100;
+        const x = (pageWidth - imgWidth) / 2;
+        const y = (pageHeight - imgHeight) / 2;
+
         for (let i = 1; i <= totalPages; i++) {
             doc.setPage(i);
             // Set watermark properties
-            doc.setFontSize(50);
-            doc.setTextColor(150);
             doc.setGState(new (doc as any).GState({opacity: 0.2}));
-            doc.text(
-                "KU OFFICIAL",
-                pageWidth / 2,
-                pageHeight / 2,
-                { align: 'center', angle: 45 }
-            );
-            // Reset text properties
+            doc.addImage(kuLogoBase64, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+            // Reset properties
             doc.setGState(new (doc as any).GState({opacity: 1}));
-            doc.setTextColor(0);
-            doc.setFontSize(10);
         }
     };
 
@@ -57,12 +54,19 @@ export default function ReportsPage() {
         head: [tableColumn],
         body: tableRows,
         startY: 20,
-        didDrawPage: function () {
+        didDrawPage: function (data: any) {
            addWatermark(doc);
+           // Redraw header on each page
+           doc.setFontSize(12);
+           doc.text("Monthly Stock Trends Report", 14, 16);
         }
     });
 
-    addWatermark(doc);
+    // Ensure watermark is on the first page too if autoTable doesn't trigger didDrawPage for it.
+    if ((doc as any).internal.getNumberOfPages() === 1) {
+        addWatermark(doc);
+    }
+
 
     doc.save("monthly_stock_trends.pdf");
   };

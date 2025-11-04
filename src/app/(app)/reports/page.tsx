@@ -9,11 +9,25 @@ import { FileDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { kuLogoBase64 } from '@/lib/logo';
 
 export default function ReportsPage() {
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
+    const totalPages = (doc as any).internal.getNumberOfPages();
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+    const imgWidth = 80;
+    const imgHeight = 80;
+    const x = (pageWidth - imgWidth) / 2;
+    const y = (pageHeight - imgHeight) / 2;
+
+    for (let i = 1; i <= totalPages; i++) {
+      doc.setPage(i);
+      doc.addImage(kuLogoBase64, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+    }
+
     doc.text("Monthly Stock Trends Report", 14, 16);
 
     const tableColumn = ["Month", ...initialMaterials.map(m => m.name)];
@@ -30,7 +44,11 @@ export default function ReportsPage() {
     (doc as any).autoTable({
         head: [tableColumn],
         body: tableRows,
-        startY: 20
+        startY: 20,
+        didDrawPage: function (data: any) {
+            // Add watermark to new pages created by autoTable
+            doc.addImage(kuLogoBase64, 'PNG', x, y, imgWidth, imgHeight, undefined, 'FAST');
+        }
     });
 
     doc.save("monthly_stock_trends.pdf");

@@ -31,3 +31,24 @@ export const UserRoleContext = React.createContext<UserRoleContextType>({
   isAdmin: false,
   isManager: false,
 });
+
+export type Order = {
+  id: string;
+  name: string;
+  details: string;
+  clientName: string;
+  status: 'Pending' | 'Completed';
+  createdAt: string;
+  completedAt?: string;
+  sheetsUsed?: number;
+  rimsUsed?: number;
+};
+
+export type PaperOnloading = {
+  id: string;
+  date: string;
+  quantityRims: number;
+  quantitySheets: number;
+  supplier: string;
+  paperType: string;
+};

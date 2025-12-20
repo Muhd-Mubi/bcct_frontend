@@ -1,4 +1,4 @@
-import type { Material } from './types';
+import type { Material, Order, PaperOnloading } from './types';
 
 export const initialMaterials: Material[] = [
   {
@@ -60,5 +60,62 @@ export const initialMaterials: Material[] = [
     unitHeight: 5, // cm per roll
     reorderThreshold: 15,
     lastUpdated: new Date().toISOString(),
+  },
+];
+
+export const initialOrders: Order[] = [
+  {
+    id: 'order-1',
+    name: 'Annual Report 2024',
+    details: '1000 copies, full color, glossy finish',
+    clientName: 'Global Corp',
+    status: 'Pending',
+    createdAt: '2024-07-20T10:00:00Z',
+  },
+  {
+    id: 'order-2',
+    name: 'Marketing Brochures Q3',
+    details: '5000 tri-fold brochures, standard paper',
+    clientName: 'Innovate LLC',
+    status: 'Completed',
+    createdAt: '2024-07-15T14:30:00Z',
+    completedAt: '2024-07-22T16:00:00Z',
+    sheetsUsed: 5000,
+    rimsUsed: 10,
+  },
+  {
+    id: 'order-3',
+    name: 'Business Cards',
+    details: '500 cards, heavy cardstock',
+    clientName: 'Startup Inc',
+    status: 'Pending',
+    createdAt: '2024-07-22T11:00:00Z',
+  },
+];
+
+export const initialOnloadings: PaperOnloading[] = [
+  {
+    id: 'onload-1',
+    date: '2024-07-01T09:00:00Z',
+    quantityRims: 200,
+    quantitySheets: 100000,
+    supplier: 'PaperCorp',
+    paperType: 'Standard A4 Paper',
+  },
+  {
+    id: 'onload-2',
+    date: '2024-07-05T11:00:00Z',
+    quantityRims: 100,
+    quantitySheets: 50000,
+    supplier: 'PaperCorp',
+    paperType: 'Glossy Brochure Paper',
+  },
+  {
+    id: 'onload-3',
+    date: '2024-07-15T14:00:00Z',
+    quantityRims: 50,
+    quantitySheets: 5000,
+    supplier: 'EcoPaper',
+    paperType: 'Recycled Kraft Paper Roll',
   },
 ];

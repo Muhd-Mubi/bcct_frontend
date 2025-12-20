@@ -32,7 +32,7 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src="/avatars/01.png" alt="@shadcn" />
+            <AvatarImage src="/avatars/01.png" alt="@bcct" />
             <AvatarFallback>AD</AvatarFallback>
           </Avatar>
         </Button>
@@ -42,7 +42,7 @@ export function UserNav() {
           <div className="flex flex-col space-y-1">
             <p className="text-sm font-medium leading-none">Admin User</p>
             <p className="text-xs leading-none text-muted-foreground">
-              admin@kupress.com
+              admin@bcct.com
             </p>
           </div>
         </DropdownMenuLabel>

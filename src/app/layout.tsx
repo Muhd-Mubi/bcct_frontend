@@ -5,8 +5,8 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
-  title: 'BCCT INVENTORY - Smart Inventory Monitoring',
-  description: 'A real-time web dashboard for monitoring paper, cardboard, and related inventory.',
+  title: 'BCCT INVENTORY',
+  description: 'BCCT INVENTORY',
 };
 
 export default function RootLayout({

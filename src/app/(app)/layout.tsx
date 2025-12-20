@@ -8,7 +8,6 @@ import {
   Sidebar,
   SidebarHeader,
   SidebarContent,
-  SidebarTrigger,
   SidebarInset,
 } from '@/components/ui/sidebar';
 import { MainNav } from '@/components/main-nav';
@@ -56,7 +55,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           <Sidebar>
             <SidebarHeader>
               <div className="flex items-center gap-2 p-2">
-                <SidebarTrigger className="size-8" />
                 <div className="flex items-center gap-2 group-data-[collapsible=icon]:hidden">
                   <Package2 className="size-6 text-primary" />
                   <h1 className="text-md font-bold font-headline whitespace-nowrap">

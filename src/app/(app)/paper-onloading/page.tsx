@@ -5,12 +5,14 @@ import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OnloadingTable } from '@/components/paper-onloading/onloading-table';
-import { initialOnloadings, PaperOnloading } from '@/lib/data';
+import { PaperOnloading } from '@/lib/data';
 import { OnloadingFormDialog } from '@/components/paper-onloading/onloading-form-dialog';
 import { Input } from '@/components/ui/input';
+import { useData } from '@/context/data-context';
+
 
 export default function PaperOnloadingPage() {
-  const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
+  const { onloadings, saveOnloading } = useData();
   const [isFormOpen, setFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -19,12 +21,7 @@ export default function PaperOnloadingPage() {
   };
 
   const handleSaveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => {
-    const newOnloading: PaperOnloading = {
-      ...onloadingData,
-      id: `onloading-${Date.now()}`,
-      date: new Date().toISOString(),
-    };
-    setOnloadings((prev) => [newOnloading, ...prev]);
+    saveOnloading(onloadingData);
     setFormOpen(false);
   };
 

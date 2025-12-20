@@ -5,12 +5,13 @@ import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MaterialsTable } from '@/components/materials/materials-table';
-import { initialMaterials, Material } from '@/lib/data';
+import { Material } from '@/lib/data';
 import { MaterialFormDialog } from '@/components/materials/material-form-dialog';
 import { UserRoleContext } from '@/lib/types';
+import { useData } from '@/context/data-context';
 
 export default function MaterialsPage() {
-  const [materials, setMaterials] = useState<Material[]>(initialMaterials);
+  const { materials, saveMaterial, deleteMaterial } = useData();
   const [isFormOpen, setFormOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
   const { isAdmin } = useContext(UserRoleContext);
@@ -26,17 +27,11 @@ export default function MaterialsPage() {
   };
 
   const handleDelete = (id: string) => {
-    setMaterials((prev) => prev.filter((m) => m.id !== id));
+    deleteMaterial(id);
   };
 
   const handleSave = (material: Material) => {
-    if (selectedMaterial) {
-      setMaterials((prev) =>
-        prev.map((m) => (m.id === material.id ? material : m))
-      );
-    } else {
-      setMaterials((prev) => [...prev, { ...material, id: `m${prev.length + 1}` }]);
-    }
+    saveMaterial(material);
     setFormOpen(false);
   };
 

@@ -29,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { initialMaterials } from '@/lib/data';
+import { useData } from '@/context/data-context';
 
 const formSchema = z.object({
   paperType: z.string().min(1, 'Please select a paper type.'),
@@ -46,13 +46,12 @@ interface OnloadingFormDialogProps {
   onSave: (data: FormValues) => void;
 }
 
-const paperTypes = initialMaterials.filter(m => m.type === 'Paper').map(m => m.name);
-
 export function OnloadingFormDialog({
   isOpen,
   onOpenChange,
   onSave,
 }: OnloadingFormDialogProps) {
+  const { materials } = useData();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -62,6 +61,9 @@ export function OnloadingFormDialog({
       quantitySheets: 0,
     },
   });
+
+  const paperTypes = materials.filter(m => m.type === 'Paper').map(m => m.name);
+
 
   useEffect(() => {
     if (isOpen) {

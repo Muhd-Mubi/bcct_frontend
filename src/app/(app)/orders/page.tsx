@@ -5,7 +5,7 @@ import { PlusCircle, ArrowUpDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OrdersTable } from '@/components/orders/orders-table';
-import { initialOrders, Order } from '@/lib/data';
+import { Order } from '@/lib/data';
 import { OrderFormDialog } from '@/components/orders/order-form-dialog';
 import { CompleteOrderDialog } from '@/components/orders/complete-order-dialog';
 import { UserRoleContext } from '@/lib/types';
@@ -17,11 +17,13 @@ import {
   DropdownMenuRadioItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useData } from '@/context/data-context';
+
 
 type SortKey = keyof Order | '';
 
 export default function OrdersPage() {
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const { orders, saveOrder, markOrderAsComplete } = useData();
   const [isOrderFormOpen, setOrderFormOpen] = useState(false);
   const [isCompleteFormOpen, setCompleteFormOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(undefined);
@@ -36,13 +38,7 @@ export default function OrdersPage() {
   };
 
   const handleSaveOrder = (order: Order) => {
-    if (selectedOrder) {
-      setOrders((prev) =>
-        prev.map((o) => (o.id === order.id ? order : o))
-      );
-    } else {
-      setOrders((prev) => [...prev, { ...order, id: `order-${prev.length + 1}` }]);
-    }
+    saveOrder(order);
     setOrderFormOpen(false);
   };
 
@@ -52,13 +48,7 @@ export default function OrdersPage() {
   };
 
   const handleMarkAsComplete = (orderId: string, sheetsUsed: number, rimsUsed: number) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId
-          ? { ...o, status: 'Completed', sheetsUsed, rimsUsed, completedAt: new Date().toISOString() }
-          : o
-      )
-    );
+    markOrderAsComplete(orderId, sheetsUsed, rimsUsed);
     setCompleteFormOpen(false);
   };
   

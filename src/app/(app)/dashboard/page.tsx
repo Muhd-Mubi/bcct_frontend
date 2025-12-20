@@ -8,34 +8,27 @@ import { SensorGraphs } from '@/components/dashboard/sensor-graphs';
 import { InventoryCompositionChart } from '@/components/dashboard/inventory-composition-chart';
 import { AlertsPanel } from '@/components/dashboard/alerts-panel';
 import { ReorderSuggestions } from '@/components/dashboard/reorder-suggestions';
-import { initialMaterials, Material } from '@/lib/data';
+import { useData } from '@/context/data-context';
 import { Package, AlertTriangle, FileText, Box } from 'lucide-react';
 
 export default function DashboardPage() {
-  const [materials, setMaterials] = useState<Material[]>(initialMaterials);
+  const { materials, updateMaterialStock } = useData();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
     const interval = setInterval(() => {
-      setMaterials((prevMaterials) =>
-        prevMaterials.map((material) => {
-          const change = (Math.random() - 0.5) * 1000; // Simulate stock change
-          const newStock = Math.max(
-            0,
-            Math.min(material.maxStock, material.currentStock + change)
-          );
-          return {
-            ...material,
-            currentStock: newStock,
-            lastUpdated: new Date().toISOString(),
-          };
-        })
-      );
+      // Simulate stock change for a random material
+      if (materials.length > 0) {
+          const randomIndex = Math.floor(Math.random() * materials.length);
+          const materialToUpdate = materials[randomIndex];
+          const change = (Math.random() - 0.5) * (materialToUpdate.maxStock * 0.01); // change up to 1% of max stock
+          updateMaterialStock(materialToUpdate.id, change);
+      }
     }, 60000); // Update every 1 minute to simulate real-time data
 
     return () => clearInterval(interval);
-  }, []);
+  }, [materials, updateMaterialStock]);
 
   const totalPaperSheets = materials
     .filter((m) => m.type === 'Paper')

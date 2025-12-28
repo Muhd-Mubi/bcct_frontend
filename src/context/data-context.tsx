@@ -175,7 +175,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
       const result = await response.json();
       if(result.success) {
-        setMeasurements((prev) => prev.map(m => m._id === result.measurement._id ? result.measurement : m));
+        setMeasurements((prev) => prev.map(m => m._id === measurement._id ? measurement : m));
         toast({
             title: "Success",
             description: result.message,

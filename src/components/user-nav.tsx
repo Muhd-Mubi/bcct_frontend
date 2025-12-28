@@ -20,12 +20,10 @@ import {
 import { ThemeToggle } from './theme-toggle';
 import { User, Users, Wrench, Shield, LogOut } from 'lucide-react';
 import { UserRole, UserRoleContext } from '@/lib/types';
-import { useAuth } from '@/context/auth-context';
 
 export function UserNav() {
   const { role, setRole } = useContext(UserRoleContext);
   const roles: UserRole[] = ['admin', 'manager', 'staff', 'technician'];
-  const { logout } = useAuth();
 
   return (
     <DropdownMenu>
@@ -76,11 +74,6 @@ export function UserNav() {
                 <span>Theme</span>
                 <ThemeToggle />
             </div>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>
-          <LogOut className="mr-2 h-4 w-4" />
-          <span>Log out</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

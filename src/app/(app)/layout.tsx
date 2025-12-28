@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useState, useContext, useEffect } from 'react';
-import { useAuth } from '@/context/auth-context';
-import { useRouter } from 'next/navigation';
 import {
   SidebarProvider,
   Sidebar,
@@ -21,25 +19,12 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>('admin');
   const [isAdmin, setIsAdmin] = useState(userRole === 'admin');
   const [isManager, setIsManager] = useState(userRole === 'manager');
-  const { user } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!user) {
-      router.push('/login');
-    }
-  }, [user, router]);
-
-
+  
   const handleSetRole = (role: UserRole) => {
     setUserRole(role);
     setIsAdmin(role === 'admin');
     setIsManager(role === 'manager');
   };
-  
-  if (!user) {
-    return null; // or a loading spinner
-  }
 
   return (
     <DataProvider>

@@ -1,7 +1,8 @@
+'use client';
 import React from 'react';
 
 export type Material = {
-  id: string;
+  _id: string;
   name: string;
   type: string;
   category: 'Paper' | 'Cardboard';

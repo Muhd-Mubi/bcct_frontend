@@ -64,7 +64,7 @@ export function InventoryTable({ materials, isClient }: { materials: Material[],
             const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
             
             return (
-              <TableRow key={material.id}>
+              <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
                 <TableCell>
                   <Badge

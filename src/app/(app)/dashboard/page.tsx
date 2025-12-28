@@ -25,7 +25,7 @@ export default function DashboardPage() {
           const randomIndex = Math.floor(Math.random() * materials.length);
           const materialToUpdate = materials[randomIndex];
           const change = (Math.random() - 0.5) * (materialToUpdate.maxStock * 0.01); // change up to 1% of max stock
-          updateMaterialStock(materialToUpdate.id, change);
+          updateMaterialStock(materialToUpdate._id, change);
       }
     }, 60000); // Update every 1 minute to simulate real-time data
 

@@ -1,67 +1,6 @@
 import type { Material, PaperOnloading, Measurement, Order } from './types';
 
-export const initialMaterials: Material[] = [
-  {
-    id: 'm1',
-    name: 'Standard A4 Paper',
-    type: 'Rim',
-    category: 'Paper',
-    unitQuantity: 180,
-    extraSheets: 0,
-    currentStock: 90000,
-    maxStock: 200000,
-    reorderThreshold: 20,
-    lastUpdated: new Date().toISOString(),
-  },
-  {
-    id: 'm2',
-    name: 'Large Cardboard Box',
-    type: 'Unit',
-    category: 'Cardboard',
-    unitQuantity: 1500,
-    extraSheets: 0,
-    currentStock: 1500,
-    maxStock: 5000,
-    reorderThreshold: 30,
-    lastUpdated: new Date().toISOString(),
-  },
-  {
-    id: 'm3',
-    name: 'Glossy Brochure Paper',
-    type: 'Packet',
-    category: 'Paper',
-    unitQuantity: 450,
-    extraSheets: 0,
-    currentStock: 45000,
-    maxStock: 100000,
-    reorderThreshold: 25,
-    lastUpdated: new Date().toISOString(),
-  },
-  {
-    id: 'm4',
-    name: 'Small Shipping Box',
-    type: 'Unit',
-    category: 'Cardboard',
-    unitQuantity: 8000,
-    extraSheets: 0,
-    currentStock: 8000,
-    maxStock: 20000,
-    reorderThreshold: 20,
-    lastUpdated: new Date().toISOString(),
-  },
-  {
-    id: 'm5',
-    name: 'Recycled Kraft Paper Roll',
-    type: 'Roll',
-    category: 'Paper',
-    unitQuantity: 50,
-    extraSheets: 0,
-    currentStock: 50,
-    maxStock: 100,
-    reorderThreshold: 15,
-    lastUpdated: new Date().toISOString(),
-  },
-];
+export const initialMaterials: Material[] = [];
 
 export const initialOnloadings: PaperOnloading[] = [
   {
@@ -97,23 +36,23 @@ export const initialOnloadings: PaperOnloading[] = [
 // It is kept here for reference but will be removed once the API is integrated.
 export const initialMeasurements: Measurement[] = [
   {
-    id: 'measurement-1',
-    type: 'Rim',
+    _id: 'measurement-1',
+    name: 'Rim',
     sheetsPerUnit: 500,
   },
   {
-    id: 'measurement-2',
-    type: 'Packet',
+    _id: 'measurement-2',
+    name: 'Packet',
     sheetsPerUnit: 100,
   },
     {
-    id: 'measurement-3',
-    type: 'Unit',
+    _id: 'measurement-3',
+    name: 'Unit',
     sheetsPerUnit: 1,
   },
   {
-    id: 'measurement-4',
-    type: 'Roll',
+    _id: 'measurement-4',
+    name: 'Roll',
     sheetsPerUnit: 1,
   },
 ];
@@ -142,7 +81,7 @@ export const initialOrders: Order[] = [
         status: 'Completed',
         date: '2024-07-18T16:00:00Z',
         materialsUsed: [
-            { materialId: 'm3', materialName: 'Glossy Brochure Paper', sheetsUsed: 500 }
+            { materialId: 'm3', materialName: 'Glossy Brochure Paper', sheetsUsed: 500, unitQuantity: 5, extraSheets: 0 }
         ]
     }
 ];

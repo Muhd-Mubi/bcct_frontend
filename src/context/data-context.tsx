@@ -1,18 +1,18 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { initialMaterials, initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
+import { initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
+type NewMaterial = Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated'>;
 
 interface DataContextType {
   materials: Material[];
   onloadings: PaperOnloading[];
   measurements: Measurement[];
-  setMeasurements: React.Dispatch<React.SetStateAction<Measurement[]>>;
   orders: Order[];
-  saveMaterial: (material: Material) => void;
+  saveMaterial: (materialData: Material | NewMaterial) => void;
   deleteMaterial: (id: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
@@ -26,10 +26,10 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const API_BASE_URL = 'https://bcctbackend-production.up.railway.app/measurement';
+const API_BASE_URL = 'https://bcctbackend-production.up.railway.app';
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [materials, setMaterials] = useState<Material[]>(initialMaterials);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
@@ -38,18 +38,13 @@ export function DataProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchMeasurements = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/get-measurement`);
+        const response = await fetch(`${API_BASE_URL}/measurement/get-measurement`);
         const data = await response.json();
         if (data.success) {
           setMeasurements(data.measurements);
         } else {
             console.error("API error:", data.message);
             setMeasurements([]); 
-            toast({
-                title: "Error",
-                description: data.message || "Failed to fetch measurements.",
-                variant: "destructive"
-            });
         }
       } catch (error) {
         console.error("Failed to fetch measurements:", error);
@@ -62,21 +57,69 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
     };
     fetchMeasurements();
+
+    const fetchMaterials = async () => {
+        // Placeholder for fetching materials
+    };
+    fetchMaterials();
+
   }, [toast]);
 
-  const saveMaterial = (material: Material) => {
-    setMaterials((prev) => {
-      const existing = prev.find((m) => m.id === material.id);
-      if (existing) {
-        return prev.map((m) => (m.id === material.id ? material : m));
-      } else {
-        return [...prev, { ...material, id: `m${prev.length + 1}` }];
-      }
-    });
+  const saveMaterial = async (materialData: Material | NewMaterial) => {
+    if ('_id' in materialData) {
+        // Update existing material
+        try {
+            const response = await fetch(`${API_BASE_URL}/material/update-material/${materialData._id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(materialData),
+            });
+            const result = await response.json();
+            if (result.success) {
+                setMaterials(prev => prev.map(m => m._id === materialData._id ? { ...m, ...materialData } : m));
+                toast({ title: "Success", description: "Material updated successfully.", variant: 'success' });
+            } else {
+                toast({ title: "Error", description: result.message || "Failed to update material.", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Network Error", description: "Could not update material.", variant: "destructive" });
+        }
+    } else {
+        // Create new material
+        try {
+            const response = await fetch(`${API_BASE_URL}/material/create-material`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(materialData),
+            });
+            const result = await response.json();
+            if (result.success) {
+                setMaterials(prev => [...prev, result.material]);
+                toast({ title: "Success", description: "Material created successfully.", variant: 'success' });
+            } else {
+                toast({ title: "Error", description: result.message || "Failed to create material.", variant: "destructive" });
+            }
+        } catch (error) {
+            toast({ title: "Network Error", description: "Could not create material.", variant: "destructive" });
+        }
+    }
   };
 
-  const deleteMaterial = (id: string) => {
-    setMaterials((prev) => prev.filter((m) => m.id !== id));
+  const deleteMaterial = async (id: string) => {
+     try {
+        const response = await fetch(`${API_BASE_URL}/material/delete-material/${id}`, {
+            method: 'DELETE',
+        });
+        const result = await response.json();
+        if (result.success) {
+            setMaterials((prev) => prev.filter((m) => m._id !== id));
+            toast({ title: "Success", description: "Material deleted successfully.", variant: 'success' });
+        } else {
+            toast({ title: "Error", description: result.message || "Failed to delete material.", variant: "destructive" });
+        }
+    } catch (error) {
+        toast({ title: "Network Error", description: "Could not delete material.", variant: "destructive" });
+    }
   };
   
   const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'| 'isReverted'>) => {
@@ -95,7 +138,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       
       // Update material stock
       if(materialToUpdate) {
-          updateMaterialStock(materialToUpdate.id, totalSheets);
+          updateMaterialStock(materialToUpdate._id, totalSheets);
       }
   };
 
@@ -110,7 +153,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         const totalSheets = (onloadingEntry.unitQuantity * sheetsPerUnit) + onloadingEntry.extraSheets;
         
         // Subtract the stock
-        updateMaterialStock(materialToUpdate.id, -totalSheets);
+        updateMaterialStock(materialToUpdate._id, -totalSheets);
     }
     
     // Mark as reverted
@@ -119,7 +162,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const updateMaterialStock = (materialId: string, stockChange: number) => {
       setMaterials(prev => prev.map(m => {
-        if (m.id === materialId) {
+        if (m._id === materialId) {
           const newStock = m.currentStock + stockChange;
           return { 
             ...m, 
@@ -133,7 +176,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const saveMeasurement = async (measurement: Omit<Measurement, '_id'>) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/create-measurement`, {
+      const response = await fetch(`${API_BASE_URL}/measurement/create-measurement`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -167,7 +210,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const updateMeasurement = async (measurement: Measurement) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/update-measurement/${measurement._id}`, {
+      const response = await fetch(`${API_BASE_URL}/measurement/update-measurement/${measurement._id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -211,7 +254,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const markOrderAsComplete = (orderId: string, materialsUsed: NewMaterialsUsed[]) => {
      const materialsUsedWithDetails: MaterialsUsed[] = materialsUsed.map(mu => {
-      const material = materials.find(m => m.id === mu.materialId);
+      const material = materials.find(m => m._id === mu.materialId);
       const measurement = measurements.find(m => m.name === material?.type);
       const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
       const totalSheetsUsed = (mu.unitQuantity * sheetsPerUnit) + mu.extraSheets;
@@ -243,7 +286,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
       materials, 
       onloadings,
       measurements,
-      setMeasurements,
       orders,
       saveMaterial, 
       deleteMaterial,

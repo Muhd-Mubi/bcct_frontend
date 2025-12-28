@@ -41,7 +41,7 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
             const units = getRims(material);
 
             return (
-              <TableRow key={material.id}>
+              <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
                 <TableCell className="text-right">{material.currentStock.toLocaleString()}</TableCell>
                 <TableCell className="text-right">{units}</TableCell>

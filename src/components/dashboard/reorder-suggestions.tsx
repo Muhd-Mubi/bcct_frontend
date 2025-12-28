@@ -92,9 +92,9 @@ export function ReorderSuggestions({ materials }: ReorderSuggestionsProps) {
                 <p className="text-sm font-medium">Select materials for suggestion:</p>
                 <div className="space-y-1">
                 {lowStockMaterials.map(material => (
-                    <div key={material.id} className="flex items-center space-x-2">
-                        <Checkbox id={material.id} onCheckedChange={() => handleCheckboxChange(material.id)} />
-                        <Label htmlFor={material.id} className="text-sm font-normal">{material.name}</Label>
+                    <div key={material._id} className="flex items-center space-x-2">
+                        <Checkbox id={material._id} onCheckedChange={() => handleCheckboxChange(material.name)} />
+                        <Label htmlFor={material._id} className="text-sm font-normal">{material.name}</Label>
                     </div>
                 ))}
                 </div>

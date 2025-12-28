@@ -5,7 +5,7 @@ import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { MaterialsTable } from '@/components/materials/materials-table';
-import { Material } from '@/lib/data';
+import { Material } from '@/lib/types';
 import { MaterialFormDialog } from '@/components/materials/material-form-dialog';
 import { UserRoleContext } from '@/lib/types';
 import { useData } from '@/context/data-context';
@@ -30,8 +30,8 @@ export default function MaterialsPage() {
     deleteMaterial(id);
   };
 
-  const handleSave = (material: Material) => {
-    saveMaterial(material);
+  const handleSave = (materialData: Omit<Material, '_id'> | Material) => {
+    saveMaterial(materialData);
     setFormOpen(false);
   };
 

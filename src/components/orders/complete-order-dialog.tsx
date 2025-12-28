@@ -81,7 +81,7 @@ export function CompleteOrderDialog({
   };
 
   const getMaterialUnitLabel = (materialId: string) => {
-    const material = materials.find(m => m.id === materialId);
+    const material = materials.find(m => m._id === materialId);
     return material ? material.type : 'Units';
   };
 
@@ -115,7 +115,7 @@ export function CompleteOrderDialog({
                                 </FormControl>
                                 <SelectContent>
                                   {materials.map((m) => (
-                                    <SelectItem key={m.id} value={m.id}>
+                                    <SelectItem key={m._id} value={m._id}>
                                       {m.name}
                                     </SelectItem>
                                   ))}

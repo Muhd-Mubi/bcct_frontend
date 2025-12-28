@@ -101,7 +101,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
           </TableHeader>
           <TableBody>
             {filteredAndSortedData.map((material) => (
-              <TableRow key={material.id}>
+              <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
                 <TableCell>{material.type}</TableCell>
                 <TableCell>{material.unitQuantity}</TableCell>
@@ -121,7 +121,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                         </DropdownMenuItem>
                         <DropdownMenuItem
                           className="text-destructive"
-                          onClick={() => onDelete(material.id)}
+                          onClick={() => onDelete(material._id)}
                         >
                           Delete
                         </DropdownMenuItem>

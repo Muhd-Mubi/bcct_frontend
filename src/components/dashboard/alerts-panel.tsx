@@ -30,7 +30,7 @@ export function AlertsPanel({ lowStockItems }: AlertsPanelProps) {
               {lowStockItems.map((item) => {
                 const stockPercentage = ((item.currentStock / item.maxStock) * 100).toFixed(1);
                 return (
-                  <li key={item.id} className="flex items-start gap-3 text-sm">
+                  <li key={item._id} className="flex items-start gap-3 text-sm">
                     <AlertTriangle className="size-4 text-destructive mt-0.5 shrink-0" />
                     <div>
                       <p className="font-semibold">{item.name}</p>

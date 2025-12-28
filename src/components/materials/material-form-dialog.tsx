@@ -33,19 +33,22 @@ import { Material } from '@/lib/types';
 import { useData } from '@/context/data-context';
 
 const formSchema = z.object({
-  id: z.string().optional(),
+  _id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   type: z.string().min(1, 'Please select a unit'),
+  category: z.enum(['Paper', 'Cardboard']),
   unitQuantity: z.coerce.number().min(0, 'Unit quantity must be a positive number.'),
   extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
+type MaterialPayload = Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated'> | Material;
+
 
 interface MaterialFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (material: Material) => void;
+  onSave: (material: MaterialPayload) => void;
   material?: Material;
 }
 
@@ -58,9 +61,10 @@ export function MaterialFormDialog({
   const { measurements } = useData();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: material || {
+    defaultValues: {
       name: '',
       type: '',
+      category: 'Paper',
       unitQuantity: 0,
       extraSheets: 0,
     },
@@ -72,7 +76,8 @@ export function MaterialFormDialog({
           form.reset(material);
         } else {
           form.reset({
-            name: '', type: '', unitQuantity: 0, extraSheets: 0
+            _id: undefined,
+            name: '', type: '', category: 'Paper', unitQuantity: 0, extraSheets: 0
           });
         }
     }
@@ -80,18 +85,7 @@ export function MaterialFormDialog({
 
 
   const onSubmit = (values: FormValues) => {
-    const measurement = measurements.find(m => m.name === values.type);
-    const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
-    const totalStock = (values.unitQuantity * sheetsPerUnit) + values.extraSheets;
-
-    onSave({
-      ...values,
-      id: material?.id || `new-${Date.now()}`,
-      lastUpdated: new Date().toISOString(),
-      currentStock: material?.currentStock || totalStock,
-      maxStock: material?.maxStock || Math.max(1000, totalStock * 2), // Ensure maxStock is reasonable
-      reorderThreshold: material?.reorderThreshold || 20,
-    } as Material);
+    onSave(values);
   };
 
   return (
@@ -116,6 +110,27 @@ export function MaterialFormDialog({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+             <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                        <SelectItem value="Paper">Paper</SelectItem>
+                        <SelectItem value="Cardboard">Cardboard</SelectItem>
+                    </SelectContent>
+                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

@@ -58,32 +58,31 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 flex h-full items-center justify-center">
-        <Card className="mx-auto w-[380px] border-none bg-glass backdrop-blur-md text-card-foreground shadow-modal">
+        <Card className="mx-auto w-[380px] bg-card text-card-foreground shadow-lg">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
-            <CardDescription className="text-white/80">
+            <CardDescription>
               Sign in to access your dashboard
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="username" className="text-white/90">Username</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
                   required
-                  className="bg-background/20 text-white placeholder:text-white/60 border-white/20 focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password" className="text-white/90">Password</Label>
+                  <Label htmlFor="password">Password</Label>
                   <Link
                     href="#"
-                    className="ml-auto inline-block text-sm text-white/70 hover:text-white underline"
+                    className="ml-auto inline-block text-sm text-primary hover:underline"
                   >
                     Forgot password?
                   </Link>
@@ -95,7 +94,6 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="password"
                   required 
-                  className="bg-background/20 text-white placeholder:text-white/60 border-white/20 focus:border-primary focus:ring-primary"
                  />
               </div>
               <Button type="submit" className="w-full mt-2" onClick={handleLogin}>

@@ -53,7 +53,9 @@ export type OrderStatus = 'Pending' | 'Completed' | 'Discarded';
 export type MaterialsUsed = {
   materialId: string;
   materialName: string;
-  sheetsUsed: number;
+  unitQuantity: number;
+  extraSheets: number;
+  sheetsUsed: number; // Total sheets calculated from unitQuantity and extraSheets
 };
 
 export type Order = {

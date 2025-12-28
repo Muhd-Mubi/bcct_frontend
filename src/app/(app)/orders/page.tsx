@@ -25,6 +25,7 @@ export default function OrdersPage() {
   const {
     orders,
     materials,
+    measurements,
     saveOrder,
     markOrderAsComplete,
     markOrderAsDiscarded,
@@ -60,7 +61,7 @@ export default function OrdersPage() {
 
   const handleConfirmComplete = (
     orderId: string,
-    materialsUsed: { materialId: string; sheetsUsed: number }[]
+    materialsUsed: { materialId: string; unitQuantity: number; extraSheets: number }[]
   ) => {
     markOrderAsComplete(orderId, materialsUsed);
     setCompleteOpen(false);

@@ -3,6 +3,8 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { initialMaterials, initialOnloadings, initialMeasurements, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
 
+type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
+
 interface DataContextType {
   materials: Material[];
   onloadings: PaperOnloading[];
@@ -15,7 +17,7 @@ interface DataContextType {
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Measurement) => void;
   saveOrder: (orderData: Omit<Order, 'id' | 'status' | 'date'>) => void;
-  markOrderAsComplete: (orderId: string, materialsUsed: Omit<MaterialsUsed, 'materialName'>[]) => void;
+  markOrderAsComplete: (orderId: string, materialsUsed: NewMaterialsUsed[]) => void;
   markOrderAsDiscarded: (orderId: string) => void;
 }
 
@@ -116,20 +118,27 @@ export function DataProvider({ children }: { children: ReactNode }) {
     setOrders(prev => [newOrder, ...prev]);
   };
 
-  const markOrderAsComplete = (orderId: string, materialsUsed: Omit<MaterialsUsed, 'materialName'>[]) => {
-    // First, deduct the stock from materials
-    materialsUsed.forEach(used => {
-      updateMaterialStock(used.materialId, -used.sheetsUsed);
+  const markOrderAsComplete = (orderId: string, materialsUsed: NewMaterialsUsed[]) => {
+     const materialsUsedWithDetails: MaterialsUsed[] = materialsUsed.map(mu => {
+      const material = materials.find(m => m.id === mu.materialId);
+      const measurement = measurements.find(m => m.type === material?.type);
+      const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
+      const totalSheetsUsed = (mu.unitQuantity * sheetsPerUnit) + mu.extraSheets;
+
+      // Deduct stock
+      updateMaterialStock(mu.materialId, -totalSheetsUsed);
+
+      return {
+        ...mu,
+        materialName: material?.name || 'Unknown',
+        sheetsUsed: totalSheetsUsed,
+      };
     });
 
     // Then, update the order status
     setOrders(prev => prev.map(o => {
       if (o.id === orderId) {
-        const materialsUsedWithNames: MaterialsUsed[] = materialsUsed.map(mu => ({
-            ...mu,
-            materialName: materials.find(m => m.id === mu.materialId)?.name || 'Unknown',
-        }));
-        return { ...o, status: 'Completed', materialsUsed: materialsUsedWithNames };
+        return { ...o, status: 'Completed', materialsUsed: materialsUsedWithDetails };
       }
       return o;
     }));

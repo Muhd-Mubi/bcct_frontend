@@ -1,18 +1,20 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { initialMaterials, initialOrders, initialOnloadings, Material, Order, PaperOnloading } from '@/lib/data';
+import { initialMaterials, initialOrders, initialOnloadings, initialMeasurements, Material, Order, PaperOnloading, Measurement } from '@/lib/data';
 
 interface DataContextType {
   materials: Material[];
   orders: Order[];
   onloadings: PaperOnloading[];
+  measurements: Measurement[];
   saveMaterial: (material: Material) => void;
   deleteMaterial: (id: string) => void;
   saveOrder: (order: Order) => void;
   markOrderAsComplete: (orderId: string, sheetsUsed: number, rimsUsed: number) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
+  saveMeasurement: (measurement: Measurement) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -21,6 +23,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
+  const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
+
 
   const saveMaterial = (material: Material) => {
     setMaterials((prev) => {
@@ -75,17 +79,29 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setMaterials(prev => prev.map(m => m.id === materialId ? { ...m, currentStock: m.currentStock + stockChange } : m));
   }
 
+  const saveMeasurement = (measurement: Measurement) => {
+    setMeasurements((prev) => {
+      const existing = prev.find((m) => m.id === measurement.id);
+      if (existing) {
+        return prev.map((m) => (m.id === measurement.id ? measurement : m));
+      } else {
+        return [...prev, { ...measurement, id: `measurement-${prev.length + 1}` }];
+      }
+    });
+  };
 
   const value = { 
       materials, 
       orders,
       onloadings,
+      measurements,
       saveMaterial, 
       deleteMaterial,
       saveOrder,
       markOrderAsComplete,
       saveOnloading,
       updateMaterialStock,
+      saveMeasurement,
     };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

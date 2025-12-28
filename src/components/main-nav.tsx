@@ -14,7 +14,8 @@ import {
   Settings,
   ClipboardList,
   PackagePlus,
-  Warehouse
+  Warehouse,
+  Ruler,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +26,7 @@ const navItems = [
   { href: '/paper-onloading', label: 'Paper Onloading', icon: PackagePlus },
   { href: '/warehouse-status', label: 'Warehouse Status', icon: Warehouse },
   { href: '/reports', label: 'Reports', icon: FileText },
+  { href: '/measurement', label: 'Measurement', icon: Ruler },
   { href: '/settings', label: 'Settings', icon: Settings },
 ];
 

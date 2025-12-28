@@ -1,4 +1,4 @@
-import type { Material, Order, PaperOnloading } from './types';
+import type { Material, Order, PaperOnloading, Measurement } from './types';
 
 export const initialMaterials: Material[] = [
   {
@@ -117,5 +117,18 @@ export const initialOnloadings: PaperOnloading[] = [
     quantitySheets: 5000,
     supplier: 'EcoPaper',
     paperType: 'Recycled Kraft Paper Roll',
+  },
+];
+
+export const initialMeasurements: Measurement[] = [
+  {
+    id: 'measurement-1',
+    name: 'Rim',
+    sheetsPerUnit: 500,
+  },
+  {
+    id: 'measurement-2',
+    name: 'Packet',
+    sheetsPerUnit: 100,
   },
 ];

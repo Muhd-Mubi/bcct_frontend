@@ -52,3 +52,9 @@ export type PaperOnloading = {
   supplier: string;
   paperType: string;
 };
+
+export type Measurement = {
+  id: string;
+  name: string;
+  sheetsPerUnit: number;
+};

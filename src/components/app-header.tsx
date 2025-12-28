@@ -13,6 +13,7 @@ const getPageTitle = (pathname: string) => {
   if (pathname.startsWith('/warehouse-status')) return 'Warehouse Status';
   if (pathname.startsWith('/reports')) return 'Reports';
   if (pathname.startsWith('/settings')) return 'Settings';
+  if (pathname.startsWith('/measurement')) return 'Measurement';
   return 'Dashboard';
 };
 

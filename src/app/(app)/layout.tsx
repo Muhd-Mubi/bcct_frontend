@@ -54,7 +54,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </Sidebar>
           <SidebarInset>
             <AppHeader />
-            <main className="p-4 sm:p-6 lg:p-8 bg-muted/30">{children}</main>
+            <main className="p-4 sm:p-6 lg:p-8">{children}</main>
           </SidebarInset>
         </SidebarProvider>
       </UserRoleContext.Provider>

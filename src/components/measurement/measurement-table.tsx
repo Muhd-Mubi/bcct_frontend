@@ -38,8 +38,8 @@ export function MeasurementTable({ data, onEdit }: MeasurementTableProps) {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {data.map((measurement) => (
-            <TableRow key={measurement._id}>
+          {data.map((measurement, index) => (
+            <TableRow key={measurement._id || index}>
               <TableCell className="font-medium">{measurement.name}</TableCell>
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
               <TableCell>

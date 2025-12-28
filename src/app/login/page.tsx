@@ -43,7 +43,7 @@ export default function LoginPage() {
         src="https://picsum.photos/seed/3/1920/1080"
         alt="Inventory management system background"
         fill
-        className="object-cover"
+        className="object-cover blur-sm"
         data-ai-hint="warehouse logistics"
       />
       <div className="absolute inset-0 bg-black/60" />
@@ -58,7 +58,7 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 flex h-full items-center justify-center">
-        <Card className="mx-auto w-[380px] border-none bg-glass backdrop-blur-sm text-card-foreground shadow-modal">
+        <Card className="mx-auto w-[380px] border-none bg-glass backdrop-blur-md text-card-foreground shadow-modal">
           <CardHeader className="text-center">
             <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
             <CardDescription className="text-white/80">

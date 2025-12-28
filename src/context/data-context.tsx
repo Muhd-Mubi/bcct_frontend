@@ -146,6 +146,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         toast({
             title: "Success",
             description: result.message,
+            variant: 'success',
         });
       } else {
         toast({
@@ -179,6 +180,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         toast({
             title: "Success",
             description: result.message,
+            variant: 'success',
         });
       } else {
         toast({

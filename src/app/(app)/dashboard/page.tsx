@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { Card } from '@/components/ui/card';
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { InventoryTable } from '@/components/dashboard/inventory-table';
@@ -9,10 +9,12 @@ import { InventoryCompositionChart } from '@/components/dashboard/inventory-comp
 import { AlertsPanel } from '@/components/dashboard/alerts-panel';
 import { ReorderSuggestions } from '@/components/dashboard/reorder-suggestions';
 import { useData } from '@/context/data-context';
-import { Package, AlertTriangle, FileText, Box } from 'lucide-react';
+import { Package, AlertTriangle, FileText, Box, ClipboardList } from 'lucide-react';
+import { UserRoleContext } from '@/lib/types';
+import Link from 'next/link';
 
 export default function DashboardPage() {
-  const { materials, updateMaterialStock } = useData();
+  const { materials, updateMaterialStock, orders } = useData();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -31,35 +33,44 @@ export default function DashboardPage() {
   }, [materials, updateMaterialStock]);
 
   const totalPaperSheets = materials
-    .filter((m) => m.type === 'Rim' || m.type === 'Packet' || m.type === 'Roll')
+    .filter((m) => m.category === 'Paper')
     .reduce((acc, m) => acc + m.currentStock, 0);
 
   const totalCardboardItems = materials
-    .filter((m) => m.type === 'Unit')
+    .filter((m) => m.category === 'Cardboard')
     .reduce((acc, m) => acc + m.currentStock, 0);
     
   const lowStockItems = materials.filter(
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
 
+  const pendingOrders = orders.filter(o => o.status === 'Pending').length;
+
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
         <MetricCard
           title="Total Materials"
           value={materials.length}
           icon={<Package className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Approx. Paper Sheets"
+          title="Paper Stock (Sheets)"
           value={totalPaperSheets.toLocaleString()}
           icon={<FileText className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Approx. Cardboard Items"
+          title="Cardboard Stock (Units)"
           value={totalCardboardItems.toLocaleString()}
           icon={<Box className="size-6 text-muted-foreground" />}
         />
+         <Link href="/orders">
+            <MetricCard
+            title="Pending Orders"
+            value={pendingOrders}
+            icon={<ClipboardList className="size-6 text-muted-foreground" />}
+            />
+        </Link>
         <MetricCard
           title="Low Stock Alerts"
           value={lowStockItems.length}

@@ -22,6 +22,7 @@ import { cn } from '@/lib/utils';
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { href: '/materials', label: 'Materials', icon: Package },
+  { href: '/orders', label: 'Orders', icon: ClipboardList },
   { href: '/paper-onloading', label: 'Paper Onloading', icon: PackagePlus },
   { href: '/warehouse-status', label: 'Warehouse Status', icon: Warehouse },
   { href: '/reports', label: 'Reports', icon: FileText },
@@ -39,7 +40,7 @@ export function MainNav() {
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild
-              isActive={pathname === item.href}
+              isActive={pathname.startsWith(item.href)}
               tooltip={item.label}
             >
               <Link href={item.href}>

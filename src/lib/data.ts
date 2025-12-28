@@ -1,4 +1,4 @@
-import type { Material, PaperOnloading, Measurement } from './types';
+import type { Material, PaperOnloading, Measurement, Order } from './types';
 
 export const initialMaterials: Material[] = [
   {
@@ -114,4 +114,33 @@ export const initialMeasurements: Measurement[] = [
     type: 'Roll',
     sheetsPerUnit: 1,
   },
+];
+
+export const initialOrders: Order[] = [
+    {
+        id: 'order-1',
+        name: 'Annual Report 2024',
+        client: 'Global Corp',
+        details: '1000 copies, full color, glossy finish.',
+        status: 'Pending',
+        date: '2024-07-20T10:00:00Z',
+    },
+    {
+        id: 'order-2',
+        name: 'Marketing Brochures Q3',
+        client: 'Innovate LLC',
+        details: '5000 trifold brochures.',
+        status: 'Pending',
+        date: '2024-07-22T14:30:00Z',
+    },
+    {
+        id: 'order-3',
+        name: 'Business Cards',
+        client: 'Startup Inc',
+        status: 'Completed',
+        date: '2024-07-18T16:00:00Z',
+        materialsUsed: [
+            { materialId: 'm3', materialName: 'Glossy Brochure Paper', sheetsUsed: 500 }
+        ]
+    }
 ];

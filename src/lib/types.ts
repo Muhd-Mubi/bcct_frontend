@@ -47,3 +47,21 @@ export type Measurement = {
   type: string;
   sheetsPerUnit: number;
 };
+
+export type OrderStatus = 'Pending' | 'Completed' | 'Discarded';
+
+export type MaterialsUsed = {
+  materialId: string;
+  materialName: string;
+  sheetsUsed: number;
+};
+
+export type Order = {
+  id: string;
+  name: string;
+  client: string;
+  details?: string;
+  status: OrderStatus;
+  date: string;
+  materialsUsed?: MaterialsUsed[];
+};

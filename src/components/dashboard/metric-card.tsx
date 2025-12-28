@@ -12,6 +12,7 @@ interface MetricCardProps {
   value: string | number;
   icon: React.ReactNode;
   variant?: 'default' | 'destructive';
+  className?: string;
 }
 
 export function MetricCard({
@@ -19,11 +20,14 @@ export function MetricCard({
   value,
   icon,
   variant = 'default',
+  className,
 }: MetricCardProps) {
   return (
     <Card
       className={cn(
-        variant === 'destructive' && 'bg-destructive/10 border-destructive'
+        'transition-all hover:shadow-md',
+        variant === 'destructive' && 'bg-destructive/10 border-destructive',
+        className
       )}
     >
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

@@ -1,18 +1,22 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { initialMaterials, initialOnloadings, initialMeasurements, Material, PaperOnloading, Measurement } from '@/lib/data';
+import { initialMaterials, initialOnloadings, initialMeasurements, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
 
 interface DataContextType {
   materials: Material[];
   onloadings: PaperOnloading[];
   measurements: Measurement[];
+  orders: Order[];
   saveMaterial: (material: Material) => void;
   deleteMaterial: (id: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Measurement) => void;
+  saveOrder: (orderData: Omit<Order, 'id' | 'status' | 'date'>) => void;
+  markOrderAsComplete: (orderId: string, materialsUsed: Omit<MaterialsUsed, 'materialName'>[]) => void;
+  markOrderAsDiscarded: (orderId: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -21,6 +25,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
+  const [orders, setOrders] = useState<Order[]>(initialOrders);
 
 
   const saveMaterial = (material: Material) => {
@@ -101,16 +106,53 @@ export function DataProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const saveOrder = (orderData: Omit<Order, 'id' | 'status' | 'date'>) => {
+    const newOrder: Order = {
+      ...orderData,
+      id: `order-${Date.now()}`,
+      status: 'Pending',
+      date: new Date().toISOString(),
+    };
+    setOrders(prev => [newOrder, ...prev]);
+  };
+
+  const markOrderAsComplete = (orderId: string, materialsUsed: Omit<MaterialsUsed, 'materialName'>[]) => {
+    // First, deduct the stock from materials
+    materialsUsed.forEach(used => {
+      updateMaterialStock(used.materialId, -used.sheetsUsed);
+    });
+
+    // Then, update the order status
+    setOrders(prev => prev.map(o => {
+      if (o.id === orderId) {
+        const materialsUsedWithNames: MaterialsUsed[] = materialsUsed.map(mu => ({
+            ...mu,
+            materialName: materials.find(m => m.id === mu.materialId)?.name || 'Unknown',
+        }));
+        return { ...o, status: 'Completed', materialsUsed: materialsUsedWithNames };
+      }
+      return o;
+    }));
+  };
+
+  const markOrderAsDiscarded = (orderId: string) => {
+    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Discarded' } : o));
+  };
+
   const value = { 
       materials, 
       onloadings,
       measurements,
+      orders,
       saveMaterial, 
       deleteMaterial,
       saveOnloading,
       revertOnloading,
       updateMaterialStock,
       saveMeasurement,
+      saveOrder,
+      markOrderAsComplete,
+      markOrderAsDiscarded,
     };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

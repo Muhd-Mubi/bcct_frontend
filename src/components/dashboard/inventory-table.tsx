@@ -46,52 +46,54 @@ const statusConfig: Record<
 
 export function InventoryTable({ materials, isClient }: { materials: Material[], isClient: boolean }) {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Material Name</TableHead>
-          <TableHead>Quality</TableHead>
-          <TableHead className="text-right">Current Stock</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Last Updated</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {materials.map((material) => {
-          const stockPercentage = (material.currentStock / material.maxStock) * 100;
-          const quality = getQualityStatus(stockPercentage);
-          const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
-          
-          return (
-            <TableRow key={material.id}>
-              <TableCell className="font-medium">{material.name}</TableCell>
-              <TableCell>
-                <Badge
-                  variant={
-                    quality === 'Good'
-                      ? 'secondary'
-                      : quality === 'Low'
-                      ? 'outline'
-                      : 'destructive'
-                  }
-                >
-                  {quality}
-                </Badge>
-              </TableCell>
-              <TableCell className="text-right">{Math.round(material.currentStock).toLocaleString()}</TableCell>
-              <TableCell>
-                <div className="flex items-center gap-2">
-                  {statusConfig[liveStatus].icon}
-                  {liveStatus}
-                </div>
-              </TableCell>
-              <TableCell>
-                {isClient ? format(parseISO(material.lastUpdated), "PPp") : 'Loading...'}
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <div className="overflow-x-auto">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead>Material Name</TableHead>
+            <TableHead>Quality</TableHead>
+            <TableHead className="text-right">Current Stock</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Last Updated</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {materials.map((material) => {
+            const stockPercentage = (material.currentStock / material.maxStock) * 100;
+            const quality = getQualityStatus(stockPercentage);
+            const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
+            
+            return (
+              <TableRow key={material.id}>
+                <TableCell className="font-medium">{material.name}</TableCell>
+                <TableCell>
+                  <Badge
+                    variant={
+                      quality === 'Good'
+                        ? 'secondary'
+                        : quality === 'Low'
+                        ? 'outline'
+                        : 'destructive'
+                    }
+                  >
+                    {quality}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-right">{Math.round(material.currentStock).toLocaleString()}</TableCell>
+                <TableCell>
+                  <div className="flex items-center gap-2">
+                    {statusConfig[liveStatus].icon}
+                    {liveStatus}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  {isClient ? format(parseISO(material.lastUpdated), "PPp") : 'Loading...'}
+                </TableCell>
+              </TableRow>
+            );
+          })}
+        </TableBody>
+      </Table>
+    </div>
   );
 }

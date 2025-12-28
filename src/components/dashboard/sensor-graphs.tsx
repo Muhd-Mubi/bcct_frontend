@@ -61,7 +61,7 @@ export function SensorGraphs() {
         <CardTitle className="font-headline">Live Sensor Graphs</CardTitle>
         <CardDescription>Real-time feed of total weight and height.</CardDescription>
       </CardHeader>
-      <CardContent className="grid gap-4 sm:grid-cols-2">
+      <CardContent className="grid gap-4 md:grid-cols-2">
         <ChartContainer config={chartConfig} className="h-[250px] w-full">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 5, right: 20, left: -10, bottom: 5 }}>

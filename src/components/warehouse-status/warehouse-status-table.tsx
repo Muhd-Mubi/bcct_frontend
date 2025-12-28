@@ -25,7 +25,7 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
   }
 
   return (
-    <div className="rounded-md border">
+    <div className="rounded-md border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
@@ -46,8 +46,8 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
                 <TableCell className="text-right">{material.currentStock.toLocaleString()}</TableCell>
                 <TableCell className="text-right">{units}</TableCell>
                 <TableCell>
-                  <div className="flex items-center gap-2">
-                    <Progress value={stockPercentage} className="w-32" />
+                  <div className="flex items-center gap-2 min-w-[150px]">
+                    <Progress value={stockPercentage} className="w-full" />
                     <span className="text-xs text-muted-foreground">{stockPercentage.toFixed(1)}%</span>
                   </div>
                 </TableCell>

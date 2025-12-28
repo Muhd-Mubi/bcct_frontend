@@ -18,9 +18,9 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
   const { measurements } = useData();
 
   const getRims = (material: Material) => {
-    if (material.category !== 'Paper') return 'N/A';
     const measurement = measurements.find(m => m.type === 'Rim');
-    const sheetsPerRim = measurement ? measurement.sheetsPerUnit : 500;
+    if (!measurement || material.type !== 'Rim') return 'N/A';
+    const sheetsPerRim = measurement.sheetsPerUnit;
     return (material.currentStock / sheetsPerRim).toFixed(2);
   }
 
@@ -29,22 +29,22 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Paper Type</TableHead>
+            <TableHead>Material Type</TableHead>
             <TableHead className="text-right">Sheets</TableHead>
-            <TableHead className="text-right">Rims</TableHead>
+            <TableHead className="text-right">Rims/Units</TableHead>
             <TableHead>Stock Level</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {materials.map((material) => {
             const stockPercentage = (material.currentStock / material.maxStock) * 100;
-            const rims = getRims(material);
+            const units = getRims(material);
 
             return (
               <TableRow key={material.id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
                 <TableCell className="text-right">{material.currentStock.toLocaleString()}</TableCell>
-                <TableCell className="text-right">{rims}</TableCell>
+                <TableCell className="text-right">{units}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2">
                     <Progress value={stockPercentage} className="w-32" />

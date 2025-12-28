@@ -4,22 +4,18 @@ export const initialMaterials: Material[] = [
   {
     id: 'm1',
     name: 'Standard A4 Paper',
-    category: 'Paper',
     type: 'Rim',
-    supplier: 'PaperCorp',
     currentStock: 90000,
     maxStock: 200000,
-    unitWeight: 0.005, // kg per sheet
-    unitHeight: 0.01, // cm per sheet
+    unitWeight: 2.5, // kg per rim
+    unitHeight: 5, // cm per rim
     reorderThreshold: 20,
     lastUpdated: new Date().toISOString(),
   },
   {
     id: 'm2',
     name: 'Large Cardboard Box',
-    category: 'Cardboard',
     type: 'Unit',
-    supplier: 'BoxCo',
     currentStock: 1500,
     maxStock: 5000,
     unitWeight: 0.5, // kg per box
@@ -30,22 +26,18 @@ export const initialMaterials: Material[] = [
   {
     id: 'm3',
     name: 'Glossy Brochure Paper',
-    category: 'Paper',
     type: 'Packet',
-    supplier: 'PaperCorp',
     currentStock: 45000,
     maxStock: 100000,
-    unitWeight: 0.008, // kg per sheet
-    unitHeight: 0.015, // cm per sheet
+    unitWeight: 0.8, // kg per packet
+    unitHeight: 1.5, // cm per packet
     reorderThreshold: 25,
     lastUpdated: new Date().toISOString(),
   },
   {
     id: 'm4',
     name: 'Small Shipping Box',
-    category: 'Cardboard',
     type: 'Unit',
-    supplier: 'BoxCo',
     currentStock: 8000,
     maxStock: 20000,
     unitWeight: 0.2, // kg per box
@@ -56,13 +48,11 @@ export const initialMaterials: Material[] = [
   {
     id: 'm5',
     name: 'Recycled Kraft Paper Roll',
-    category: 'Paper',
     type: 'Roll',
-    supplier: 'EcoPaper',
     currentStock: 50,
     maxStock: 100,
     unitWeight: 10, // kg per roll
-    unitHeight: 5, // cm per roll
+    unitHeight: 50, // cm height of roll
     reorderThreshold: 15,
     lastUpdated: new Date().toISOString(),
   },

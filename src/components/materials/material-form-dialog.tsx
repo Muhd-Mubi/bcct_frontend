@@ -35,10 +35,7 @@ import { useData } from '@/context/data-context';
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
-  category: z.enum(['Paper', 'Cardboard']),
   type: z.string().min(1, 'Please select a type'),
-  currentStock: z.coerce.number().min(0, 'Stock cannot be negative.'),
-  maxStock: z.coerce.number().min(1, 'Max stock must be at least 1.'),
   unitWeight: z.coerce.number().positive('Weight must be positive.'),
   unitHeight: z.coerce.number().positive('Height must be positive.'),
   reorderThreshold: z.coerce
@@ -67,10 +64,7 @@ export function MaterialFormDialog({
     resolver: zodResolver(formSchema),
     defaultValues: material || {
       name: '',
-      category: 'Paper',
       type: '',
-      currentStock: 0,
-      maxStock: 1000,
       unitWeight: 0,
       unitHeight: 0,
       reorderThreshold: 20,
@@ -83,8 +77,7 @@ export function MaterialFormDialog({
           form.reset(material);
         } else {
           form.reset({
-            name: '', category: 'Paper', type: '', currentStock: 0,
-            maxStock: 1000, unitWeight: 0, unitHeight: 0, reorderThreshold: 20,
+            name: '', type: '', unitWeight: 0, unitHeight: 0, reorderThreshold: 20,
           });
         }
     }
@@ -94,9 +87,10 @@ export function MaterialFormDialog({
   const onSubmit = (values: FormValues) => {
     onSave({
       ...values,
-      supplier: '', // Set supplier to empty string
       id: material?.id || `new-${Date.now()}`,
       lastUpdated: new Date().toISOString(),
+      currentStock: material?.currentStock || 0,
+      maxStock: material?.maxStock || 1000,
     } as Material);
   };
 
@@ -122,30 +116,6 @@ export function MaterialFormDialog({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      <SelectItem value="Paper">Paper</SelectItem>
-                      <SelectItem value="Cardboard">Cardboard</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}
@@ -176,12 +146,12 @@ export function MaterialFormDialog({
               )}
             />
             <div className="grid grid-cols-2 gap-4">
-              <FormField
+               <FormField
                 control={form.control}
-                name="currentStock"
+                name="unitWeight"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Current Stock</FormLabel>
+                    <FormLabel>Unit Weight (kg)</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -191,10 +161,10 @@ export function MaterialFormDialog({
               />
               <FormField
                 control={form.control}
-                name="maxStock"
+                name="unitHeight"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Max Stock</FormLabel>
+                    <FormLabel>Unit Height (cm)</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -203,6 +173,19 @@ export function MaterialFormDialog({
                 )}
               />
             </div>
+             <FormField
+                control={form.control}
+                name="reorderThreshold"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Reorder Threshold (%)</FormLabel>
+                    <FormControl>
+                      <Input type="number" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
             <DialogFooter>
               <Button type="submit">Save</Button>
             </DialogFooter>

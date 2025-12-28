@@ -31,11 +31,11 @@ export default function DashboardPage() {
   }, [materials, updateMaterialStock]);
 
   const totalPaperSheets = materials
-    .filter((m) => m.type === 'Paper')
+    .filter((m) => m.type === 'Rim' || m.type === 'Packet' || m.type === 'Roll')
     .reduce((acc, m) => acc + m.currentStock, 0);
 
   const totalCardboardItems = materials
-    .filter((m) => m.type === 'Cardboard')
+    .filter((m) => m.type === 'Unit')
     .reduce((acc, m) => acc + m.currentStock, 0);
     
   const lowStockItems = materials.filter(

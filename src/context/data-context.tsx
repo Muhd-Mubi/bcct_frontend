@@ -29,10 +29,15 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const saveMaterial = (material: Material) => {
     setMaterials((prev) => {
       const existing = prev.find((m) => m.id === material.id);
+      const materialWithStock = {
+        ...material,
+        currentStock: existing?.currentStock || 0,
+        maxStock: existing?.maxStock || 1000,
+      }
       if (existing) {
-        return prev.map((m) => (m.id === material.id ? material : m));
+        return prev.map((m) => (m.id === material.id ? materialWithStock : m));
       } else {
-        return [...prev, { ...material, id: `m${prev.length + 1}` }];
+        return [...prev, { ...materialWithStock, id: `m${prev.length + 1}` }];
       }
     });
   };

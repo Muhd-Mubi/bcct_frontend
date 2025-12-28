@@ -3,9 +3,7 @@ import React from 'react';
 export type Material = {
   id: string;
   name: string;
-  category: 'Paper' | 'Cardboard';
   type: string;
-  supplier: string;
   currentStock: number;
   maxStock: number;
   unitWeight: number; // in kg

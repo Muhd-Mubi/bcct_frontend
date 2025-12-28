@@ -93,7 +93,6 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
           <TableHeader>
             <TableRow>
               <SortableHeader sortKeyName="name">Name</SortableHeader>
-              <SortableHeader sortKeyName="category">Category</SortableHeader>
               <SortableHeader sortKeyName="type">Type</SortableHeader>
               <SortableHeader sortKeyName="currentStock">Current Stock</SortableHeader>
               <SortableHeader sortKeyName="maxStock">Max Stock</SortableHeader>
@@ -104,7 +103,6 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
             {filteredAndSortedData.map((material) => (
               <TableRow key={material.id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
-                <TableCell>{material.category}</TableCell>
                 <TableCell>{material.type}</TableCell>
                 <TableCell>{material.currentStock}</TableCell>
                 <TableCell>{material.maxStock}</TableCell>

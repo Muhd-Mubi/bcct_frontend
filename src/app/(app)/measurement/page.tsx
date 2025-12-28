@@ -28,10 +28,10 @@ export default function MeasurementPage() {
     };
 
     const handleSave = (measurementData: Measurement | Omit<Measurement, '_id'>) => {
-        if ('_id' in measurementData) {
-            updateMeasurement(measurementData);
+        if ('_id' in measurementData && measurementData._id) {
+            updateMeasurement(measurementData as Measurement);
         } else {
-            saveMeasurement(measurementData);
+            saveMeasurement(measurementData as Omit<Measurement, '_id'>);
         }
         setFormOpen(false);
     };

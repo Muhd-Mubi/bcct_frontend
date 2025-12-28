@@ -11,6 +11,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import { buttonVariants } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 interface RevertConfirmationDialogProps {
   isOpen: boolean;
@@ -34,7 +36,12 @@ export function RevertConfirmationDialog({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={onConfirm}>Confirm Revert</AlertDialogAction>
+          <AlertDialogAction 
+            onClick={onConfirm}
+            className={cn(buttonVariants({ variant: "destructive" }))}
+          >
+            Confirm Revert
+          </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>

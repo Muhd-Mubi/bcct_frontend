@@ -5,6 +5,7 @@ export const initialMaterials: Material[] = [
     id: 'm1',
     name: 'Standard A4 Paper',
     type: 'Rim',
+    category: 'Paper',
     unitQuantity: 180,
     extraSheets: 0,
     currentStock: 90000,
@@ -16,6 +17,7 @@ export const initialMaterials: Material[] = [
     id: 'm2',
     name: 'Large Cardboard Box',
     type: 'Unit',
+    category: 'Cardboard',
     unitQuantity: 1500,
     extraSheets: 0,
     currentStock: 1500,
@@ -27,6 +29,7 @@ export const initialMaterials: Material[] = [
     id: 'm3',
     name: 'Glossy Brochure Paper',
     type: 'Packet',
+    category: 'Paper',
     unitQuantity: 450,
     extraSheets: 0,
     currentStock: 45000,
@@ -38,6 +41,7 @@ export const initialMaterials: Material[] = [
     id: 'm4',
     name: 'Small Shipping Box',
     type: 'Unit',
+    category: 'Cardboard',
     unitQuantity: 8000,
     extraSheets: 0,
     currentStock: 8000,
@@ -49,6 +53,7 @@ export const initialMaterials: Material[] = [
     id: 'm5',
     name: 'Recycled Kraft Paper Roll',
     type: 'Roll',
+    category: 'Paper',
     unitQuantity: 50,
     extraSheets: 0,
     currentStock: 50,
@@ -75,8 +80,7 @@ export const initialOrders: Order[] = [
     status: 'Completed',
     createdAt: '2024-07-15T14:30:00Z',
     completedAt: '2024-07-22T16:00:00Z',
-    sheetsUsed: 5000,
-    rimsUsed: 10,
+    materialsUsed: [{ materialId: 'm1', sheetsUsed: 5000 }],
   },
   {
     id: 'order-3',
@@ -96,6 +100,7 @@ export const initialOnloadings: PaperOnloading[] = [
     extraSheets: 0,
     supplier: 'PaperCorp',
     paperType: 'Standard A4 Paper',
+    isReverted: false,
   },
   {
     id: 'onload-2',
@@ -104,6 +109,7 @@ export const initialOnloadings: PaperOnloading[] = [
     extraSheets: 0,
     supplier: 'PaperCorp',
     paperType: 'Glossy Brochure Paper',
+    isReverted: false,
   },
   {
     id: 'onload-3',
@@ -112,6 +118,7 @@ export const initialOnloadings: PaperOnloading[] = [
     extraSheets: 0,
     supplier: 'EcoPaper',
     paperType: 'Recycled Kraft Paper Roll',
+    isReverted: false,
   },
 ];
 

@@ -4,6 +4,7 @@ export type Material = {
   id: string;
   name: string;
   type: string;
+  category: 'Paper' | 'Cardboard';
   unitQuantity: number;
   extraSheets: number;
   currentStock: number;
@@ -40,8 +41,6 @@ export type Order = {
   createdAt: string;
   completedAt?: string;
   materialsUsed?: { materialId: string; sheetsUsed: number }[];
-  sheetsUsed?: number; // legacy
-  rimsUsed?: number; // legacy
 };
 
 export type PaperOnloading = {

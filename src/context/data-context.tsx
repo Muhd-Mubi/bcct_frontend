@@ -13,7 +13,7 @@ interface DataContextType {
   saveOrder: (order: Order) => void;
   markOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; sheetsUsed: number }[]) => void;
   markOrderAsDiscarded: (orderId: string) => void;
-  saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => void;
+  saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Measurement) => void;
@@ -72,7 +72,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     );
   };
   
-  const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => {
+  const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'| 'isReverted'>) => {
     const materialToUpdate = materials.find(m => m.name === onloadingData.paperType);
     const measurement = measurements.find(m => m.type === materialToUpdate?.type);
     const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
@@ -116,7 +116,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           const newStock = m.currentStock + stockChange;
           return { 
             ...m, 
-            currentStock: newStock,
+            currentStock: Math.max(0, newStock), // Ensure stock doesn't go negative
             lastUpdated: new Date().toISOString() 
           };
         }

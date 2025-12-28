@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useMemo, useContext } from 'react';
-import { PlusCircle, MoreHorizontal } from 'lucide-react';
+import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OrdersTable } from '@/components/orders/orders-table';
-import { Order, Material } from '@/lib/data';
+import { Order } from '@/lib/data';
 import { OrderFormDialog } from '@/components/orders/order-form-dialog';
 import { CompleteOrderDialog } from '@/components/orders/complete-order-dialog';
 import { DiscardOrderDialog } from '@/components/orders/discard-order-dialog';

@@ -21,6 +21,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useData } from '@/context/data-context';
 
 interface OrdersTableProps {
   data: Order[];
@@ -30,6 +31,7 @@ interface OrdersTableProps {
 
 export function OrdersTable({ data, onCompleteClick, onDiscardClick }: OrdersTableProps) {
   const { isManager } = useContext(UserRoleContext);
+  const { materials } = useData();
   
   const getStatusBadgeVariant = (status: Order['status']) => {
     switch (status) {
@@ -42,6 +44,10 @@ export function OrdersTable({ data, onCompleteClick, onDiscardClick }: OrdersTab
         return 'default';
     }
   };
+
+  const getMaterialName = (id: string) => {
+    return materials.find(m => m.id === id)?.name || 'Unknown Material';
+  }
 
   return (
     <div className="rounded-md border">
@@ -67,10 +73,14 @@ export function OrdersTable({ data, onCompleteClick, onDiscardClick }: OrdersTab
                   {order.status}
                 </Badge>
               </TableCell>
-               <TableCell className="text-xs text-muted-foreground">
+               <TableCell className="text-xs text-muted-foreground max-w-xs truncate">
                 {order.status === 'Completed' && order.materialsUsed ? (
-                   <div>
-                     {order.materialsUsed.map(m => `Used ${m.sheetsUsed} sheets`).join(', ')}
+                   <div className="flex flex-col gap-1">
+                     {order.materialsUsed.map((m, index) => (
+                       <span key={index}>
+                         Used {m.sheetsUsed} sheets of {getMaterialName(m.materialId)}
+                       </span>
+                     ))}
                    </div>
                 ) : (
                   order.details
@@ -90,7 +100,7 @@ export function OrdersTable({ data, onCompleteClick, onDiscardClick }: OrdersTab
                         Mark as Completed
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        className="text-destructive"
+                        className="text-destructive focus:text-destructive focus:bg-destructive/10"
                         onClick={() => onDiscardClick(order)}
                       >
                         Discard Order

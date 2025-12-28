@@ -49,7 +49,7 @@ export function InventoryTable({ materials, isClient }: { materials: Material[],
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Material Type</TableHead>
+          <TableHead>Material Name</TableHead>
           <TableHead>Quality</TableHead>
           <TableHead className="text-right">Current Stock</TableHead>
           <TableHead>Status</TableHead>

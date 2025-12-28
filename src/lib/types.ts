@@ -3,7 +3,8 @@ import React from 'react';
 export type Material = {
   id: string;
   name: string;
-  type: 'Paper' | 'Cardboard';
+  category: 'Paper' | 'Cardboard';
+  type: string;
   supplier: string;
   currentStock: number;
   maxStock: number;

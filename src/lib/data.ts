@@ -4,7 +4,8 @@ export const initialMaterials: Material[] = [
   {
     id: 'm1',
     name: 'Standard A4 Paper',
-    type: 'Paper',
+    category: 'Paper',
+    type: 'Rim',
     supplier: 'PaperCorp',
     currentStock: 90000,
     maxStock: 200000,
@@ -16,7 +17,8 @@ export const initialMaterials: Material[] = [
   {
     id: 'm2',
     name: 'Large Cardboard Box',
-    type: 'Cardboard',
+    category: 'Cardboard',
+    type: 'Unit',
     supplier: 'BoxCo',
     currentStock: 1500,
     maxStock: 5000,
@@ -28,7 +30,8 @@ export const initialMaterials: Material[] = [
   {
     id: 'm3',
     name: 'Glossy Brochure Paper',
-    type: 'Paper',
+    category: 'Paper',
+    type: 'Packet',
     supplier: 'PaperCorp',
     currentStock: 45000,
     maxStock: 100000,
@@ -40,7 +43,8 @@ export const initialMaterials: Material[] = [
   {
     id: 'm4',
     name: 'Small Shipping Box',
-    type: 'Cardboard',
+    category: 'Cardboard',
+    type: 'Unit',
     supplier: 'BoxCo',
     currentStock: 8000,
     maxStock: 20000,
@@ -52,7 +56,8 @@ export const initialMaterials: Material[] = [
   {
     id: 'm5',
     name: 'Recycled Kraft Paper Roll',
-    type: 'Paper',
+    category: 'Paper',
+    type: 'Roll',
     supplier: 'EcoPaper',
     currentStock: 50,
     maxStock: 100,
@@ -130,5 +135,15 @@ export const initialMeasurements: Measurement[] = [
     id: 'measurement-2',
     type: 'Packet',
     sheetsPerUnit: 100,
+  },
+    {
+    id: 'measurement-3',
+    type: 'Unit',
+    sheetsPerUnit: 1,
+  },
+  {
+    id: 'measurement-4',
+    type: 'Roll',
+    sheetsPerUnit: 1,
   },
 ];

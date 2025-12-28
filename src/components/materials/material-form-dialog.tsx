@@ -30,11 +30,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Material } from '@/lib/types';
+import { useData } from '@/context/data-context';
 
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
-  type: z.enum(['Paper', 'Cardboard']),
+  category: z.enum(['Paper', 'Cardboard']),
+  type: z.string().min(1, 'Please select a type'),
   currentStock: z.coerce.number().min(0, 'Stock cannot be negative.'),
   maxStock: z.coerce.number().min(1, 'Max stock must be at least 1.'),
   unitWeight: z.coerce.number().positive('Weight must be positive.'),
@@ -60,11 +62,13 @@ export function MaterialFormDialog({
   onSave,
   material,
 }: MaterialFormDialogProps) {
+  const { measurements } = useData();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: material || {
       name: '',
-      type: 'Paper',
+      category: 'Paper',
+      type: '',
       currentStock: 0,
       maxStock: 1000,
       unitWeight: 0,
@@ -74,13 +78,15 @@ export function MaterialFormDialog({
   });
   
   useEffect(() => {
-    if (material) {
-      form.reset(material);
-    } else {
-      form.reset({
-        name: '', type: 'Paper', currentStock: 0,
-        maxStock: 1000, unitWeight: 0, unitHeight: 0, reorderThreshold: 20,
-      });
+    if (isOpen) {
+        if (material) {
+          form.reset(material);
+        } else {
+          form.reset({
+            name: '', category: 'Paper', type: '', currentStock: 0,
+            maxStock: 1000, unitWeight: 0, unitHeight: 0, reorderThreshold: 20,
+          });
+        }
     }
   }, [material, form, isOpen]);
 
@@ -120,6 +126,30 @@ export function MaterialFormDialog({
                 </FormItem>
               )}
             />
+             <FormField
+              control={form.control}
+              name="category"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Category</FormLabel>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <FormControl>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      <SelectItem value="Paper">Paper</SelectItem>
+                      <SelectItem value="Cardboard">Cardboard</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="type"
@@ -136,8 +166,9 @@ export function MaterialFormDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      <SelectItem value="Paper">Paper</SelectItem>
-                      <SelectItem value="Cardboard">Cardboard</SelectItem>
+                      {measurements.map(m => (
+                        <SelectItem key={m.id} value={m.type}>{m.type}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                   <FormMessage />

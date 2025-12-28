@@ -19,7 +19,7 @@ export default function WarehouseStatusPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <WarehouseStatusTable materials={materials.filter(m => m.type === 'Paper')} />
+          <WarehouseStatusTable materials={materials.filter(m => m.category === 'Paper')} />
         </CardContent>
       </Card>
        <Card>
@@ -30,7 +30,7 @@ export default function WarehouseStatusPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <WarehouseStatusTable materials={materials.filter(m => m.type === 'Cardboard')} />
+          <WarehouseStatusTable materials={materials.filter(m => m.category === 'Cardboard')} />
         </CardContent>
       </Card>
     </div>

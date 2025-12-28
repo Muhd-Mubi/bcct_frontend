@@ -11,14 +11,19 @@ import {
 } from '@/components/ui/table';
 import { Material } from '@/lib/types';
 import { Progress } from '@/components/ui/progress';
+import { useData } from '@/context/data-context';
 
-const RIMS_PER_SHEET = 500;
 
-interface WarehouseStatusTableProps {
-  materials: Material[];
-}
+export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
+  const { measurements } = useData();
 
-export function WarehouseStatusTable({ materials }: WarehouseStatusTableProps) {
+  const getRims = (material: Material) => {
+    if (material.category !== 'Paper') return 'N/A';
+    const measurement = measurements.find(m => m.type === 'Rim');
+    const sheetsPerRim = measurement ? measurement.sheetsPerUnit : 500;
+    return (material.currentStock / sheetsPerRim).toFixed(2);
+  }
+
   return (
     <div className="rounded-md border">
       <Table>
@@ -33,7 +38,7 @@ export function WarehouseStatusTable({ materials }: WarehouseStatusTableProps) {
         <TableBody>
           {materials.map((material) => {
             const stockPercentage = (material.currentStock / material.maxStock) * 100;
-            const rims = material.type === 'Paper' ? (material.currentStock / RIMS_PER_SHEET).toFixed(2) : 'N/A';
+            const rims = getRims(material);
 
             return (
               <TableRow key={material.id}>

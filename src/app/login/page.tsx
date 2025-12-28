@@ -38,13 +38,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full lg:grid lg:min-h-[100vh] lg:grid-cols-2 xl:min-h-[100vh]">
+    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
       <div className="hidden bg-muted lg:block relative">
          <Image
           src="https://picsum.photos/seed/3/1200/1800"
           alt="Inventory management system"
-          width="1200"
-          height="1800"
+          fill
           className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
           data-ai-hint="warehouse logistics"
         />

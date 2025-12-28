@@ -36,11 +36,12 @@ export type Order = {
   name: string;
   details: string;
   clientName: string;
-  status: 'Pending' | 'Completed';
+  status: 'Pending' | 'Completed' | 'Discarded';
   createdAt: string;
   completedAt?: string;
-  sheetsUsed?: number;
-  rimsUsed?: number;
+  materialsUsed?: { materialId: string; sheetsUsed: number }[];
+  sheetsUsed?: number; // legacy
+  rimsUsed?: number; // legacy
 };
 
 export type PaperOnloading = {

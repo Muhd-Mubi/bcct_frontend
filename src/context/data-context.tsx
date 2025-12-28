@@ -11,7 +11,8 @@ interface DataContextType {
   saveMaterial: (material: Material) => void;
   deleteMaterial: (id: string) => void;
   saveOrder: (order: Order) => void;
-  markOrderAsComplete: (orderId: string, sheetsUsed: number, rimsUsed: number) => void;
+  markOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; sheetsUsed: number }[]) => void;
+  markOrderAsDiscarded: (orderId: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
@@ -51,15 +52,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
   };
 
-  const markOrderAsComplete = (orderId: string, sheetsUsed: number, rimsUsed: number) => {
+  const markOrderAsComplete = (orderId: string, materialsUsed: { materialId: string; sheetsUsed: number }[]) => {
     setOrders((prev) =>
       prev.map((o) =>
         o.id === orderId
-          ? { ...o, status: 'Completed', sheetsUsed, rimsUsed, completedAt: new Date().toISOString() }
+          ? { ...o, status: 'Completed', materialsUsed, completedAt: new Date().toISOString() }
           : o
       )
     );
-    // You might want to deduct stock here as well
+    // Deduct stock for each material used
+    materialsUsed.forEach(item => {
+        updateMaterialStock(item.materialId, -item.sheetsUsed);
+    });
+  };
+
+  const markOrderAsDiscarded = (orderId: string) => {
+    setOrders((prev) =>
+      prev.map((o) => (o.id === orderId ? { ...o, status: 'Discarded' } : o))
+    );
   };
   
   const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => {
@@ -134,6 +144,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       deleteMaterial,
       saveOrder,
       markOrderAsComplete,
+      markOrderAsDiscarded,
       saveOnloading,
       revertOnloading,
       updateMaterialStock,

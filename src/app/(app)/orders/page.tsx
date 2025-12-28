@@ -1,13 +1,14 @@
 'use client';
 
 import React, { useState, useMemo, useContext } from 'react';
-import { PlusCircle, ArrowUpDown } from 'lucide-react';
+import { PlusCircle, MoreHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OrdersTable } from '@/components/orders/orders-table';
-import { Order } from '@/lib/data';
+import { Order, Material } from '@/lib/data';
 import { OrderFormDialog } from '@/components/orders/order-form-dialog';
 import { CompleteOrderDialog } from '@/components/orders/complete-order-dialog';
+import { DiscardOrderDialog } from '@/components/orders/discard-order-dialog';
 import { UserRoleContext } from '@/lib/types';
 import { Input } from '@/components/ui/input';
 import {
@@ -23,9 +24,10 @@ import { useData } from '@/context/data-context';
 type SortKey = keyof Order | '';
 
 export default function OrdersPage() {
-  const { orders, saveOrder, markOrderAsComplete } = useData();
+  const { orders, saveOrder, markOrderAsComplete, markOrderAsDiscarded } = useData();
   const [isOrderFormOpen, setOrderFormOpen] = useState(false);
   const [isCompleteFormOpen, setCompleteFormOpen] = useState(false);
+  const [isDiscardFormOpen, setDiscardFormOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState<Order | undefined>(undefined);
   const { isManager } = useContext(UserRoleContext);
   const [searchTerm, setSearchTerm] = useState('');
@@ -46,10 +48,20 @@ export default function OrdersPage() {
     setSelectedOrder(order);
     setCompleteFormOpen(true);
   };
+  
+  const handleDiscardClick = (order: Order) => {
+    setSelectedOrder(order);
+    setDiscardFormOpen(true);
+  };
 
-  const handleMarkAsComplete = (orderId: string, sheetsUsed: number, rimsUsed: number) => {
-    markOrderAsComplete(orderId, sheetsUsed, rimsUsed);
+  const handleMarkAsComplete = (orderId: string, materialsUsed: { materialId: string; sheetsUsed: number }[]) => {
+    markOrderAsComplete(orderId, materialsUsed);
     setCompleteFormOpen(false);
+  };
+
+  const handleMarkAsDiscarded = (orderId: string) => {
+    markOrderAsDiscarded(orderId);
+    setDiscardFormOpen(false);
   };
   
   const filteredAndSortedData = useMemo(() => {
@@ -110,6 +122,7 @@ export default function OrdersPage() {
           <OrdersTable
             data={filteredAndSortedData}
             onCompleteClick={handleCompleteClick}
+            onDiscardClick={handleDiscardClick}
           />
         </CardContent>
       </Card>
@@ -126,6 +139,13 @@ export default function OrdersPage() {
         onOpenChange={setCompleteFormOpen}
         order={selectedOrder}
         onSave={handleMarkAsComplete}
+      />
+
+      <DiscardOrderDialog
+        isOpen={isDiscardFormOpen}
+        onOpenChange={setDiscardFormOpen}
+        order={selectedOrder}
+        onConfirm={handleMarkAsDiscarded}
       />
     </div>
   );

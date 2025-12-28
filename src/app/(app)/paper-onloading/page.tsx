@@ -9,11 +9,14 @@ import { PaperOnloading } from '@/lib/data';
 import { OnloadingFormDialog } from '@/components/paper-onloading/onloading-form-dialog';
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/data-context';
+import { RevertConfirmationDialog } from '@/components/paper-onloading/revert-confirmation-dialog';
 
 
 export default function PaperOnloadingPage() {
   const { onloadings, saveOnloading, revertOnloading } = useData();
   const [isFormOpen, setFormOpen] = useState(false);
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
+  const [selectedOnloadingId, setSelectedOnloadingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
   const handleAddOnloading = () => {
@@ -25,9 +28,19 @@ export default function PaperOnloadingPage() {
     setFormOpen(false);
   };
   
-  const handleRevert = (onloadingId: string) => {
-    revertOnloading(onloadingId);
+  const handleRevertClick = (onloadingId: string) => {
+    setSelectedOnloadingId(onloadingId);
+    setConfirmOpen(true);
   };
+
+  const handleConfirmRevert = () => {
+    if (selectedOnloadingId) {
+      revertOnloading(selectedOnloadingId);
+    }
+    setConfirmOpen(false);
+    setSelectedOnloadingId(null);
+  };
+
 
   const filteredData = useMemo(() => {
     return onloadings.filter((o) =>
@@ -54,7 +67,7 @@ export default function PaperOnloadingPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <OnloadingTable data={filteredData} onRevert={handleRevert}/>
+          <OnloadingTable data={filteredData} onRevertClick={handleRevertClick}/>
         </CardContent>
       </Card>
 
@@ -62,6 +75,12 @@ export default function PaperOnloadingPage() {
         isOpen={isFormOpen}
         onOpenChange={setFormOpen}
         onSave={handleSaveOnloading}
+      />
+
+      <RevertConfirmationDialog
+        isOpen={isConfirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={handleConfirmRevert}
       />
     </div>
   );

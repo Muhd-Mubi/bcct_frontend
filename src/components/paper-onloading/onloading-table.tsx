@@ -16,10 +16,10 @@ import { Badge } from '@/components/ui/badge';
 
 interface OnloadingTableProps {
   data: PaperOnloading[];
-  onRevert: (id: string) => void;
+  onRevertClick: (id: string) => void;
 }
 
-export function OnloadingTable({ data, onRevert }: OnloadingTableProps) {
+export function OnloadingTable({ data, onRevertClick }: OnloadingTableProps) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -51,7 +51,7 @@ export function OnloadingTable({ data, onRevert }: OnloadingTableProps) {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => onRevert(item.id)}
+                  onClick={() => onRevertClick(item.id)}
                   disabled={item.isReverted}
                 >
                   Revert

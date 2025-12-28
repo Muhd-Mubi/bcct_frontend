@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { initialMaterials, initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
+import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
 
@@ -32,27 +33,31 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const { toast } = useToast();
 
   useEffect(() => {
     const fetchMeasurements = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/get-measurement`);
         const data = await response.json();
-        if (data && Array.isArray(data)) {
-          setMeasurements(data);
-        } else if (data && Array.isArray(data.measurements)) {
+        if (data.success) {
           setMeasurements(data.measurements);
         } else {
-            console.error("Fetched data is not in the expected array format:", data);
+            console.error("API error:", data.message);
             setMeasurements([]); 
         }
       } catch (error) {
         console.error("Failed to fetch measurements:", error);
         setMeasurements([]); 
+        toast({
+            title: "Error fetching measurements",
+            description: "Could not connect to the server.",
+            variant: "destructive"
+        });
       }
     };
     fetchMeasurements();
-  }, []);
+  }, [toast]);
 
   const saveMaterial = (material: Material) => {
     setMaterials((prev) => {
@@ -130,10 +135,27 @@ export function DataProvider({ children }: { children: ReactNode }) {
         },
         body: JSON.stringify(measurement),
       });
-      const newMeasurement = await response.json();
-      setMeasurements((prev) => [...prev, newMeasurement]);
+      const result = await response.json();
+      if (result.success) {
+        setMeasurements((prev) => [...prev, result.measurement]);
+        toast({
+            title: "Success",
+            description: result.message,
+        });
+      } else {
+        toast({
+            title: "Error",
+            description: result.message || "Failed to save measurement.",
+            variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Failed to save measurement:", error);
+      toast({
+            title: "Network Error",
+            description: "Could not save measurement. Please check your connection.",
+            variant: "destructive",
+        });
     }
   };
 
@@ -146,10 +168,27 @@ export function DataProvider({ children }: { children: ReactNode }) {
         },
         body: JSON.stringify({ name: measurement.name, sheetsPerUnit: measurement.sheetsPerUnit }),
       });
-      const updatedMeasurement = await response.json();
-      setMeasurements((prev) => prev.map(m => m._id === updatedMeasurement._id ? updatedMeasurement : m));
+      const result = await response.json();
+      if(result.success) {
+        setMeasurements((prev) => prev.map(m => m._id === result.measurement._id ? result.measurement : m));
+        toast({
+            title: "Success",
+            description: result.message,
+        });
+      } else {
+        toast({
+            title: "Error",
+            description: result.message || "Failed to update measurement.",
+            variant: "destructive",
+        });
+      }
     } catch (error) {
       console.error("Failed to update measurement:", error);
+      toast({
+        title: "Network Error",
+        description: "Could not update measurement. Please check your connection.",
+        variant: "destructive",
+    });
     }
   }
 

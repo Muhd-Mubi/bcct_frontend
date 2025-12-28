@@ -13,6 +13,8 @@ export default {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', ...fontFamily.sans],
+        body: ['var(--font-body)', 'sans-serif'],
+        headline: ['var(--font-headline)', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',
@@ -71,6 +73,10 @@ export default {
         lg: 'var(--radius)',
         md: 'calc(var(--radius) - 4px)',
         sm: 'calc(var(--radius) - 6px)',
+      },
+      boxShadow: {
+        'card': '0 6px 18px rgba(12, 18, 25, 0.04)',
+        'modal': '0 20px 40px rgba(8, 12, 20, 0.12)',
       },
       keyframes: {
         'accordion-down': {

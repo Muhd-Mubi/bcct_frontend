@@ -17,7 +17,6 @@ import { Package2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Link from 'next/link';
-import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -39,7 +38,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="relative h-screen w-full">
+    <div className="relative h-screen w-full font-body">
        <Image
         src="https://picsum.photos/seed/3/1920/1080"
         alt="Inventory management system background"
@@ -47,24 +46,23 @@ export default function LoginPage() {
         className="object-cover"
         data-ai-hint="warehouse logistics"
       />
-      <div className="absolute inset-0 bg-black/50" />
+      <div className="absolute inset-0 bg-black/60" />
       
       <div className="absolute top-8 left-8 text-white">
           <div className="flex items-center gap-4">
-              <Package2 className="size-10 text-primary" />
-              <h1 className="text-4xl font-bold font-headline drop-shadow-md">
+              <Package2 className="size-8 text-primary" />
+              <h1 className="text-2xl font-bold font-headline drop-shadow-md">
                   BCCT INVENTORY
               </h1>
           </div>
-          <p className="mt-2 text-lg text-white/90 drop-shadow-md">The intelligent way to manage your stock.</p>
       </div>
 
       <div className="relative z-10 flex h-full items-center justify-center">
-        <Card className="mx-auto w-[380px] border-none bg-glass/80 backdrop-blur-sm text-card-foreground shadow-2xl">
+        <Card className="mx-auto w-[380px] border-none bg-glass backdrop-blur-sm text-card-foreground shadow-modal">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold">Login</CardTitle>
+            <CardTitle className="text-3xl font-headline">Welcome Back</CardTitle>
             <CardDescription className="text-white/80">
-              Enter your credentials to access your dashboard
+              Sign in to access your dashboard
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -87,7 +85,7 @@ export default function LoginPage() {
                     href="#"
                     className="ml-auto inline-block text-sm text-white/70 hover:text-white underline"
                   >
-                    Forgot your password?
+                    Forgot password?
                   </Link>
                 </div>
                 <Input 
@@ -101,14 +99,8 @@ export default function LoginPage() {
                  />
               </div>
               <Button type="submit" className="w-full mt-2" onClick={handleLogin}>
-                Login
+                Sign In
               </Button>
-            </div>
-            <div className="mt-4 text-center text-sm text-white/70">
-              Don&apos;t have an account?{' '}
-              <Link href="#" className="underline hover:text-white">
-                Contact Support
-              </Link>
             </div>
           </CardContent>
         </Card>

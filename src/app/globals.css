@@ -4,129 +4,131 @@
 
 @layer base {
   :root {
-    --bg-100: 220 20% 98%;
-    --bg-200: 220 17% 95%;
-    --bg-300: 220 16% 91%;
-    --panel-dark: 216 28% 7%;
-    
+    /* Rothko Theme - Light */
+    --bg-100: 220 20% 98%;      /* #FAFAFA */
+    --bg-200: 220 17% 95%;      /* #F2F3F5 */
+    --bg-300: 220 16% 91%;      /* #E6E8EC */
+    --panel-dark: 216 28% 7%;  /* #0E1116 */
+
     --text-primary: 215 39% 10%;
-    --text-secondary: 209 15% 40%;
+    --text-secondary: 211 15% 40%;
     --muted-color: 210 13% 69%;
-    
-    --accent-warm-1: 14 100% 67%;
-    --accent-warm-2: 20 100% 73%;
-    --accent-cool-1: 217 91% 60%;
-    
+
+    --accent-warm-1: 12 56% 55%; /* #C86B52 */
+    --accent-warm-2: 12 56% 65%; /* Lighter shade for gradients/hovers */
+    --accent-cool-1: 211 18% 50%; /* #6B7C93 */
+
     --success: 142 71% 45%;
     --danger: 9 84% 60%;
     --warning: 38 92% 50%;
-    
+
     --glass: 255 100% 100%;
 
-    --background: 0 0% 100%;
+    --background: 240 60% 99%; /* #FAFAFA */
     --foreground: var(--text-primary);
-    
-    --card: var(--bg-100);
+
+    --card: 0 0% 100%;
     --card-foreground: var(--text-primary);
-    
+
     --popover: 0 0% 100%;
     --popover-foreground: var(--text-primary);
-    
+
     --primary: var(--accent-warm-1);
     --primary-foreground: 0 0% 100%;
-    
+
     --secondary: var(--accent-cool-1);
     --secondary-foreground: 0 0% 100%;
-    
+
     --muted: var(--bg-200);
     --muted-foreground: var(--text-secondary);
-    
+
     --accent: var(--bg-300);
     --accent-foreground: var(--text-primary);
-    
+
     --destructive: var(--danger);
     --destructive-foreground: 0 0% 100%;
-    
-    --border: var(--bg-300);
-    --input: var(--bg-300);
-    --ring: 217 91% 60%;
-    
-    --radius: 12px;
 
-    --chart-1: 217 91% 60%;
-    --chart-2: 262 88% 58%;
-    --chart-3: 14 100% 67%;
-    --chart-4: 142 71% 45%;
-    --chart-5: 38 92% 50%;
+    --border: var(--bg-300);
+    --input: var(--bg-200);
+    --ring: var(--accent-cool-1);
+
+    --radius: 14px;
+
+    --chart-1: 211 18% 50%;
+    --chart-2: 12 56% 55%;
+    --chart-3: 142 71% 45%;
+    --chart-4: 38 92% 50%;
+    --chart-5: 262 88% 58%;
 
     --sidebar-background: var(--panel-dark);
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-primary: var(--accent-warm-1);
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 216 28% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-accent-foreground: var(--accent-warm-1);
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 240 4.9% 83.9%;
+    --sidebar-ring: var(--accent-warm-1);
   }
 
   .dark {
+    /* Rothko Theme - Dark */
     --bg-100: 215 28% 17%;
     --bg-200: 215 28% 14%;
     --bg-300: 215 28% 11%;
-    --panel-dark: 216 28% 7%;
-    
+    --panel-dark: 216 28% 7%; /* #0E1116 */
+
     --text-primary: 210 40% 98%;
     --text-secondary: 215 20% 65%;
     --muted-color: 217 21% 53%;
 
-    --accent-warm-1: 14 100% 67%;
-    --accent-warm-2: 20 100% 73%;
-    --accent-cool-1: 217 91% 60%;
-    
-    --success: 142 71% 45%;
-    --danger: 9 84% 60%;
-    --warning: 38 92% 50%;
-    
+    --accent-warm-1: 12 56% 55%; /* #C86B52 */
+    --accent-warm-2: 12 56% 65%;
+    --accent-cool-1: 211 18% 50%; /* #6B7C93 */
+
+    --success: 142 61% 40%;
+    --danger: 9 74% 55%;
+    --warning: 38 82% 45%;
+
     --glass: 215 28% 17% / 0.6;
 
-    --background: 222 47% 11%;
+    --background: 216 28% 7%; /* #0E1116 */
     --foreground: var(--text-primary);
-    
+
     --card: var(--bg-100);
     --card-foreground: var(--text-primary);
-    
+
     --popover: var(--bg-300);
     --popover-foreground: var(--text-primary);
-    
+
     --primary: var(--accent-warm-1);
     --primary-foreground: 0 0% 100%;
-    
+
     --secondary: var(--accent-cool-1);
     --secondary-foreground: 0 0% 100%;
-    
+
     --muted: var(--bg-200);
     --muted-foreground: var(--text-secondary);
-    
+
     --accent: var(--bg-300);
     --accent-foreground: var(--text-primary);
-    
+
     --destructive: var(--danger);
     --destructive-foreground: 0 0% 100%;
-    
+
     --border: var(--bg-200);
-    --input: var(--bg-300);
-    --ring: 217 91% 60%;
+    --input: var(--bg-200);
+    --ring: var(--accent-warm-1);
 
-    --radius: 12px;
-
+    --radius: 14px;
+    
     --sidebar-background: var(--panel-dark);
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 210 40% 98%;
-    --sidebar-primary-foreground: 240 5.9% 10%;
+    --sidebar-primary: var(--accent-warm-1);
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 216 28% 12%;
-    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-accent-foreground: var(--accent-warm-1);
     --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 240 4.9% 83.9%;
+    --sidebar-ring: var(--accent-warm-1);
   }
 }
 
@@ -136,13 +138,24 @@
   }
   body {
     @apply bg-background text-foreground;
-    background: linear-gradient(180deg, hsl(var(--bg-100)) 0%, hsl(var(--bg-100)) 40%, hsl(var(--bg-200)) 100%);
+    background: linear-gradient(180deg, hsl(var(--bg-100)) 0%, hsl(var(--bg-200)) 40%, hsl(var(--bg-300)) 100%);
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
   .dark body {
-    background: linear-gradient(180deg, hsl(var(--bg-300)) 0%, hsl(var(--bg-300)) 40%, hsl(var(--panel-dark)) 100%);
+    background: linear-gradient(180deg, hsl(216 28% 9%) 0%, hsl(216 28% 7%) 100%);
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-headline;
+    letter-spacing: 0.2px;
+  }
+  body, p, span, div, input, textarea, button, select {
+    @apply font-body;
+  }
+  /* For tabular numbers */
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
   }
 }
 

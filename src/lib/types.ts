@@ -4,11 +4,11 @@ export type Material = {
   id: string;
   name: string;
   type: string;
+  unitQuantity: number;
+  extraSheets: number;
   currentStock: number;
   maxStock: number;
-  unitWeight: number; // in kg
-  unitHeight: number; // in cm
-  reorderThreshold: number; // percentage
+  reorderThreshold: number;
   lastUpdated: string;
 };
 

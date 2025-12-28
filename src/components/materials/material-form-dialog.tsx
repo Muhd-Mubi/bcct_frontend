@@ -36,12 +36,8 @@ const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   type: z.string().min(1, 'Please select a type'),
-  unitWeight: z.coerce.number().positive('Weight must be positive.'),
-  unitHeight: z.coerce.number().positive('Height must be positive.'),
-  reorderThreshold: z.coerce
-    .number()
-    .min(0, 'Threshold must be at least 0.')
-    .max(100, 'Threshold cannot be over 100.'),
+  unitQuantity: z.coerce.number().min(0, 'Unit quantity must be a positive number.'),
+  extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -65,9 +61,8 @@ export function MaterialFormDialog({
     defaultValues: material || {
       name: '',
       type: '',
-      unitWeight: 0,
-      unitHeight: 0,
-      reorderThreshold: 20,
+      unitQuantity: 0,
+      extraSheets: 0,
     },
   });
   
@@ -77,7 +72,7 @@ export function MaterialFormDialog({
           form.reset(material);
         } else {
           form.reset({
-            name: '', type: '', unitWeight: 0, unitHeight: 0, reorderThreshold: 20,
+            name: '', type: '', unitQuantity: 0, extraSheets: 0
           });
         }
     }
@@ -85,12 +80,17 @@ export function MaterialFormDialog({
 
 
   const onSubmit = (values: FormValues) => {
+    const measurement = measurements.find(m => m.type === values.type);
+    const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
+    const totalStock = (values.unitQuantity * sheetsPerUnit) + values.extraSheets;
+
     onSave({
       ...values,
       id: material?.id || `new-${Date.now()}`,
       lastUpdated: new Date().toISOString(),
-      currentStock: material?.currentStock || 0,
-      maxStock: material?.maxStock || 1000,
+      currentStock: material?.currentStock || totalStock,
+      maxStock: material?.maxStock || Math.max(1000, totalStock * 2), // Ensure maxStock is reasonable
+      reorderThreshold: material?.reorderThreshold || 20,
     } as Material);
   };
 
@@ -148,10 +148,10 @@ export function MaterialFormDialog({
             <div className="grid grid-cols-2 gap-4">
                <FormField
                 control={form.control}
-                name="unitWeight"
+                name="unitQuantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit Weight (kg)</FormLabel>
+                    <FormLabel>Unit Quantity</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -161,10 +161,10 @@ export function MaterialFormDialog({
               />
               <FormField
                 control={form.control}
-                name="unitHeight"
+                name="extraSheets"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Unit Height (cm)</FormLabel>
+                    <FormLabel>Extra Sheets</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -173,19 +173,6 @@ export function MaterialFormDialog({
                 )}
               />
             </div>
-             <FormField
-                control={form.control}
-                name="reorderThreshold"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Reorder Threshold (%)</FormLabel>
-                    <FormControl>
-                      <Input type="number" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
             <DialogFooter>
               <Button type="submit">Save</Button>
             </DialogFooter>

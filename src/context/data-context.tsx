@@ -29,15 +29,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const saveMaterial = (material: Material) => {
     setMaterials((prev) => {
       const existing = prev.find((m) => m.id === material.id);
-      const materialWithStock = {
-        ...material,
-        currentStock: existing?.currentStock || 0,
-        maxStock: existing?.maxStock || 1000,
-      }
       if (existing) {
-        return prev.map((m) => (m.id === material.id ? materialWithStock : m));
+        return prev.map((m) => (m.id === material.id ? material : m));
       } else {
-        return [...prev, { ...materialWithStock, id: `m${prev.length + 1}` }];
+        return [...prev, { ...material, id: `m${prev.length + 1}` }];
       }
     });
   };
@@ -63,6 +58,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
           : o
       )
     );
+    // You might want to deduct stock here as well
   };
   
   const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => {
@@ -85,7 +81,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
   const updateMaterialStock = (materialId: string, stockChange: number) => {
-      setMaterials(prev => prev.map(m => m.id === materialId ? { ...m, currentStock: m.currentStock + stockChange } : m));
+      setMaterials(prev => prev.map(m => {
+        if (m.id === materialId) {
+          const newStock = m.currentStock + stockChange;
+          return { 
+            ...m, 
+            currentStock: newStock,
+            lastUpdated: new Date().toISOString() 
+          };
+        }
+        return m;
+      }));
   }
 
   const saveMeasurement = (measurement: Measurement) => {

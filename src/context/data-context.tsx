@@ -38,18 +38,17 @@ export function DataProvider({ children }: { children: ReactNode }) {
       try {
         const response = await fetch(`${API_BASE_URL}/get-measurement`);
         const data = await response.json();
-        // Assuming the API returns an object with a 'measurements' property which is an array
         if (data && Array.isArray(data)) {
           setMeasurements(data);
         } else if (data && Array.isArray(data.measurements)) {
           setMeasurements(data.measurements);
         } else {
             console.error("Fetched data is not in the expected array format:", data);
-            setMeasurements([]); // Set to empty array to avoid .map errors
+            setMeasurements([]); 
         }
       } catch (error) {
         console.error("Failed to fetch measurements:", error);
-        setMeasurements([]); // Set to empty array on error
+        setMeasurements([]); 
       }
     };
     fetchMeasurements();
@@ -124,7 +123,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const saveMeasurement = async (measurement: Omit<Measurement, '_id'>) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/add-measurement`, {
+      const response = await fetch(`${API_BASE_URL}/create-measurement`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

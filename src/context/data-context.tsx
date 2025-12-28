@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
+import { initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed, APIMaterial } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
@@ -28,6 +28,23 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 const API_BASE_URL = 'https://bcctbackend-production.up.railway.app';
 
+// Adapter to convert API material to frontend material
+const adaptMaterial = (apiMaterial: APIMaterial): Material => {
+    return {
+        _id: apiMaterial._id,
+        name: apiMaterial.name,
+        type: apiMaterial.measurementId.name,
+        category: 'Paper', // Defaulting category, as it's not in the API response
+        unitQuantity: apiMaterial.unitQuantity || 0,
+        extraSheets: apiMaterial.extraSheets || 0,
+        currentStock: apiMaterial.totalSheets,
+        maxStock: 10000, // Placeholder
+        reorderThreshold: 10, // Placeholder
+        lastUpdated: apiMaterial.lastUpdated || new Date().toISOString(),
+    };
+};
+
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
@@ -43,7 +60,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (data.success) {
           setMeasurements(data.measurements);
         } else {
-            console.error("API error:", data.message);
+            console.error("API error fetching measurements:", data.message);
             setMeasurements([]); 
         }
       } catch (error) {
@@ -56,11 +73,35 @@ export function DataProvider({ children }: { children: ReactNode }) {
         });
       }
     };
-    fetchMeasurements();
 
     const fetchMaterials = async () => {
-        // Placeholder for fetching materials
+        try {
+            const response = await fetch(`${API_BASE_URL}/material/get-material`);
+            const data = await response.json();
+            if (data.success) {
+                const adaptedMaterials = data.materials.map(adaptMaterial);
+                setMaterials(adaptedMaterials);
+            } else {
+                console.error("API error fetching materials:", data.message);
+                setMaterials([]);
+                toast({
+                    title: "Error fetching materials",
+                    description: data.message || "Could not retrieve materials.",
+                    variant: "destructive"
+                });
+            }
+        } catch (error) {
+            console.error("Failed to fetch materials:", error);
+            setMaterials([]);
+            toast({
+                title: "Network Error",
+                description: "Could not fetch materials. Please check your connection.",
+                variant: "destructive"
+            });
+        }
     };
+    
+    fetchMeasurements();
     fetchMaterials();
 
   }, [toast]);
@@ -94,7 +135,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             });
             const result = await response.json();
             if (result.success) {
-                setMaterials(prev => [...prev, result.material]);
+                setMaterials(prev => [...prev, adaptMaterial(result.material)]);
                 toast({ title: "Success", description: "Material created successfully.", variant: 'success' });
             } else {
                 toast({ title: "Error", description: result.message || "Failed to create material.", variant: "destructive" });

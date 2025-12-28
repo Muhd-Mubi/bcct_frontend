@@ -87,7 +87,7 @@ export function InventoryTable({ materials, isClient }: { materials: Material[],
                   </div>
                 </TableCell>
                 <TableCell>
-                  {isClient ? format(parseISO(material.lastUpdated), "PPp") : 'Loading...'}
+                  {isClient && material.lastUpdated ? format(parseISO(material.lastUpdated), "PPp") : 'N/A'}
                 </TableCell>
               </TableRow>
             );

@@ -1,11 +1,26 @@
 'use client';
 import React from 'react';
 
+export type APIMaterial = {
+  _id: string;
+  name: string;
+  measurementId: {
+    _id: string;
+    name: string;
+    sheetsPerUnit: number;
+  };
+  unitQuantity?: number;
+  extraSheets?: number;
+  totalSheets: number;
+  lastUpdated?: string;
+  __v?: number;
+}
+
 export type Material = {
   _id: string;
   name: string;
   type: string;
-  category: 'Paper' | 'Cardboard';
+  category: 'Paper' | 'Cardboard'; // This might need to be derived or added to API
   unitQuantity: number;
   extraSheets: number;
   currentStock: number;

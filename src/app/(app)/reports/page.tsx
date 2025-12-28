@@ -2,29 +2,31 @@
 
 import React from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { TrendCharts, trendData, initialMaterials } from '@/components/reports/trend-charts';
+import { TrendCharts } from '@/components/reports/trend-charts';
 import { PredictiveAnalyticsPlaceholder } from '@/components/reports/predictive-analytics-placeholder';
 import { Button } from '@/components/ui/button';
 import { FileDown } from 'lucide-react';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
-import { kuLogoBase64 } from '@/lib/logo';
+import { useData } from '@/context/data-context';
+import { trendData } from '@/lib/reports-data';
 
 export default function ReportsPage() {
+  const { materials } = useData();
 
   const handleExportPDF = () => {
     const doc = new jsPDF();
     
     doc.text("Monthly Stock Trends Report", 14, 16);
 
-    const tableColumn = ["Month", ...initialMaterials.map(m => m.name)];
+    const tableColumn = ["Month", ...materials.map(m => m.name)];
     const tableRows: (string | number)[][] = [];
 
     trendData.forEach(data => {
       const rowData = [
         data.month,
-        ...initialMaterials.map(m => data[m.name] ?? 0)
+        ...materials.map(m => data[m.name] ?? 0)
       ];
       tableRows.push(rowData);
     });
@@ -33,29 +35,6 @@ export default function ReportsPage() {
         head: [tableColumn],
         body: tableRows,
         startY: 20,
-        didDrawPage: function (data: any) {
-            const totalPages = doc.internal.pages.length - 1;
-            const pageWidth = doc.internal.pageSize.getWidth();
-            const pageHeight = doc.internal.pageSize.getHeight();
-            
-            // Set watermark properties
-            doc.setFontSize(50);
-            doc.setTextColor(230, 230, 230);
-            doc.setGState(new (doc as any).GState({opacity: 0.5}));
-
-            for (let i = 1; i <= totalPages; i++) {
-                doc.setPage(i);
-                doc.text("BCCT INVENTORY", pageWidth / 2, pageHeight / 2, { align: 'center', angle: 45 });
-            }
-            
-            // Reset properties
-            doc.setFontSize(12);
-            doc.setTextColor(0, 0, 0);
-            doc.setGState(new (doc as any).GState({opacity: 1}));
-             if (data.pageNumber > 1) {
-               doc.text("Monthly Stock Trends Report", 14, 16);
-             }
-        }
     });
 
     doc.save("monthly_stock_trends.pdf");

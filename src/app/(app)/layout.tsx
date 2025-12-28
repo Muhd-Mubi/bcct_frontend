@@ -13,7 +13,6 @@ import { AppHeader } from '@/components/app-header';
 import { Package2 } from 'lucide-react';
 import { UserRoleContext } from '@/lib/types';
 import { UserRole } from '@/lib/types';
-import { DataProvider } from '@/context/data-context';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>('admin');
@@ -27,7 +26,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <DataProvider>
       <UserRoleContext.Provider
         value={{
           role: userRole,
@@ -58,6 +56,5 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           </SidebarInset>
         </SidebarProvider>
       </UserRoleContext.Provider>
-    </DataProvider>
   );
 }

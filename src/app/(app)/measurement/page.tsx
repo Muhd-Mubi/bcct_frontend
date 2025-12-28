@@ -12,7 +12,7 @@ import { UserRoleContext } from '@/lib/types';
 
 
 export default function MeasurementPage() {
-    const { measurements, saveMeasurement, deleteMeasurement } = useData();
+    const { measurements, saveMeasurement } = useData();
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const { isAdmin } = useContext(UserRoleContext);
@@ -25,10 +25,6 @@ export default function MeasurementPage() {
     const handleEdit = (measurement: Measurement) => {
         setSelectedMeasurement(measurement);
         setFormOpen(true);
-    };
-
-    const handleDelete = (id: string) => {
-        deleteMeasurement(id);
     };
 
     const handleSave = (measurement: Measurement) => {
@@ -52,7 +48,6 @@ export default function MeasurementPage() {
           <MeasurementTable
             data={measurements}
             onEdit={handleEdit}
-            onDelete={handleDelete}
           />
         </CardContent>
       </Card>

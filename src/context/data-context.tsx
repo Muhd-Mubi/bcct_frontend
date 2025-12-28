@@ -15,6 +15,7 @@ interface DataContextType {
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Measurement) => void;
+  deleteMeasurement: (id: string) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -90,6 +91,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     });
   };
 
+  const deleteMeasurement = (id: string) => {
+    setMeasurements((prev) => prev.filter((m) => m.id !== id));
+  };
+
   const value = { 
       materials, 
       orders,
@@ -102,6 +107,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       saveOnloading,
       updateMaterialStock,
       saveMeasurement,
+      deleteMeasurement,
     };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

@@ -123,12 +123,12 @@ export const initialOnloadings: PaperOnloading[] = [
 export const initialMeasurements: Measurement[] = [
   {
     id: 'measurement-1',
-    name: 'Rim',
+    type: 'Rim',
     sheetsPerUnit: 500,
   },
   {
     id: 'measurement-2',
-    name: 'Packet',
+    type: 'Packet',
     sheetsPerUnit: 100,
   },
 ];

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -8,16 +8,27 @@ import { MeasurementTable } from '@/components/measurement/measurement-table';
 import { useData } from '@/context/data-context';
 import { MeasurementFormDialog } from '@/components/measurement/measurement-form-dialog';
 import { Measurement } from '@/lib/types';
+import { UserRoleContext } from '@/lib/types';
 
 
 export default function MeasurementPage() {
-    const { measurements, saveMeasurement } = useData();
+    const { measurements, saveMeasurement, deleteMeasurement } = useData();
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
+    const { isAdmin } = useContext(UserRoleContext);
 
     const handleAdd = () => {
         setSelectedMeasurement(undefined);
         setFormOpen(true);
+    };
+    
+    const handleEdit = (measurement: Measurement) => {
+        setSelectedMeasurement(measurement);
+        setFormOpen(true);
+    };
+
+    const handleDelete = (id: string) => {
+        deleteMeasurement(id);
     };
 
     const handleSave = (measurement: Measurement) => {
@@ -30,14 +41,18 @@ export default function MeasurementPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline">Measurements</CardTitle>
-            <Button size="sm" onClick={handleAdd}>
-              <PlusCircle />
-              Add Measurement
-            </Button>
+            {isAdmin && (
+                <Button size="sm" onClick={handleAdd}>
+                  <PlusCircle />
+                  Add Measurement
+                </Button>
+            )}
         </CardHeader>
         <CardContent>
           <MeasurementTable
             data={measurements}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </CardContent>
       </Card>

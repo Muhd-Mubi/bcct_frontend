@@ -26,7 +26,7 @@ import { Measurement } from '@/lib/types';
 
 const formSchema = z.object({
   id: z.string().optional(),
-  name: z.string().min(2, 'Name must be at least 2 characters.'),
+  type: z.string().min(2, 'Type must be at least 2 characters.'),
   sheetsPerUnit: z.coerce.number().min(1, 'Sheets per unit must be at least 1.'),
 });
 
@@ -48,7 +48,7 @@ export function MeasurementFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: measurement || {
-      name: '',
+      type: '',
       sheetsPerUnit: 1,
     },
   });
@@ -58,7 +58,7 @@ export function MeasurementFormDialog({
       form.reset(measurement);
     } else {
       form.reset({
-        name: '',
+        type: '',
         sheetsPerUnit: 1,
       });
     }
@@ -87,10 +87,10 @@ export function MeasurementFormDialog({
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <FormField
               control={form.control}
-              name="name"
+              name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>Type</FormLabel>
                   <FormControl>
                     <Input {...field} />
                   </FormControl>

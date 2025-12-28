@@ -45,6 +45,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
         } else {
             console.error("API error:", data.message);
             setMeasurements([]); 
+            toast({
+                title: "Error",
+                description: data.message || "Failed to fetch measurements.",
+                variant: "destructive"
+            });
         }
       } catch (error) {
         console.error("Failed to fetch measurements:", error);

@@ -61,6 +61,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
   
   const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => {
+    const materialToUpdate = materials.find(m => m.name === onloadingData.paperType);
+    const measurement = measurements.find(m => m.type === materialToUpdate?.type);
+    const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
+    const totalSheets = (onloadingData.unitQuantity * sheetsPerUnit) + onloadingData.extraSheets;
+
       const newOnloading: PaperOnloading = {
         ...onloadingData,
         id: `onloading-${Date.now()}`,
@@ -69,9 +74,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
       setOnloadings((prev) => [newOnloading, ...prev]);
       
       // Update material stock
-      const materialToUpdate = materials.find(m => m.name === onloadingData.paperType);
       if(materialToUpdate) {
-          updateMaterialStock(materialToUpdate.id, onloadingData.quantitySheets);
+          updateMaterialStock(materialToUpdate.id, totalSheets);
       }
   };
 

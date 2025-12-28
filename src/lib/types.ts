@@ -48,8 +48,8 @@ export type Order = {
 export type PaperOnloading = {
   id: string;
   date: string;
-  quantityRims: number;
-  quantitySheets: number;
+  unitQuantity: number;
+  extraSheets: number;
   supplier: string;
   paperType: string;
 };

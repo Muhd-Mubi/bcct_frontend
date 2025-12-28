@@ -34,8 +34,8 @@ import { useData } from '@/context/data-context';
 const formSchema = z.object({
   paperType: z.string().min(1, 'Please select a paper type.'),
   supplier: z.string().min(2, 'Supplier name must be at least 2 characters.'),
-  quantityRims: z.coerce.number().min(1, 'Rims quantity must be at least 1.'),
-  quantitySheets: z.coerce.number().min(1, 'Sheets quantity must be at least 1.'),
+  unitQuantity: z.coerce.number().min(1, 'Unit quantity must be at least 1.'),
+  extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -57,17 +57,17 @@ export function OnloadingFormDialog({
     defaultValues: {
       paperType: '',
       supplier: '',
-      quantityRims: 0,
-      quantitySheets: 0,
+      unitQuantity: 0,
+      extraSheets: 0,
     },
   });
 
-  const paperTypes = materials.filter(m => m.type === 'Paper').map(m => m.name);
+  const paperTypes = materials.filter(m => m.category === 'Paper').map(m => m.name);
 
 
   useEffect(() => {
     if (isOpen) {
-      form.reset({ paperType: '', supplier: '', quantityRims: 0, quantitySheets: 0 });
+      form.reset({ paperType: '', supplier: '', unitQuantity: 0, extraSheets: 0 });
     }
   }, [form, isOpen]);
 
@@ -124,10 +124,10 @@ export function OnloadingFormDialog({
             <div className="grid grid-cols-2 gap-4">
               <FormField
                 control={form.control}
-                name="quantityRims"
+                name="unitQuantity"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity (Rims)</FormLabel>
+                    <FormLabel>Unit Quantity</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>
@@ -137,10 +137,10 @@ export function OnloadingFormDialog({
               />
               <FormField
                 control={form.control}
-                name="quantitySheets"
+                name="extraSheets"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Quantity (Sheets)</FormLabel>
+                    <FormLabel>Extra Sheets</FormLabel>
                     <FormControl>
                       <Input type="number" {...field} />
                     </FormControl>

@@ -25,8 +25,8 @@ export function OnloadingTable({ data }: OnloadingTableProps) {
             <TableHead>Date</TableHead>
             <TableHead>Paper Type</TableHead>
             <TableHead>Supplier</TableHead>
-            <TableHead className="text-right">Rims</TableHead>
-            <TableHead className="text-right">Sheets</TableHead>
+            <TableHead className="text-right">Unit Quantity</TableHead>
+            <TableHead className="text-right">Extra Sheets</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -37,8 +37,8 @@ export function OnloadingTable({ data }: OnloadingTableProps) {
               </TableCell>
               <TableCell>{item.paperType}</TableCell>
               <TableCell>{item.supplier}</TableCell>
-              <TableCell className="text-right">{item.quantityRims.toLocaleString()}</TableCell>
-              <TableCell className="text-right">{item.quantitySheets.toLocaleString()}</TableCell>
+              <TableCell className="text-right">{item.unitQuantity.toLocaleString()}</TableCell>
+              <TableCell className="text-right">{item.extraSheets.toLocaleString()}</TableCell>
             </TableRow>
           ))}
         </TableBody>

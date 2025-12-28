@@ -50,6 +50,7 @@ export type PaperOnloading = {
   extraSheets: number;
   supplier: string;
   paperType: string;
+  isReverted?: boolean;
 };
 
 export type Measurement = {

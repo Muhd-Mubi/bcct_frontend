@@ -12,7 +12,7 @@ import { useData } from '@/context/data-context';
 
 
 export default function PaperOnloadingPage() {
-  const { onloadings, saveOnloading } = useData();
+  const { onloadings, saveOnloading, revertOnloading } = useData();
   const [isFormOpen, setFormOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -23,6 +23,10 @@ export default function PaperOnloadingPage() {
   const handleSaveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => {
     saveOnloading(onloadingData);
     setFormOpen(false);
+  };
+  
+  const handleRevert = (onloadingId: string) => {
+    revertOnloading(onloadingId);
   };
 
   const filteredData = useMemo(() => {
@@ -50,7 +54,7 @@ export default function PaperOnloadingPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <OnloadingTable data={filteredData} />
+          <OnloadingTable data={filteredData} onRevert={handleRevert}/>
         </CardContent>
       </Card>
 

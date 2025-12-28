@@ -13,6 +13,7 @@ interface DataContextType {
   saveOrder: (order: Order) => void;
   markOrderAsComplete: (orderId: string, sheetsUsed: number, rimsUsed: number) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date'>) => void;
+  revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Measurement) => void;
 }
@@ -71,6 +72,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         ...onloadingData,
         id: `onloading-${Date.now()}`,
         date: new Date().toISOString(),
+        isReverted: false,
       };
       setOnloadings((prev) => [newOnloading, ...prev]);
       
@@ -78,6 +80,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if(materialToUpdate) {
           updateMaterialStock(materialToUpdate.id, totalSheets);
       }
+  };
+
+  const revertOnloading = (onloadingId: string) => {
+    const onloadingEntry = onloadings.find(o => o.id === onloadingId);
+    if (!onloadingEntry || onloadingEntry.isReverted) return;
+
+    const materialToUpdate = materials.find(m => m.name === onloadingEntry.paperType);
+    if (materialToUpdate) {
+        const measurement = measurements.find(m => m.type === materialToUpdate.type);
+        const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
+        const totalSheets = (onloadingEntry.unitQuantity * sheetsPerUnit) + onloadingEntry.extraSheets;
+        
+        // Subtract the stock
+        updateMaterialStock(materialToUpdate.id, -totalSheets);
+    }
+    
+    // Mark as reverted
+    setOnloadings(prev => prev.map(o => o.id === onloadingId ? { ...o, isReverted: true } : o));
   };
 
   const updateMaterialStock = (materialId: string, stockChange: number) => {
@@ -115,6 +135,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       saveOrder,
       markOrderAsComplete,
       saveOnloading,
+      revertOnloading,
       updateMaterialStock,
       saveMeasurement,
     };

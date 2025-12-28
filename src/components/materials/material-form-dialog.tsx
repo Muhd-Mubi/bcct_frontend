@@ -80,7 +80,7 @@ export function MaterialFormDialog({
 
 
   const onSubmit = (values: FormValues) => {
-    const measurement = measurements.find(m => m.type === values.type);
+    const measurement = measurements.find(m => m.name === values.type);
     const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
     const totalStock = (values.unitQuantity * sheetsPerUnit) + values.extraSheets;
 
@@ -137,7 +137,7 @@ export function MaterialFormDialog({
                     </FormControl>
                     <SelectContent>
                       {measurements.map(m => (
-                        <SelectItem key={m.id} value={m.type}>{m.type}</SelectItem>
+                        <SelectItem key={m._id} value={m.name}>{m.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

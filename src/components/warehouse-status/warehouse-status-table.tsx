@@ -18,7 +18,7 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
   const { measurements } = useData();
 
   const getRims = (material: Material) => {
-    const measurement = measurements.find(m => m.type === 'Rim');
+    const measurement = measurements.find(m => m.name === 'Rim');
     if (!measurement || material.type !== 'Rim') return 'N/A';
     const sheetsPerRim = measurement.sheetsPerUnit;
     return (material.currentStock / sheetsPerRim).toFixed(2);

@@ -17,17 +17,6 @@ export default function MeasurementPage() {
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const { isAdmin } = useContext(UserRoleContext);
     
-    useEffect(() => {
-        // TODO: Fetch measurements from your API and update the state
-        // Example:
-        // const fetchMeasurements = async () => {
-        //   const response = await fetch('YOUR_API_ENDPOINT');
-        //   const data = await response.json();
-        //   setMeasurements(data);
-        // };
-        // fetchMeasurements();
-    }, [setMeasurements]);
-
     const handleAdd = () => {
         setSelectedMeasurement(undefined);
         setFormOpen(true);
@@ -38,8 +27,8 @@ export default function MeasurementPage() {
         setFormOpen(true);
     };
 
-    const handleSave = (measurementData: Measurement | Omit<Measurement, 'id'>) => {
-        if ('id' in measurementData) {
+    const handleSave = (measurementData: Measurement | Omit<Measurement, '_id'>) => {
+        if ('_id' in measurementData) {
             updateMeasurement(measurementData);
         } else {
             saveMeasurement(measurementData);

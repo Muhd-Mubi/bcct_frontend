@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { initialMaterials, initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
@@ -16,7 +16,7 @@ interface DataContextType {
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
-  saveMeasurement: (measurement: Omit<Measurement, 'id'>) => void;
+  saveMeasurement: (measurement: Omit<Measurement, '_id'>) => void;
   updateMeasurement: (measurement: Measurement) => void;
   saveOrder: (orderData: Omit<Order, 'id' | 'status' | 'date'>) => void;
   markOrderAsComplete: (orderId: string, materialsUsed: NewMaterialsUsed[]) => void;
@@ -25,12 +25,26 @@ interface DataContextType {
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
+const API_BASE_URL = 'https://bcctbackend-production.up.railway.app/measurement';
+
 export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
 
+  useEffect(() => {
+    const fetchMeasurements = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/get-measurement`);
+        const data = await response.json();
+        setMeasurements(data);
+      } catch (error) {
+        console.error("Failed to fetch measurements:", error);
+      }
+    };
+    fetchMeasurements();
+  }, []);
 
   const saveMaterial = (material: Material) => {
     setMaterials((prev) => {
@@ -49,7 +63,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   
   const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'| 'isReverted'>) => {
     const materialToUpdate = materials.find(m => m.name === onloadingData.paperType);
-    const measurement = measurements.find(m => m.type === materialToUpdate?.type);
+    const measurement = measurements.find(m => m.name === materialToUpdate?.type);
     const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
     const totalSheets = (onloadingData.unitQuantity * sheetsPerUnit) + onloadingData.extraSheets;
 
@@ -73,7 +87,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
     const materialToUpdate = materials.find(m => m.name === onloadingEntry.paperType);
     if (materialToUpdate) {
-        const measurement = measurements.find(m => m.type === materialToUpdate.type);
+        const measurement = measurements.find(m => m.name === materialToUpdate.type);
         const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
         const totalSheets = (onloadingEntry.unitQuantity * sheetsPerUnit) + onloadingEntry.extraSheets;
         
@@ -99,17 +113,36 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
   }
 
-  const saveMeasurement = (measurement: Omit<Measurement, 'id'>) => {
-    // This will be replaced with your API call to create a new measurement.
-    // For now, it optimistically adds to the UI.
-    const newMeasurement = { ...measurement, id: `temp-${Date.now()}`};
-    setMeasurements((prev) => [...prev, newMeasurement]);
+  const saveMeasurement = async (measurement: Omit<Measurement, '_id'>) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/add-measurement`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(measurement),
+      });
+      const newMeasurement = await response.json();
+      setMeasurements((prev) => [...prev, newMeasurement]);
+    } catch (error) {
+      console.error("Failed to save measurement:", error);
+    }
   };
 
-  const updateMeasurement = (measurement: Measurement) => {
-    // This will be replaced with your API call to update a measurement.
-    // For now, it optimistically updates the UI.
-    setMeasurements((prev) => prev.map(m => m.id === measurement.id ? measurement : m));
+  const updateMeasurement = async (measurement: Measurement) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/update-measurement/${measurement._id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name: measurement.name, sheetsPerUnit: measurement.sheetsPerUnit }),
+      });
+      const updatedMeasurement = await response.json();
+      setMeasurements((prev) => prev.map(m => m._id === updatedMeasurement._id ? updatedMeasurement : m));
+    } catch (error) {
+      console.error("Failed to update measurement:", error);
+    }
   }
 
   const saveOrder = (orderData: Omit<Order, 'id' | 'status' | 'date'>) => {
@@ -125,7 +158,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const markOrderAsComplete = (orderId: string, materialsUsed: NewMaterialsUsed[]) => {
      const materialsUsedWithDetails: MaterialsUsed[] = materialsUsed.map(mu => {
       const material = materials.find(m => m.id === mu.materialId);
-      const measurement = measurements.find(m => m.type === material?.type);
+      const measurement = measurements.find(m => m.name === material?.type);
       const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
       const totalSheetsUsed = (mu.unitQuantity * sheetsPerUnit) + mu.extraSheets;
 

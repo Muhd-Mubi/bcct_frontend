@@ -43,8 +43,8 @@ export type PaperOnloading = {
 };
 
 export type Measurement = {
-  id: string;
-  type: string;
+  _id: string;
+  name: string;
   sheetsPerUnit: number;
 };
 

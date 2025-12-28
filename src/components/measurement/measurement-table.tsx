@@ -32,15 +32,15 @@ export function MeasurementTable({ data, onEdit }: MeasurementTableProps) {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Type</TableHead>
+            <TableHead>Name</TableHead>
             <TableHead className="text-right">Sheets Per Unit</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data.map((measurement) => (
-            <TableRow key={measurement.id}>
-              <TableCell className="font-medium">{measurement.type}</TableCell>
+            <TableRow key={measurement._id}>
+              <TableCell className="font-medium">{measurement.name}</TableCell>
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
               <TableCell>
                   {isAdmin ? (

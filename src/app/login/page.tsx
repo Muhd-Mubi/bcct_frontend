@@ -17,6 +17,7 @@ import { Package2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Link from 'next/link';
+import { cn } from '@/lib/utils';
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
@@ -59,31 +60,32 @@ export default function LoginPage() {
       </div>
 
       <div className="relative z-10 flex h-full items-center justify-center">
-        <Card className="mx-auto w-[380px] bg-background/90 backdrop-blur-sm">
+        <Card className="mx-auto w-[380px] border-none bg-glass/80 backdrop-blur-sm text-card-foreground shadow-2xl">
           <CardHeader className="text-center">
-            <CardTitle className="text-3xl font-bold font-headline">Login</CardTitle>
-            <CardDescription>
+            <CardTitle className="text-3xl font-bold">Login</CardTitle>
+            <CardDescription className="text-white/80">
               Enter your credentials to access your dashboard
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="grid gap-4">
               <div className="grid gap-2">
-                <Label htmlFor="username">Username</Label>
+                <Label htmlFor="username" className="text-white/90">Username</Label>
                 <Input
                   id="username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
                   required
+                  className="bg-background/20 text-white placeholder:text-white/60 border-white/20 focus:border-primary focus:ring-primary"
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-white/90">Password</Label>
                   <Link
                     href="#"
-                    className="ml-auto inline-block text-sm underline"
+                    className="ml-auto inline-block text-sm text-white/70 hover:text-white underline"
                   >
                     Forgot your password?
                   </Link>
@@ -95,15 +97,16 @@ export default function LoginPage() {
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="password"
                   required 
+                  className="bg-background/20 text-white placeholder:text-white/60 border-white/20 focus:border-primary focus:ring-primary"
                  />
               </div>
               <Button type="submit" className="w-full mt-2" onClick={handleLogin}>
                 Login
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-sm text-white/70">
               Don&apos;t have an account?{' '}
-              <Link href="#" className="underline">
+              <Link href="#" className="underline hover:text-white">
                 Contact Support
               </Link>
             </div>

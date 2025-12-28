@@ -38,75 +38,77 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="w-full lg:grid lg:min-h-screen lg:grid-cols-2">
-      <div className="hidden bg-muted lg:block relative">
-         <Image
-          src="https://picsum.photos/seed/3/1200/1800"
-          alt="Inventory management system"
-          fill
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-          data-ai-hint="warehouse logistics"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-background/10" />
-        <div className="absolute bottom-8 left-8 text-foreground">
-            <div className="flex items-center gap-4">
-                <Package2 className="size-10 text-primary" />
-                <h1 className="text-4xl font-bold font-headline text-white drop-shadow-md">
-                    BCCT INVENTORY
-                </h1>
-            </div>
-            <p className="mt-2 text-lg text-white/90 drop-shadow-md">The intelligent way to manage your stock.</p>
-        </div>
+    <div className="relative h-screen w-full">
+       <Image
+        src="https://picsum.photos/seed/3/1920/1080"
+        alt="Inventory management system background"
+        fill
+        className="object-cover"
+        data-ai-hint="warehouse logistics"
+      />
+      <div className="absolute inset-0 bg-black/50" />
+      
+      <div className="absolute top-8 left-8 text-white">
+          <div className="flex items-center gap-4">
+              <Package2 className="size-10 text-primary" />
+              <h1 className="text-4xl font-bold font-headline drop-shadow-md">
+                  BCCT INVENTORY
+              </h1>
+          </div>
+          <p className="mt-2 text-lg text-white/90 drop-shadow-md">The intelligent way to manage your stock.</p>
       </div>
-      <div className="flex items-center justify-center py-12">
-        <div className="mx-auto grid w-[350px] gap-6">
-          <div className="grid gap-2 text-center">
-            <h1 className="text-3xl font-bold font-headline">Login</h1>
-            <p className="text-balance text-muted-foreground">
+
+      <div className="relative z-10 flex h-full items-center justify-center">
+        <Card className="mx-auto w-[380px] bg-background/90 backdrop-blur-sm">
+          <CardHeader className="text-center">
+            <CardTitle className="text-3xl font-bold font-headline">Login</CardTitle>
+            <CardDescription>
               Enter your credentials to access your dashboard
-            </p>
-          </div>
-          <div className="grid gap-4">
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="admin"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="#"
-                  className="ml-auto inline-block text-sm underline"
-                >
-                  Forgot your password?
-                </Link>
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="admin"
+                  required
+                />
               </div>
-              <Input 
-                id="password" 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="password"
-                required 
-               />
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link
+                    href="#"
+                    className="ml-auto inline-block text-sm underline"
+                  >
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Input 
+                  id="password" 
+                  type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="password"
+                  required 
+                 />
+              </div>
+              <Button type="submit" className="w-full mt-2" onClick={handleLogin}>
+                Login
+              </Button>
             </div>
-            <Button type="submit" className="w-full" onClick={handleLogin}>
-              Login
-            </Button>
-          </div>
-          <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{' '}
-            <Link href="#" className="underline">
-              Contact Support
-            </Link>
-          </div>
-        </div>
+            <div className="mt-4 text-center text-sm">
+              Don&apos;t have an account?{' '}
+              <Link href="#" className="underline">
+                Contact Support
+              </Link>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

@@ -93,7 +93,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
           <TableHeader>
             <TableRow>
               <SortableHeader sortKeyName="name">Name</SortableHeader>
-              <SortableHeader sortKeyName="type">Type</SortableHeader>
+              <SortableHeader sortKeyName="type">Measurement Unit</SortableHeader>
               <SortableHeader sortKeyName="unitQuantity">Unit Quantity</SortableHeader>
               <SortableHeader sortKeyName="extraSheets">Extra Sheets</SortableHeader>
               <TableHead>Actions</TableHead>

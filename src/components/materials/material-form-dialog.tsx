@@ -35,7 +35,7 @@ import { useData } from '@/context/data-context';
 const formSchema = z.object({
   id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
-  type: z.string().min(1, 'Please select a type'),
+  type: z.string().min(1, 'Please select a unit'),
   unitQuantity: z.coerce.number().min(0, 'Unit quantity must be a positive number.'),
   extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
 });
@@ -125,14 +125,14 @@ export function MaterialFormDialog({
               name="type"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Type</FormLabel>
+                  <FormLabel>Measurement Unit</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
-                        <SelectValue placeholder="Select a type" />
+                        <SelectValue placeholder="Select a unit" />
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>

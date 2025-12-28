@@ -1,18 +1,14 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { initialMaterials, initialOrders, initialOnloadings, initialMeasurements, Material, Order, PaperOnloading, Measurement } from '@/lib/data';
+import { initialMaterials, initialOnloadings, initialMeasurements, Material, PaperOnloading, Measurement } from '@/lib/data';
 
 interface DataContextType {
   materials: Material[];
-  orders: Order[];
   onloadings: PaperOnloading[];
   measurements: Measurement[];
   saveMaterial: (material: Material) => void;
   deleteMaterial: (id: string) => void;
-  saveOrder: (order: Order) => void;
-  markOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; sheetsUsed: number }[]) => void;
-  markOrderAsDiscarded: (orderId: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
@@ -23,7 +19,6 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
 
@@ -41,35 +36,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const deleteMaterial = (id: string) => {
     setMaterials((prev) => prev.filter((m) => m.id !== id));
-  };
-  
-  const saveOrder = (order: Order) => {
-      const existing = orders.find((o) => o.id === order.id);
-      if (existing) {
-          setOrders((prev) => prev.map((o) => (o.id === order.id ? order : o)));
-      } else {
-          setOrders((prev) => [...prev, { ...order, id: `order-${prev.length + 1}` }]);
-      }
-  };
-
-  const markOrderAsComplete = (orderId: string, materialsUsed: { materialId: string; sheetsUsed: number }[]) => {
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.id === orderId
-          ? { ...o, status: 'Completed', materialsUsed, completedAt: new Date().toISOString() }
-          : o
-      )
-    );
-    // Deduct stock for each material used
-    materialsUsed.forEach(item => {
-        updateMaterialStock(item.materialId, -item.sheetsUsed);
-    });
-  };
-
-  const markOrderAsDiscarded = (orderId: string) => {
-    setOrders((prev) =>
-      prev.map((o) => (o.id === orderId ? { ...o, status: 'Discarded' } : o))
-    );
   };
   
   const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'| 'isReverted'>) => {
@@ -137,14 +103,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const value = { 
       materials, 
-      orders,
       onloadings,
       measurements,
       saveMaterial, 
       deleteMaterial,
-      saveOrder,
-      markOrderAsComplete,
-      markOrderAsDiscarded,
       saveOnloading,
       revertOnloading,
       updateMaterialStock,

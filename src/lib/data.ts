@@ -1,4 +1,4 @@
-import type { Material, Order, PaperOnloading, Measurement } from './types';
+import type { Material, PaperOnloading, Measurement } from './types';
 
 export const initialMaterials: Material[] = [
   {
@@ -60,35 +60,6 @@ export const initialMaterials: Material[] = [
     maxStock: 100,
     reorderThreshold: 15,
     lastUpdated: new Date().toISOString(),
-  },
-];
-
-export const initialOrders: Order[] = [
-  {
-    id: 'order-1',
-    name: 'Annual Report 2024',
-    details: '1000 copies, full color, glossy finish',
-    clientName: 'Global Corp',
-    status: 'Pending',
-    createdAt: '2024-07-20T10:00:00Z',
-  },
-  {
-    id: 'order-2',
-    name: 'Marketing Brochures Q3',
-    details: '5000 tri-fold brochures, standard paper',
-    clientName: 'Innovate LLC',
-    status: 'Completed',
-    createdAt: '2024-07-15T14:30:00Z',
-    completedAt: '2024-07-22T16:00:00Z',
-    materialsUsed: [{ materialId: 'm1', sheetsUsed: 5000 }],
-  },
-  {
-    id: 'order-3',
-    name: 'Business Cards',
-    details: '500 cards, heavy cardstock',
-    clientName: 'Startup Inc',
-    status: 'Pending',
-    createdAt: '2024-07-22T11:00:00Z',
   },
 ];
 

@@ -21,7 +21,6 @@ import { cn } from '@/lib/utils';
 
 const navItems = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/orders', label: 'Orders', icon: ClipboardList },
   { href: '/materials', label: 'Materials', icon: Package },
   { href: '/paper-onloading', label: 'Paper Onloading', icon: PackagePlus },
   { href: '/warehouse-status', label: 'Warehouse Status', icon: Warehouse },

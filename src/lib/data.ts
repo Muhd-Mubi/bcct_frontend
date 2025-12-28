@@ -93,6 +93,8 @@ export const initialOnloadings: PaperOnloading[] = [
   },
 ];
 
+// This is no longer the source of truth for measurements.
+// It is kept here for reference but will be removed once the API is integrated.
 export const initialMeasurements: Measurement[] = [
   {
     id: 'measurement-1',

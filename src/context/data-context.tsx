@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { initialMaterials, initialOnloadings, initialMeasurements, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
+import { initialMaterials, initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed } from '@/lib/data';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
 
@@ -9,13 +9,15 @@ interface DataContextType {
   materials: Material[];
   onloadings: PaperOnloading[];
   measurements: Measurement[];
+  setMeasurements: React.Dispatch<React.SetStateAction<Measurement[]>>;
   orders: Order[];
   saveMaterial: (material: Material) => void;
   deleteMaterial: (id: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
-  saveMeasurement: (measurement: Measurement) => void;
+  saveMeasurement: (measurement: Omit<Measurement, 'id'>) => void;
+  updateMeasurement: (measurement: Measurement) => void;
   saveOrder: (orderData: Omit<Order, 'id' | 'status' | 'date'>) => void;
   markOrderAsComplete: (orderId: string, materialsUsed: NewMaterialsUsed[]) => void;
   markOrderAsDiscarded: (orderId: string) => void;
@@ -26,7 +28,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
-  const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [orders, setOrders] = useState<Order[]>(initialOrders);
 
 
@@ -97,16 +99,18 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
   }
 
-  const saveMeasurement = (measurement: Measurement) => {
-    setMeasurements((prev) => {
-      const existing = prev.find((m) => m.id === measurement.id);
-      if (existing) {
-        return prev.map((m) => (m.id === measurement.id ? measurement : m));
-      } else {
-        return [...prev, { ...measurement, id: `measurement-${prev.length + 1}` }];
-      }
-    });
+  const saveMeasurement = (measurement: Omit<Measurement, 'id'>) => {
+    // This will be replaced with your API call to create a new measurement.
+    // For now, it optimistically adds to the UI.
+    const newMeasurement = { ...measurement, id: `temp-${Date.now()}`};
+    setMeasurements((prev) => [...prev, newMeasurement]);
   };
+
+  const updateMeasurement = (measurement: Measurement) => {
+    // This will be replaced with your API call to update a measurement.
+    // For now, it optimistically updates the UI.
+    setMeasurements((prev) => prev.map(m => m.id === measurement.id ? measurement : m));
+  }
 
   const saveOrder = (orderData: Omit<Order, 'id' | 'status' | 'date'>) => {
     const newOrder: Order = {
@@ -152,6 +156,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       materials, 
       onloadings,
       measurements,
+      setMeasurements,
       orders,
       saveMaterial, 
       deleteMaterial,
@@ -159,6 +164,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       revertOnloading,
       updateMaterialStock,
       saveMeasurement,
+      updateMeasurement,
       saveOrder,
       markOrderAsComplete,
       markOrderAsDiscarded,

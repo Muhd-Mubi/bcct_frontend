@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,10 +12,21 @@ import { UserRoleContext } from '@/lib/types';
 
 
 export default function MeasurementPage() {
-    const { measurements, saveMeasurement } = useData();
+    const { measurements, setMeasurements, saveMeasurement, updateMeasurement } = useData();
     const [isFormOpen, setFormOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const { isAdmin } = useContext(UserRoleContext);
+    
+    useEffect(() => {
+        // TODO: Fetch measurements from your API and update the state
+        // Example:
+        // const fetchMeasurements = async () => {
+        //   const response = await fetch('YOUR_API_ENDPOINT');
+        //   const data = await response.json();
+        //   setMeasurements(data);
+        // };
+        // fetchMeasurements();
+    }, [setMeasurements]);
 
     const handleAdd = () => {
         setSelectedMeasurement(undefined);
@@ -27,8 +38,12 @@ export default function MeasurementPage() {
         setFormOpen(true);
     };
 
-    const handleSave = (measurement: Measurement) => {
-        saveMeasurement(measurement);
+    const handleSave = (measurementData: Measurement | Omit<Measurement, 'id'>) => {
+        if ('id' in measurementData) {
+            updateMeasurement(measurementData);
+        } else {
+            saveMeasurement(measurementData);
+        }
         setFormOpen(false);
     };
 

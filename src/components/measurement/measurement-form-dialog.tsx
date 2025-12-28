@@ -35,7 +35,7 @@ type FormValues = z.infer<typeof formSchema>;
 interface MeasurementFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  onSave: (measurement: Measurement) => void;
+  onSave: (measurement: FormValues) => void;
   measurement?: Measurement;
 }
 
@@ -54,22 +54,22 @@ export function MeasurementFormDialog({
   });
   
   useEffect(() => {
-    if (measurement) {
-      form.reset(measurement);
-    } else {
-      form.reset({
-        type: '',
-        sheetsPerUnit: 1,
-      });
+    if (isOpen) {
+        if (measurement) {
+          form.reset(measurement);
+        } else {
+          form.reset({
+            id: undefined,
+            type: '',
+            sheetsPerUnit: 1,
+          });
+        }
     }
   }, [measurement, form, isOpen]);
 
 
   const onSubmit = (values: FormValues) => {
-    onSave({
-      ...values,
-      id: measurement?.id || `new-${Date.now()}`,
-    } as Measurement);
+    onSave(values);
   };
 
   return (

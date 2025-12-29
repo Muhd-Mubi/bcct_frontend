@@ -12,7 +12,7 @@ interface DataContextType {
   onloadings: PaperOnloading[];
   measurements: Measurement[];
   orders: Order[];
-  saveMaterial: (materialData: Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string } | Material & { measurementId?: string }) => void;
+  saveMaterial: (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => void;
   deleteMaterial: (id: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
@@ -71,52 +71,57 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
     }
   }, [toast]);
-
-  useEffect(() => {
-    const fetchMaterials = async () => {
-        try {
-            const response = await fetch(`${API_BASE_URL}/material/get-material`);
-            const data = await response.json();
-            if (data.success) {
-                const adaptedMaterials = data.materials.map(adaptMaterial);
-                setMaterials(adaptedMaterials);
-            } else {
-                console.error("API error fetching materials:", data.message);
-                setMaterials([]);
-                toast({
-                    title: "Error fetching materials",
-                    description: data.message || "Could not retrieve materials.",
-                    variant: "destructive"
-                });
-            }
-        } catch (error) {
-            console.error("Failed to fetch materials:", error);
+  
+  const fetchMaterials = useCallback(async () => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/material/get-material`);
+        const data = await response.json();
+        if (data.success) {
+            const adaptedMaterials = data.materials.map(adaptMaterial);
+            setMaterials(adaptedMaterials);
+        } else {
+            console.error("API error fetching materials:", data.message);
             setMaterials([]);
             toast({
-                title: "Network Error",
-                description: "Could not fetch materials. Please check your connection.",
+                title: "Error fetching materials",
+                description: data.message || "Could not retrieve materials.",
                 variant: "destructive"
             });
         }
-    };
-    
+    } catch (error) {
+        console.error("Failed to fetch materials:", error);
+        setMaterials([]);
+        toast({
+            title: "Network Error",
+            description: "Could not fetch materials. Please check your connection.",
+            variant: "destructive"
+        });
+    }
+  }, [toast]);
+
+  useEffect(() => {
     fetchMeasurements();
     fetchMaterials();
+  }, [fetchMeasurements, fetchMaterials]);
 
-  }, [fetchMeasurements, toast]);
-
-  const saveMaterial = async (materialData: Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string } | Material & { measurementId?: string }) => {
-    if ('_id' in materialData) {
+  const saveMaterial = async (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => {
+    if ('_id' in materialData && materialData._id) {
         // Update existing material
+        const payload = {
+            name: materialData.name,
+            unitQuantity: materialData.unitQuantity,
+            extraSheets: materialData.extraSheets,
+            measurementId: materialData.measurementId || null
+        };
         try {
             const response = await fetch(`${API_BASE_URL}/material/update-material/${materialData._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(materialData),
+                body: JSON.stringify(payload),
             });
             const result = await response.json();
             if (result.success) {
-                setMaterials(prev => prev.map(m => m._id === materialData._id ? { ...m, ...materialData, type: measurements.find(mes => mes._id === materialData.measurementId)?.name || 'N/A' } : m));
+                fetchMaterials(); // Refetch all materials to get the updated list
                 toast({ title: "Success", description: "Material updated successfully.", variant: 'success' });
             } else {
                 toast({ title: "Error", description: result.message || "Failed to update material.", variant: "destructive" });

@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
@@ -105,14 +106,16 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [fetchMeasurements, fetchMaterials]);
 
   const saveMaterial = async (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => {
-    if ('_id' in materialData && materialData._id) {
+    const isUpdate = '_id' in materialData && materialData._id;
+    const payload = {
+        name: materialData.name,
+        unitQuantity: materialData.unitQuantity,
+        extraSheets: materialData.extraSheets,
+        measurementId: materialData.measurementId || null
+    };
+
+    if (isUpdate) {
         // Update existing material
-        const payload = {
-            name: materialData.name,
-            unitQuantity: materialData.unitQuantity,
-            extraSheets: materialData.extraSheets,
-            measurementId: materialData.measurementId || null
-        };
         try {
             const response = await fetch(`${API_BASE_URL}/material/update-material/${materialData._id}`, {
                 method: 'PUT',
@@ -131,13 +134,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
     } else {
         // Create new material
-        const payload = {
-            name: materialData.name,
-            unitQuantity: materialData.unitQuantity,
-            extraSheets: materialData.extraSheets,
-            measurementId: materialData.measurementId || null
-        };
-
         try {
             const response = await fetch(`${API_BASE_URL}/material/create-material`, {
                 method: 'POST',
@@ -146,9 +142,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             });
             const result = await response.json();
             if (result.success) {
-                const newApiMaterial = result.material as APIMaterial;
-                const newMaterial = adaptMaterial(newApiMaterial);
-                setMaterials(prev => [...prev, newMaterial]);
+                fetchMaterials(); // Refetch to get the latest list with the new material
                 toast({ title: "Success", description: "Material created successfully.", variant: 'success' });
             } else {
                 toast({ title: "Error", description: result.message || "Failed to create material.", variant: "destructive" });

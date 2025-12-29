@@ -74,7 +74,7 @@ export function MaterialFormDialog({
           const measurement = measurements.find(m => m.name === material.type);
           form.reset({
             ...material,
-            measurementId: measurement?._id,
+            measurementId: measurement?._id || '',
           });
         } else {
           form.reset({
@@ -127,7 +127,6 @@ export function MaterialFormDialog({
                   <FormLabel>Measurement Unit (Optional)</FormLabel>
                   <Select
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
                     value={field.value}
                   >
                     <FormControl>

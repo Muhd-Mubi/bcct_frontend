@@ -23,41 +23,30 @@ export default function DashboardPage() {
           const randomIndex = Math.floor(Math.random() * materials.length);
           const materialToUpdate = materials[randomIndex];
           const change = (Math.random() - 0.5) * (materialToUpdate.maxStock * 0.01); // change up to 1% of max stock
-          updateMaterialStock(materialToUpdate.id, change);
+          updateMaterialStock(materialToUpdate._id, change);
       }
     }, 60000); // Update every 1 minute to simulate real-time data
 
     return () => clearInterval(interval);
   }, [materials, updateMaterialStock]);
 
-  const totalPaperSheets = materials
-    .filter((m) => m.category === 'Paper')
-    .reduce((acc, m) => acc + m.currentStock, 0);
-
-  const totalCardboardItems = materials
-    .filter((m) => m.category === 'Cardboard')
-    .reduce((acc, m) => acc + m.currentStock, 0);
-    
   const lowStockItems = materials.filter(
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
+  
+  const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <MetricCard
           title="Total Materials"
           value={materials.length}
           icon={<Package className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Approx. Paper Sheets"
-          value={totalPaperSheets.toLocaleString()}
-          icon={<FileText className="size-6 text-muted-foreground" />}
-        />
-        <MetricCard
-          title="Approx. Cardboard Items"
-          value={totalCardboardItems.toLocaleString()}
+          title="Total Stock (Sheets)"
+          value={totalStock.toLocaleString()}
           icon={<Box className="size-6 text-muted-foreground" />}
         />
         <MetricCard

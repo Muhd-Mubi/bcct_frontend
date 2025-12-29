@@ -34,7 +34,6 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
         _id: apiMaterial._id,
         name: apiMaterial.name,
         type: apiMaterial.measurementId?.name || 'N/A',
-        category: 'Paper', // Defaulting category, as it's not in the API response
         unitQuantity: apiMaterial.unitQuantity || 0,
         extraSheets: apiMaterial.extraSheets || 0,
         currentStock: apiMaterial.totalSheets,

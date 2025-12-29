@@ -20,7 +20,6 @@ export type Material = {
   _id: string;
   name: string;
   type: string;
-  category: 'Paper' | 'Cardboard'; // This might need to be derived or added to API
   unitQuantity: number;
   extraSheets: number;
   currentStock: number;

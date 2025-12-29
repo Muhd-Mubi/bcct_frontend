@@ -62,7 +62,7 @@ export function OnloadingFormDialog({
     },
   });
 
-  const paperTypes = materials.filter(m => m.category === 'Paper').map(m => m.name);
+  const paperTypes = materials.map(m => m.name);
 
 
   useEffect(() => {

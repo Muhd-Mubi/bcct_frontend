@@ -31,37 +31,26 @@ export default function DashboardPage() {
 
     return () => clearInterval(interval);
   }, [materials, updateMaterialStock]);
-
-  const totalPaperSheets = materials
-    .filter((m) => m.category === 'Paper')
-    .reduce((acc, m) => acc + m.currentStock, 0);
-
-  const totalCardboardItems = materials
-    .filter((m) => m.category === 'Cardboard')
-    .reduce((acc, m) => acc + m.currentStock, 0);
     
   const lowStockItems = materials.filter(
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
 
   const pendingOrders = orders.filter(o => o.status === 'Pending').length;
+  
+  const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Materials"
           value={materials.length}
           icon={<Package className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Paper Stock (Sheets)"
-          value={totalPaperSheets.toLocaleString()}
-          icon={<FileText className="size-6 text-muted-foreground" />}
-        />
-        <MetricCard
-          title="Cardboard Stock (Units)"
-          value={totalCardboardItems.toLocaleString()}
+          title="Total Stock (Sheets)"
+          value={totalStock.toLocaleString()}
           icon={<Box className="size-6 text-muted-foreground" />}
         />
          <Link href="/orders">

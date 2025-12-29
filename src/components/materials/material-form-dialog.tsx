@@ -36,7 +36,6 @@ const formSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   type: z.string().min(1, 'Please select a unit'),
-  category: z.enum(['Paper', 'Cardboard']),
   unitQuantity: z.coerce.number().min(0, 'Unit quantity must be a positive number.'),
   extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
 });
@@ -64,7 +63,6 @@ export function MaterialFormDialog({
     defaultValues: {
       name: '',
       type: '',
-      category: 'Paper',
       unitQuantity: 0,
       extraSheets: 0,
     },
@@ -77,7 +75,7 @@ export function MaterialFormDialog({
         } else {
           form.reset({
             _id: undefined,
-            name: '', type: '', category: 'Paper', unitQuantity: 0, extraSheets: 0
+            name: '', type: '', unitQuantity: 0, extraSheets: 0
           });
         }
     }
@@ -110,27 +108,6 @@ export function MaterialFormDialog({
                   <FormControl>
                     <Input {...field} />
                   </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-             <FormField
-              control={form.control}
-              name="category"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Category</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                        <SelectItem value="Paper">Paper</SelectItem>
-                        <SelectItem value="Cardboard">Cardboard</SelectItem>
-                    </SelectContent>
-                  </Select>
                   <FormMessage />
                 </FormItem>
               )}

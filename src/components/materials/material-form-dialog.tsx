@@ -35,14 +35,13 @@ import { useData } from '@/context/data-context';
 const formSchema = z.object({
   _id: z.string().optional(),
   name: z.string().min(2, 'Name must be at least 2 characters.'),
-  type: z.string().min(1, 'Please select a unit'),
+  measurementId: z.string().optional(),
   unitQuantity: z.coerce.number().min(0, 'Unit quantity must be a positive number.'),
   extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
-type MaterialPayload = Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated'> | Material;
-
+type MaterialPayload = (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string });
 
 interface MaterialFormDialogProps {
   isOpen: boolean;
@@ -62,7 +61,7 @@ export function MaterialFormDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
-      type: '',
+      measurementId: '',
       unitQuantity: 0,
       extraSheets: 0,
     },
@@ -71,19 +70,26 @@ export function MaterialFormDialog({
   useEffect(() => {
     if (isOpen) {
         if (material) {
-          form.reset(material);
+          const measurement = measurements.find(m => m.name === material.type);
+          form.reset({
+            ...material,
+            measurementId: measurement?._id,
+          });
         } else {
           form.reset({
             _id: undefined,
-            name: '', type: '', unitQuantity: 0, extraSheets: 0
+            name: '', 
+            measurementId: '', 
+            unitQuantity: 0, 
+            extraSheets: 0
           });
         }
     }
-  }, [material, form, isOpen]);
+  }, [material, form, isOpen, measurements]);
 
 
   const onSubmit = (values: FormValues) => {
-    onSave(values);
+    onSave(values as any);
   };
 
   return (
@@ -114,13 +120,14 @@ export function MaterialFormDialog({
             />
             <FormField
               control={form.control}
-              name="type"
+              name="measurementId"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Measurement Unit</FormLabel>
+                  <FormLabel>Measurement Unit (Optional)</FormLabel>
                   <Select
                     onValueChange={field.onChange}
                     defaultValue={field.value}
+                    value={field.value}
                   >
                     <FormControl>
                       <SelectTrigger>
@@ -129,7 +136,7 @@ export function MaterialFormDialog({
                     </FormControl>
                     <SelectContent>
                       {measurements.map(m => (
-                        <SelectItem key={m._id} value={m.name}>{m.name}</SelectItem>
+                        <SelectItem key={m._id} value={m._id}>{m.name}</SelectItem>
                       ))}
                     </SelectContent>
                   </Select>

@@ -12,7 +12,7 @@ interface DataContextType {
   onloadings: PaperOnloading[];
   measurements: Measurement[];
   orders: Order[];
-  saveMaterial: (materialData: Material | NewMaterial) => void;
+  saveMaterial: (materialData: Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string } | Material & { measurementId?: string }) => void;
   deleteMaterial: (id: string) => void;
   saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
   revertOnloading: (onloadingId: string) => void;
@@ -105,7 +105,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   }, [fetchMeasurements, toast]);
 
-  const saveMaterial = async (materialData: Material | NewMaterial) => {
+  const saveMaterial = async (materialData: Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string } | Material & { measurementId?: string }) => {
     if ('_id' in materialData) {
         // Update existing material
         try {
@@ -116,7 +116,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
             });
             const result = await response.json();
             if (result.success) {
-                setMaterials(prev => prev.map(m => m._id === materialData._id ? { ...m, ...materialData } : m));
+                setMaterials(prev => prev.map(m => m._id === materialData._id ? { ...m, ...materialData, type: measurements.find(mes => mes._id === materialData.measurementId)?.name || 'N/A' } : m));
                 toast({ title: "Success", description: "Material updated successfully.", variant: 'success' });
             } else {
                 toast({ title: "Error", description: result.message || "Failed to update material.", variant: "destructive" });
@@ -126,15 +126,24 @@ export function DataProvider({ children }: { children: ReactNode }) {
         }
     } else {
         // Create new material
+        const payload = {
+            name: materialData.name,
+            unitQuantity: materialData.unitQuantity,
+            extraSheets: materialData.extraSheets,
+            measurementId: materialData.measurementId || null
+        };
+
         try {
             const response = await fetch(`${API_BASE_URL}/material/create-material`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(materialData),
+                body: JSON.stringify(payload),
             });
             const result = await response.json();
             if (result.success) {
-                setMaterials(prev => [...prev, adaptMaterial(result.material)]);
+                const newApiMaterial = result.material as APIMaterial;
+                const newMaterial = adaptMaterial(newApiMaterial);
+                setMaterials(prev => [...prev, newMaterial]);
                 toast({ title: "Success", description: "Material created successfully.", variant: 'success' });
             } else {
                 toast({ title: "Error", description: result.message || "Failed to create material.", variant: "destructive" });

@@ -8,7 +8,7 @@ export type APIMaterial = {
     _id: string;
     name: string;
     sheetsPerUnit: number;
-  };
+  } | null; // Can be null
   unitQuantity?: number;
   extraSheets?: number;
   totalSheets: number;
@@ -19,7 +19,7 @@ export type APIMaterial = {
 export type Material = {
   _id: string;
   name: string;
-  type: string;
+  type: string; // Will be 'N/A' if measurementId is null
   unitQuantity: number;
   extraSheets: number;
   currentStock: number;

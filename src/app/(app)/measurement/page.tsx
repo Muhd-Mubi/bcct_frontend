@@ -50,7 +50,7 @@ export default function MeasurementPage() {
         </CardHeader>
         <CardContent>
           <MeasurementTable
-            data={measurements}
+            data={measurements.filter(Boolean)}
             onEdit={handleEdit}
           />
         </CardContent>

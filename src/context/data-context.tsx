@@ -1,6 +1,6 @@
 'use client';
 
-import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
 import { initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed, APIMaterial } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
@@ -33,7 +33,7 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
     return {
         _id: apiMaterial._id,
         name: apiMaterial.name,
-        type: apiMaterial.measurementId.name,
+        type: apiMaterial.measurementId?.name || 'N/A',
         category: 'Paper', // Defaulting category, as it's not in the API response
         unitQuantity: apiMaterial.unitQuantity || 0,
         extraSheets: apiMaterial.extraSheets || 0,
@@ -52,28 +52,28 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [orders, setOrders] = useState<Order[]>(initialOrders);
   const { toast } = useToast();
 
-  useEffect(() => {
-    const fetchMeasurements = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/measurement/get-measurement`);
-        const data = await response.json();
-        if (data.success) {
-          setMeasurements(data.measurements);
-        } else {
-            console.error("API error fetching measurements:", data.message);
-            setMeasurements([]); 
-        }
-      } catch (error) {
-        console.error("Failed to fetch measurements:", error);
-        setMeasurements([]); 
-        toast({
-            title: "Error fetching measurements",
-            description: "Could not connect to the server.",
-            variant: "destructive"
-        });
+  const fetchMeasurements = useCallback(async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/measurement/get-measurement`);
+      const data = await response.json();
+      if (data.success) {
+        setMeasurements(data.measurements);
+      } else {
+          console.error("API error fetching measurements:", data.message);
+          setMeasurements([]); 
       }
-    };
+    } catch (error) {
+      console.error("Failed to fetch measurements:", error);
+      setMeasurements([]); 
+      toast({
+          title: "Error fetching measurements",
+          description: "Could not connect to the server.",
+          variant: "destructive"
+      });
+    }
+  }, [toast]);
 
+  useEffect(() => {
     const fetchMaterials = async () => {
         try {
             const response = await fetch(`${API_BASE_URL}/material/get-material`);
@@ -104,7 +104,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     fetchMeasurements();
     fetchMaterials();
 
-  }, [toast]);
+  }, [fetchMeasurements, toast]);
 
   const saveMaterial = async (materialData: Material | NewMaterial) => {
     if ('_id' in materialData) {
@@ -226,7 +226,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
       const result = await response.json();
       if (result.success) {
-        setMeasurements((prev) => [...prev, result.measurement]);
+        fetchMeasurements(); // Refresh data
         toast({
             title: "Success",
             description: result.message,
@@ -260,7 +260,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       });
       const result = await response.json();
       if(result.success) {
-        setMeasurements((prev) => prev.map(m => m._id === measurement._id ? measurement : m));
+        fetchMeasurements(); // Refresh data
         toast({
             title: "Success",
             description: result.message,

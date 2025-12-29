@@ -37,6 +37,7 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
         type: apiMaterial.measurementId?.name || 'N/A',
         unitQuantity: apiMaterial.unitQuantity || 0,
         extraSheets: apiMaterial.extraSheets || 0,
+        totalSheets: apiMaterial.totalSheets,
         currentStock: apiMaterial.totalSheets,
         maxStock: 10000, // Placeholder
         reorderThreshold: 10, // Placeholder

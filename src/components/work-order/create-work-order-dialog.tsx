@@ -112,7 +112,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
           <DialogTitle className="font-headline">Create New Work Order</DialogTitle>
           <DialogDescription>
@@ -253,7 +253,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
                 />
               </div>
             </ScrollArea>
-            <DialogFooter className="pt-4">
+            <DialogFooter className="pt-6">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

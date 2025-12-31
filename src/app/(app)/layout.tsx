@@ -17,11 +17,12 @@ import { DataProvider } from '@/context/data-context';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>('admin');
-  const isAdmin = userRole === 'admin';
   
   const handleSetRole = (role: UserRole) => {
     setUserRole(role);
   };
+
+  const isAdmin = userRole === 'admin';
 
   return (
     <DataProvider>

@@ -39,7 +39,7 @@ export default function MaterialsPage() {
     <div className="space-y-6">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="font-headline">Inventory Materials</CardTitle>
+          <CardTitle className="font-headline">Inventory</CardTitle>
           {isAdmin && (
             <Button size="sm" onClick={handleAdd}>
               <PlusCircle />

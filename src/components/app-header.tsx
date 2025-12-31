@@ -9,9 +9,8 @@ import { Badge } from '@/components/ui/badge';
 const getPageTitle = (pathname: string) => {
   if (pathname.startsWith('/jobs')) return 'Jobs';
   if (pathname.startsWith('/work-order')) return 'Work Orders';
-  if (pathname.startsWith('/materials')) return 'Materials';
+  if (pathname.startsWith('/materials')) return 'Inventory';
   if (pathname.startsWith('/onboarding')) return 'Onboarding';
-  if (pathname.startsWith('/warehouse-status')) return 'Inventory';
   if (pathname.startsWith('/reports')) return 'Reports';
   if (pathname.startsWith('/settings')) return 'Settings';
   if (pathname.startsWith('/measurement')) return 'Measurement';

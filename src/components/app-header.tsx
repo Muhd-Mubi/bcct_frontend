@@ -7,10 +7,11 @@ import { UserNav } from '@/components/user-nav';
 import { Badge } from '@/components/ui/badge';
 
 const getPageTitle = (pathname: string) => {
+  if (pathname.startsWith('/jobs')) return 'Jobs';
+  if (pathname.startsWith('/work-order')) return 'Work Orders';
   if (pathname.startsWith('/materials')) return 'Materials';
-  if (pathname.startsWith('/orders')) return 'Orders';
-  if (pathname.startsWith('/paper-onloading')) return 'Paper Onloading';
-  if (pathname.startsWith('/warehouse-status')) return 'Warehouse Status';
+  if (pathname.startsWith('/onboarding')) return 'Onboarding';
+  if (pathname.startsWith('/warehouse-status')) return 'Inventory';
   if (pathname.startsWith('/reports')) return 'Reports';
   if (pathname.startsWith('/settings')) return 'Settings';
   if (pathname.startsWith('/measurement')) return 'Measurement';

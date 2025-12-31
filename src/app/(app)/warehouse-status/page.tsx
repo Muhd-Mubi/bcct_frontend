@@ -16,7 +16,7 @@ export default function WarehouseStatusPage() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold font-headline">Warehouse Status</h1>
+      <h1 className="text-3xl font-bold font-headline">Inventory</h1>
       <Card>
         <CardHeader>
           <CardTitle>Inventory Status</CardTitle>

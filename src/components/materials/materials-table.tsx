@@ -96,7 +96,6 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
               <SortableHeader sortKeyName="type">Measurement Unit</SortableHeader>
               <SortableHeader sortKeyName="unitQuantity">Unit Quantity</SortableHeader>
               <SortableHeader sortKeyName="extraSheets">Extra Sheets</SortableHeader>
-              <SortableHeader sortKeyName="currentStock">Current Stock</SortableHeader>
               <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -107,7 +106,6 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                 <TableCell>{material.type}</TableCell>
                 <TableCell>{material.unitQuantity}</TableCell>
                 <TableCell>{material.extraSheets}</TableCell>
-                <TableCell>{material.currentStock}</TableCell>
                 <TableCell>
                   {isAdmin ? (
                     <DropdownMenu>

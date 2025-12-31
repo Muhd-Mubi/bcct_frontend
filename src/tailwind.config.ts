@@ -10,9 +10,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"PT Sans"', 'sans-serif'],
-        headline: ['"Space Grotesk"', 'sans-serif'],
-        code: ['monospace'],
+        body: 'var(--font-body)',
+        headline: 'var(--font-headline)',
+        'pt-sans': 'var(--font-pt-sans)',
+        'space-grotesk': 'var(--font-space-grotesk)',
+        'inter': 'var(--font-inter)',
+        'roboto-mono': 'var(--font-roboto-mono)',
+        'rubik': 'var(--font-rubik)',
       },
       colors: {
         background: 'hsl(var(--background))',

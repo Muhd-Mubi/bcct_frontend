@@ -14,7 +14,7 @@ import { UserRoleContext } from '@/lib/types';
 import Link from 'next/link';
 
 export default function DashboardPage() {
-  const { materials, updateMaterialStock, orders } = useData();
+  const { materials, updateMaterialStock, workOrders } = useData();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function DashboardPage() {
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
 
-  const pendingOrders = orders.filter(o => o.status === 'Pending').length;
+  const pendingWorkOrders = workOrders.filter(o => o.status === 'Pending').length;
   
   const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
 
@@ -53,10 +53,10 @@ export default function DashboardPage() {
           value={totalStock.toLocaleString()}
           icon={<Box className="size-6 text-muted-foreground" />}
         />
-         <Link href="/orders">
+         <Link href="/work-order">
             <MetricCard
-            title="Pending Orders"
-            value={pendingOrders}
+            title="Pending Work Orders"
+            value={pendingWorkOrders}
             icon={<ClipboardList className="size-6 text-muted-foreground" />}
             />
         </Link>

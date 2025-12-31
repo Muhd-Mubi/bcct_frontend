@@ -1,36 +1,27 @@
-import type { Material, PaperOnloading, Measurement, Order } from './types';
+import type { Material, PaperOnboarding, Measurement, WorkOrder, Job } from './types';
 
 export const initialMaterials: Material[] = [];
 
-export const initialOnloadings: PaperOnloading[] = [
+export const initialOnloadings: PaperOnboarding[] = [
   {
     id: 'onload-1',
     date: '2024-07-01T09:00:00Z',
-    unitQuantity: 200,
-    extraSheets: 0,
     supplier: 'PaperCorp',
-    paperType: 'Standard A4 Paper',
+    papers: [
+        { paperType: 'Standard A4 Paper', unitQuantity: 200, extraSheets: 0 },
+        { paperType: 'Glossy Brochure Paper', unitQuantity: 100, extraSheets: 0 },
+    ],
     isReverted: false,
   },
   {
     id: 'onload-2',
     date: '2024-07-05T11:00:00Z',
-    unitQuantity: 500,
-    extraSheets: 0,
-    supplier: 'PaperCorp',
-    paperType: 'Glossy Brochure Paper',
-    isReverted: false,
-  },
-  {
-    id: 'onload-3',
-    date: '2024-07-15T14:00:00Z',
-    unitQuantity: 50,
-    extraSheets: 0,
     supplier: 'EcoPaper',
-    paperType: 'Recycled Kraft Paper Roll',
+    papers: [{ paperType: 'Recycled Kraft Paper Roll', unitQuantity: 50, extraSheets: 0 }],
     isReverted: false,
   },
 ];
+
 
 // This is no longer the source of truth for measurements.
 // It is kept here for reference but will be removed once the API is integrated.
@@ -57,31 +48,44 @@ export const initialMeasurements: Measurement[] = [
   },
 ];
 
-export const initialOrders: Order[] = [
+export const initialJobs: Job[] = [
     {
-        id: 'order-1',
-        name: 'Annual Report 2024',
-        client: 'Global Corp',
-        details: '1000 copies, full color, glossy finish.',
-        status: 'Pending',
-        date: '2024-07-20T10:00:00Z',
+        id: 'job-1',
+        department: 'Printing',
+        date: '2024-07-25T10:00:00Z',
+        items: [
+            { name: 'Annual Report', quantity: 1000 },
+            { name: 'Cover Page', quantity: 1000 }
+        ]
     },
     {
-        id: 'order-2',
-        name: 'Marketing Brochures Q3',
-        client: 'Innovate LLC',
-        details: '5000 trifold brochures.',
+        id: 'job-2',
+        department: 'Binding',
+        date: '2024-07-26T11:00:00Z',
+        items: [
+            { name: 'Marketing Brochures', quantity: 5000 }
+        ]
+    }
+];
+
+export const initialWorkOrders: WorkOrder[] = [
+    {
+        id: 'wo-1',
+        jobId: 'job-1',
+        description: 'Print 1000 copies of the annual report.',
+        priority: 'High',
         status: 'Pending',
-        date: '2024-07-22T14:30:00Z',
+        date: '2024-07-25T11:00:00Z',
     },
     {
-        id: 'order-3',
-        name: 'Business Cards',
-        client: 'Startup Inc',
+        id: 'wo-2',
+        jobId: 'job-2',
+        description: 'Fold and bind 5000 marketing brochures.',
+        priority: 'Medium',
         status: 'Completed',
-        date: '2024-07-18T16:00:00Z',
+        date: '2024-07-26T12:00:00Z',
         materialsUsed: [
-            { materialId: 'm3', materialName: 'Glossy Brochure Paper', sheetsUsed: 500, unitQuantity: 5, extraSheets: 0 }
+            { materialId: 'm3', materialName: 'Glossy Brochure Paper', quantity: 500 }
         ]
     }
 ];

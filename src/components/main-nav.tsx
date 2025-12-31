@@ -16,27 +16,35 @@ import {
   PackagePlus,
   Warehouse,
   Ruler,
+  Briefcase,
+  FileCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-
-const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/materials', label: 'Materials', icon: Package },
-  { href: '/orders', label: 'Orders', icon: ClipboardList },
-  { href: '/paper-onloading', label: 'Paper Onloading', icon: PackagePlus },
-  { href: '/warehouse-status', label: 'Warehouse Status', icon: Warehouse },
-  { href: '/reports', label: 'Reports', icon: FileText },
-  { href: '/measurement', label: 'Measurement', icon: Ruler },
-  { href: '/settings', label: 'Settings', icon: Settings },
-];
+import { useContext } from 'react';
+import { UserRoleContext } from '@/lib/types';
 
 export function MainNav() {
   const pathname = usePathname();
+  const { role } = useContext(UserRoleContext);
+
+  const navItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['chairman', 'admin', 'technician'] },
+    { href: '/jobs', label: 'Jobs', icon: Briefcase, roles: ['admin', 'chairman'] },
+    { href: '/work-order', label: 'Work Orders', icon: FileCheck, roles: ['admin', 'technician', 'chairman'] },
+    { href: '/materials', label: 'Materials', icon: Package, roles: ['admin', 'chairman'] },
+    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus, roles: ['admin', 'technician'] },
+    { href: '/warehouse-status', label: 'Inventory', icon: Warehouse, roles: ['admin', 'chairman', 'technician'] },
+    { href: '/reports', label: 'Reports', icon: FileText, roles: ['admin', 'chairman'] },
+    { href: '/measurement', label: 'Measurement', icon: Ruler, roles: ['admin'] },
+    { href: '/settings', label: 'Settings', icon: Settings, roles: ['admin', 'chairman'] },
+  ];
+  
+  const accessibleNavItems = navItems.filter(item => item.roles.includes(role));
 
   return (
     <nav className="p-2">
       <SidebarMenu>
-        {navItems.map((item) => (
+        {accessibleNavItems.map((item) => (
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild

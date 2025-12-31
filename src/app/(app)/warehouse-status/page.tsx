@@ -1,12 +1,18 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { WarehouseStatusTable } from '@/components/warehouse-status/warehouse-status-table';
 import { useData } from '@/context/data-context';
+import { Input } from '@/components/ui/input';
 
 export default function WarehouseStatusPage() {
   const { materials } = useData();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const filteredMaterials = materials.filter(material =>
+    material.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="space-y-6">
@@ -17,9 +23,15 @@ export default function WarehouseStatusPage() {
           <CardDescription>
             Current quantities of all materials in the warehouse.
           </CardDescription>
+          <Input
+            placeholder="Search for a specific material..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-sm"
+          />
         </CardHeader>
         <CardContent>
-          <WarehouseStatusTable materials={materials} />
+          <WarehouseStatusTable materials={filteredMaterials} />
         </CardContent>
       </Card>
     </div>

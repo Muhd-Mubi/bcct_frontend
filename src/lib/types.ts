@@ -5,7 +5,7 @@ export type APIMaterial = {
   _id: string;
   name: string;
   measurementId: {
-    _id: string;
+    _id:string;
     name: string;
     sheetsPerUnit: number;
   } | null; // Can be null
@@ -31,29 +31,31 @@ export type Material = {
 export type QualityStatus = 'Good' | 'Low' | 'Very Low';
 export type LiveStatus = 'Normal' | 'Near Low' | 'Low';
 
-export type UserRole = 'staff' | 'manager' | 'admin' | 'technician';
+export type UserRole = 'chairman' | 'admin' | 'technician';
 
 type UserRoleContextType = {
   role: UserRole;
   setRole: (role: UserRole) => void;
   isAdmin: boolean;
-  isManager: boolean;
+  isChairman: boolean;
 };
 
 export const UserRoleContext = React.createContext<UserRoleContextType>({
-  role: 'staff',
+  role: 'admin',
   setRole: () => {},
-  isAdmin: false,
-  isManager: false,
+  isAdmin: true,
+  isChairman: false,
 });
 
-export type PaperOnloading = {
+export type PaperOnboarding = {
   id: string;
   date: string;
-  unitQuantity: number;
-  extraSheets: number;
   supplier: string;
-  paperType: string;
+  papers: {
+    paperType: string;
+    unitQuantity: number;
+    extraSheets: number;
+  }[],
   isReverted?: boolean;
 };
 
@@ -63,22 +65,31 @@ export type Measurement = {
   sheetsPerUnit: number;
 };
 
-export type OrderStatus = 'Pending' | 'Completed' | 'Discarded';
+export type WorkOrderStatus = 'Pending' | 'Completed';
+export type WorkOrderPriority = 'High' | 'Medium' | 'Low';
 
 export type MaterialsUsed = {
   materialId: string;
   materialName: string;
-  unitQuantity: number;
-  extraSheets: number;
-  sheetsUsed: number; // Total sheets calculated from unitQuantity and extraSheets
+  quantity: number;
 };
 
-export type Order = {
+export type Job = {
   id: string;
-  name: string;
-  client: string;
-  details?: string;
-  status: OrderStatus;
+  department: string;
+  date: string;
+  items: {
+    name: string;
+    quantity: number;
+  }[];
+}
+
+export type WorkOrder = {
+  id: string;
+  jobId: string;
+  description?: string;
+  priority: WorkOrderPriority;
+  status: WorkOrderStatus;
   date: string;
   materialsUsed?: MaterialsUsed[];
 };

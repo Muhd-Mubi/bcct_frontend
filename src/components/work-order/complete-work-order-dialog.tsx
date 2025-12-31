@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useForm, useFieldArray } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -23,17 +23,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Order, Material } from '@/lib/types';
+import { WorkOrder, Material } from '@/lib/types';
 import { PlusCircle, Trash2 } from 'lucide-react';
-import { useData } from '@/context/data-context';
 
 const materialUsedSchema = z.object({
   materialId: z.string().min(1, 'Please select a material.'),
-  unitQuantity: z.coerce.number().min(0, 'Unit quantity must be non-negative.'),
-  extraSheets: z.coerce.number().min(0, 'Extra sheets must be non-negative.'),
-}).refine(data => data.unitQuantity > 0 || data.extraSheets > 0, {
-    message: "Either unit quantity or extra sheets must be greater than 0.",
-    path: ["unitQuantity"],
+  quantity: z.coerce.number().min(1, 'Quantity must be at least 1.'),
 });
 
 const formSchema = z.object({
@@ -42,26 +37,25 @@ const formSchema = z.object({
 
 type FormValues = z.infer<typeof formSchema>;
 
-interface CompleteOrderDialogProps {
+interface CompleteWorkOrderDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  order: Order;
+  workOrder: WorkOrder;
   materials: Material[];
   onConfirm: (orderId: string, materialsUsed: z.infer<typeof materialUsedSchema>[]) => void;
 }
 
-export function CompleteOrderDialog({
+export function CompleteWorkOrderDialog({
   isOpen,
   onOpenChange,
-  order,
+  workOrder,
   materials,
   onConfirm,
-}: CompleteOrderDialogProps) {
-  const { measurements } = useData();
+}: CompleteWorkOrderDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      materialsUsed: [{ materialId: '', unitQuantity: 0, extraSheets: 0 }],
+      materialsUsed: [{ materialId: '', quantity: 1 }],
     },
   });
 
@@ -72,27 +66,21 @@ export function CompleteOrderDialog({
 
   useEffect(() => {
     if (isOpen) {
-      form.reset({ materialsUsed: [{ materialId: '', unitQuantity: 0, extraSheets: 0 }] });
+      form.reset({ materialsUsed: [{ materialId: '', quantity: 1 }] });
     }
   }, [isOpen, form]);
 
   const onSubmit = (values: FormValues) => {
-    onConfirm(order.id, values.materialsUsed);
+    onConfirm(workOrder.id, values.materialsUsed);
   };
-
-  const getMaterialUnitLabel = (materialId: string) => {
-    const material = materials.find(m => m._id === materialId);
-    return material ? material.type : 'Units';
-  };
-
-
+  
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-headline">Complete Order: {order.name}</DialogTitle>
+          <DialogTitle className="font-headline">Complete Work Order: {workOrder.jobId}</DialogTitle>
           <DialogDescription>
-            Record the materials and quantities used to complete this order.
+            Record the paper types and quantities used to complete this work order.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -100,17 +88,17 @@ export function CompleteOrderDialog({
             <div className="space-y-4 max-h-[300px] overflow-y-auto p-1">
               {fields.map((field, index) => (
                 <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
-                  <div className="grid grid-cols-3 gap-2 flex-grow">
+                  <div className="grid grid-cols-2 gap-2 flex-grow">
                     <FormField
                       control={form.control}
                       name={`materialsUsed.${index}.materialId`}
                       render={({ field }) => (
-                        <FormItem className="col-span-3">
-                          <FormLabel>Material</FormLabel>
+                        <FormItem>
+                          <FormLabel>Paper Type</FormLabel>
                            <Select onValueChange={field.onChange} defaultValue={field.value}>
                                 <FormControl>
                                   <SelectTrigger>
-                                    <SelectValue placeholder="Select material" />
+                                    <SelectValue placeholder="Select paper" />
                                   </SelectTrigger>
                                 </FormControl>
                                 <SelectContent>
@@ -127,23 +115,10 @@ export function CompleteOrderDialog({
                     />
                     <FormField
                       control={form.control}
-                      name={`materialsUsed.${index}.unitQuantity`}
+                      name={`materialsUsed.${index}.quantity`}
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel>{getMaterialUnitLabel(form.watch(`materialsUsed.${index}.materialId`))}</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                     <FormField
-                      control={form.control}
-                      name={`materialsUsed.${index}.extraSheets`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Extra Sheets</FormLabel>
+                          <FormLabel>Quantity Used</FormLabel>
                           <FormControl>
                             <Input type="number" {...field} />
                           </FormControl>
@@ -165,9 +140,9 @@ export function CompleteOrderDialog({
               ))}
             </div>
             
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 0, extraSheets: 0 })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', quantity: 1 })}>
               <PlusCircle className="mr-2 h-4 w-4" />
-              Add Another Material
+              Add Another Paper Type
             </Button>
 
             <DialogFooter>

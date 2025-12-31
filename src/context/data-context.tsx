@@ -1,28 +1,28 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { initialOnloadings, initialOrders, Material, PaperOnloading, Measurement, Order, OrderStatus, MaterialsUsed, APIMaterial } from '@/lib/data';
+import { initialOnloadings, initialJobs, initialWorkOrders, Material, PaperOnloading, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
-type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName' | 'sheetsUsed'>;
+type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName'>;
 type NewMaterial = Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated'>;
 
 interface DataContextType {
   materials: Material[];
   onloadings: PaperOnloading[];
   measurements: Measurement[];
-  orders: Order[];
+  jobs: Job[];
+  workOrders: WorkOrder[];
   saveMaterial: (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => void;
   deleteMaterial: (id: string) => void;
-  saveOnloading: (onloadingData: Omit<PaperOnloading, 'id' | 'date' | 'isReverted'>) => void;
+  saveOnloading: (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, extraSheets: number }[]}) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Omit<Measurement, '_id'>) => void;
   updateMeasurement: (measurement: Measurement) => void;
-  saveOrder: (orderData: Omit<Order, 'id' | 'status' | 'date'>) => void;
-  markOrderAsComplete: (orderId: string, materialsUsed: NewMaterialsUsed[]) => void;
-  markOrderAsDiscarded: (orderId: string) => void;
+  saveJob: (jobData: Omit<Job, 'date'>) => void;
+  saveWorkOrder: (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => void;
+  markWorkOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; quantity: number }[]) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -48,9 +48,11 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>([]);
-  const [onloadings, setOnloadings] = useState<PaperOnloading[]>(initialOnloadings);
+  const [onloadings, setOnloadings] = useState<PaperOnboarding[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
-  const [orders, setOrders] = useState<Order[]>(initialOrders);
+  const [jobs, setJobs] = useState<Job[]>(initialJobs);
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>(initialWorkOrders);
+
   const { toast } = useToast();
 
   const fetchMeasurements = useCallback(async () => {
@@ -171,39 +173,42 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  const saveOnloading = (onloadingData: Omit<PaperOnloading, 'id' | 'date'| 'isReverted'>) => {
-    const materialToUpdate = materials.find(m => m.name === onloadingData.paperType);
-    const measurement = measurements.find(m => m.name === materialToUpdate?.type);
-    const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
-    const totalSheets = (onloadingData.unitQuantity * sheetsPerUnit) + onloadingData.extraSheets;
-
-      const newOnloading: PaperOnloading = {
-        ...onloadingData,
+  const saveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date'| 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, extraSheets: number }[]}) => {
+      const newOnloading: PaperOnboarding = {
         id: `onloading-${Date.now()}`,
         date: new Date().toISOString(),
+        supplier: onloadingData.supplier,
+        papers: onloadingData.papers,
         isReverted: false,
       };
       setOnloadings((prev) => [newOnloading, ...prev]);
       
-      // Update material stock
-      if(materialToUpdate) {
-          updateMaterialStock(materialToUpdate._id, totalSheets);
-      }
+      // Update stock for each paper
+      onloadingData.papers.forEach(paper => {
+        const materialToUpdate = materials.find(m => m.name === paper.paperType);
+        if (materialToUpdate) {
+            const measurement = measurements.find(m => m.name === materialToUpdate.type);
+            const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
+            const totalSheets = (paper.unitQuantity * sheetsPerUnit) + paper.extraSheets;
+            updateMaterialStock(materialToUpdate._id, totalSheets);
+        }
+      });
   };
 
   const revertOnloading = (onloadingId: string) => {
     const onloadingEntry = onloadings.find(o => o.id === onloadingId);
     if (!onloadingEntry || onloadingEntry.isReverted) return;
-
-    const materialToUpdate = materials.find(m => m.name === onloadingEntry.paperType);
-    if (materialToUpdate) {
-        const measurement = measurements.find(m => m.name === materialToUpdate.type);
-        const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
-        const totalSheets = (onloadingEntry.unitQuantity * sheetsPerUnit) + onloadingEntry.extraSheets;
-        
-        // Subtract the stock
-        updateMaterialStock(materialToUpdate._id, -totalSheets);
-    }
+    
+    onloadingEntry.papers.forEach(paper => {
+      const materialToUpdate = materials.find(m => m.name === paper.paperType);
+      if (materialToUpdate) {
+          const measurement = measurements.find(m => m.name === materialToUpdate.type);
+          const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
+          const totalSheets = (paper.unitQuantity * sheetsPerUnit) + paper.extraSheets;
+          // Subtract the stock
+          updateMaterialStock(materialToUpdate._id, -totalSheets);
+      }
+    });
     
     // Mark as reverted
     setOnloadings(prev => prev.map(o => o.id === onloadingId ? { ...o, isReverted: true } : o));
@@ -291,35 +296,39 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const saveOrder = (orderData: Omit<Order, 'id' | 'status' | 'date'>) => {
-    const newOrder: Order = {
+  const saveJob = (jobData: Omit<Job, 'date'>) => {
+    const newJob: Job = {
+      ...jobData,
+      date: new Date().toISOString(),
+    };
+    setJobs(prev => [newJob, ...prev]);
+  };
+  
+  const saveWorkOrder = (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
+    const newWorkOrder: WorkOrder = {
       ...orderData,
-      id: `order-${Date.now()}`,
+      id: `wo-${Date.now()}`,
       status: 'Pending',
       date: new Date().toISOString(),
     };
-    setOrders(prev => [newOrder, ...prev]);
+    setWorkOrders(prev => [newWorkOrder, ...prev]);
   };
 
-  const markOrderAsComplete = (orderId: string, materialsUsed: NewMaterialsUsed[]) => {
-     const materialsUsedWithDetails: MaterialsUsed[] = materialsUsed.map(mu => {
+  const markWorkOrderAsComplete = (orderId: string, materialsUsed: { materialId: string; quantity: number }[]) => {
+     const materialsUsedWithDetails = materialsUsed.map(mu => {
       const material = materials.find(m => m._id === mu.materialId);
-      const measurement = measurements.find(m => m.name === material?.type);
-      const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
-      const totalSheetsUsed = (mu.unitQuantity * sheetsPerUnit) + mu.extraSheets;
-
+      
       // Deduct stock
-      updateMaterialStock(mu.materialId, -totalSheetsUsed);
+      updateMaterialStock(mu.materialId, -mu.quantity);
 
       return {
         ...mu,
         materialName: material?.name || 'Unknown',
-        sheetsUsed: totalSheetsUsed,
       };
     });
 
     // Then, update the order status
-    setOrders(prev => prev.map(o => {
+    setWorkOrders(prev => prev.map(o => {
       if (o.id === orderId) {
         return { ...o, status: 'Completed', materialsUsed: materialsUsedWithDetails };
       }
@@ -327,15 +336,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }));
   };
 
-  const markOrderAsDiscarded = (orderId: string) => {
-    setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'Discarded' } : o));
-  };
-
   const value = { 
       materials, 
       onloadings,
       measurements,
-      orders,
+      jobs,
+      workOrders,
       saveMaterial, 
       deleteMaterial,
       saveOnloading,
@@ -343,9 +349,9 @@ export function DataProvider({ children }: { children: ReactNode }) {
       updateMaterialStock,
       saveMeasurement,
       updateMeasurement,
-      saveOrder,
-      markOrderAsComplete,
-      markOrderAsDiscarded,
+      saveJob,
+      saveWorkOrder,
+      markWorkOrderAsComplete,
     };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

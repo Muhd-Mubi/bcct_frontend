@@ -9,27 +9,25 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PaperOnloading } from '@/lib/types';
+import { PaperOnboarding } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 
-interface OnloadingTableProps {
-  data: PaperOnloading[];
+interface OnboardingTableProps {
+  data: PaperOnboarding[];
   onRevertClick: (id: string) => void;
 }
 
-export function OnloadingTable({ data, onRevertClick }: OnloadingTableProps) {
+export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
   return (
     <div className="rounded-md border overflow-x-auto">
       <Table>
         <TableHeader>
           <TableRow>
             <TableHead>Date</TableHead>
-            <TableHead>Paper Type</TableHead>
             <TableHead>Supplier</TableHead>
-            <TableHead className="text-right">Unit Quantity</TableHead>
-            <TableHead className="text-right">Extra Sheets</TableHead>
+            <TableHead>Papers</TableHead>
             <TableHead>Status</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
@@ -40,10 +38,14 @@ export function OnloadingTable({ data, onRevertClick }: OnloadingTableProps) {
               <TableCell className="font-medium">
                 {format(parseISO(item.date), 'PPP')}
               </TableCell>
-              <TableCell>{item.paperType}</TableCell>
               <TableCell>{item.supplier}</TableCell>
-              <TableCell className="text-right">{item.unitQuantity.toLocaleString()}</TableCell>
-              <TableCell className="text-right">{item.extraSheets.toLocaleString()}</TableCell>
+              <TableCell>
+                 <div className="flex flex-col gap-1 text-xs">
+                    {item.papers.map((p, index) => (
+                      <span key={index}>{p.paperType} (Units: {p.unitQuantity}, Extras: {p.extraSheets})</span>
+                    ))}
+                  </div>
+              </TableCell>
               <TableCell>
                 {item.isReverted && <Badge variant="destructive">Reverted</Badge>}
               </TableCell>

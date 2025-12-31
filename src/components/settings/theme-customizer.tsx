@@ -30,24 +30,32 @@ export function ThemeCustomizer() {
   
   useEffect(() => {
     setMounted(true);
+    const root = document.documentElement;
     const storedColor = localStorage.getItem('theme-color');
     const storedFont = localStorage.getItem('theme-font');
     if (storedColor) {
-      document.documentElement.style.setProperty('--primary', storedColor);
+      root.style.setProperty('--primary', storedColor);
+      root.style.setProperty('--sidebar-primary', storedColor);
+      root.style.setProperty('--sidebar-accent-foreground', storedColor);
+      root.style.setProperty('--sidebar-ring', storedColor);
       setActiveColor(storedColor);
     }
     if (storedFont) {
       const font = fonts.find(f => f.value === storedFont);
       if (font) {
-        document.documentElement.style.setProperty('--font-body', font.body);
-        document.documentElement.style.setProperty('--font-headline', font.headline);
+        root.style.setProperty('--font-body', font.body);
+        root.style.setProperty('--font-headline', font.headline);
         setActiveFont(font.value);
       }
     }
   }, []);
 
   const handleColorChange = (colorHsl: string) => {
-    document.documentElement.style.setProperty('--primary', colorHsl);
+    const root = document.documentElement;
+    root.style.setProperty('--primary', colorHsl);
+    root.style.setProperty('--sidebar-primary', colorHsl);
+    root.style.setProperty('--sidebar-accent-foreground', colorHsl);
+    root.style.setProperty('--sidebar-ring', colorHsl);
     localStorage.setItem('theme-color', colorHsl);
     setActiveColor(colorHsl);
   };
@@ -55,8 +63,9 @@ export function ThemeCustomizer() {
   const handleFontChange = (fontValue: string) => {
       const font = fonts.find(f => f.value === fontValue);
       if (font) {
-          document.documentElement.style.setProperty('--font-body', font.body);
-          document.documentElement.style.setProperty('--font-headline', font.headline);
+          const root = document.documentElement;
+          root.style.setProperty('--font-body', font.body);
+          root.style.setProperty('--font-headline', font.headline);
           localStorage.setItem('theme-font', fontValue);
           setActiveFont(fontValue);
       }

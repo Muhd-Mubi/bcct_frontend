@@ -27,7 +27,7 @@ export function StockReportTable({ data }: StockReportTableProps) {
             <TableHead>Source</TableHead>
             <TableHead>Job/Supplier</TableHead>
             <TableHead className="text-right">Unit Change</TableHead>
-            <TableHead className="text-right">Sheet Change</TableHead>
+            <TableHead className="text-right">Amount</TableHead>
             <TableHead className="text-right">Updated Stock</TableHead>
           </TableRow>
         </TableHeader>
@@ -44,7 +44,7 @@ export function StockReportTable({ data }: StockReportTableProps) {
                 <TableCell>{entry.source}</TableCell>
                 <TableCell>{entry.jobId}</TableCell>
                 <TableCell className="text-right">{entry.unitQuantity}</TableCell>
-                <TableCell className="text-right">{entry.extraSheets}</TableCell>
+                <TableCell className="text-right">{entry.amount ? `$${entry.amount.toFixed(2)}` : 'N/A'}</TableCell>
                 <TableCell className="text-right font-medium">{entry.updatedStock.toLocaleString()}</TableCell>
               </TableRow>
             ))

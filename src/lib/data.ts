@@ -8,8 +8,8 @@ export const initialOnloadings: PaperOnboarding[] = [
     date: '2024-07-01T09:00:00Z',
     supplier: 'PaperCorp',
     papers: [
-        { paperType: 'Standard A4 Paper', unitQuantity: 200, extraSheets: 0 },
-        { paperType: 'Glossy Brochure Paper', unitQuantity: 100, extraSheets: 0 },
+        { paperType: 'Standard A4 Paper', unitQuantity: 200, amount: 2000 },
+        { paperType: 'Glossy Brochure Paper', unitQuantity: 100, amount: 1500 },
     ],
     isReverted: false,
   },
@@ -17,7 +17,7 @@ export const initialOnloadings: PaperOnboarding[] = [
     id: 'onload-2',
     date: '2024-07-05T11:00:00Z',
     supplier: 'EcoPaper',
-    papers: [{ paperType: 'Recycled Kraft Paper Roll', unitQuantity: 50, extraSheets: 0 }],
+    papers: [{ paperType: 'Recycled Kraft Paper Roll', unitQuantity: 50, amount: 5000 }],
     isReverted: false,
   },
 ];

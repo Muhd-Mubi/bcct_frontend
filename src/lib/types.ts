@@ -54,7 +54,7 @@ export type PaperOnboarding = {
   papers: {
     paperType: string;
     unitQuantity: number;
-    extraSheets: number;
+    amount: number;
   }[],
   isReverted?: boolean;
 };
@@ -104,6 +104,6 @@ export type StockLedgerEntry = {
     jobId: string; // Can be Job ID or Supplier Name
     change: number;
     unitQuantity: number;
-    extraSheets: number;
+    amount: number;
     updatedStock: number;
 };

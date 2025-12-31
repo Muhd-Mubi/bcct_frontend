@@ -23,7 +23,7 @@ export default function OnboardingPage() {
     setFormOpen(true);
   };
 
-  const handleSaveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, extraSheets: number }[]}) => {
+  const handleSaveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, amount: number }[]}) => {
     saveOnloading(onloadingData);
     setFormOpen(false);
   };

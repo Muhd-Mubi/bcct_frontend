@@ -15,7 +15,7 @@ interface DataContextType {
   workOrders: WorkOrder[];
   saveMaterial: (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => void;
   deleteMaterial: (id: string) => void;
-  saveOnloading: (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, extraSheets: number }[]}) => void;
+  saveOnloading: (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, amount: number }[]}) => void;
   revertOnloading: (onloadingId: string) => void;
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Omit<Measurement, '_id'>) => void;
@@ -173,7 +173,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   };
   
-  const saveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date'| 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, extraSheets: number }[]}) => {
+  const saveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date'| 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, amount: number }[]}) => {
       const newOnloading: PaperOnboarding = {
         id: `onloading-${Date.now()}`,
         date: new Date().toISOString(),
@@ -189,7 +189,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
         if (materialToUpdate) {
             const measurement = measurements.find(m => m.name === materialToUpdate.type);
             const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
-            const totalSheets = (paper.unitQuantity * sheetsPerUnit) + paper.extraSheets;
+            const totalSheets = paper.unitQuantity * sheetsPerUnit;
             updateMaterialStock(materialToUpdate._id, totalSheets);
         }
       });
@@ -204,7 +204,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       if (materialToUpdate) {
           const measurement = measurements.find(m => m.name === materialToUpdate.type);
           const sheetsPerUnit = measurement ? measurement.sheetsPerUnit : 1;
-          const totalSheets = (paper.unitQuantity * sheetsPerUnit) + paper.extraSheets;
+          const totalSheets = paper.unitQuantity * sheetsPerUnit;
           // Subtract the stock
           updateMaterialStock(materialToUpdate._id, -totalSheets);
       }

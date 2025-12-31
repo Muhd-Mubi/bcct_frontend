@@ -30,7 +30,7 @@ export default function ReportsPage() {
       .flatMap(o => o.papers.map(p => ({ ...p, onloading: o })))
       .filter(p => p.paperType === material.name && !p.onloading.isReverted)
       .map(p => {
-        const totalSheets = p.unitQuantity * sheetsPerUnit + p.extraSheets;
+        const totalSheets = p.unitQuantity * sheetsPerUnit;
         return {
           date: p.onloading.date,
           materialName: material.name,
@@ -38,7 +38,7 @@ export default function ReportsPage() {
           jobId: p.onloading.supplier,
           change: totalSheets,
           unitQuantity: p.unitQuantity,
-          extraSheets: p.extraSheets,
+          amount: p.amount,
         };
       });
       
@@ -55,7 +55,7 @@ export default function ReportsPage() {
             jobId: mu.workOrder.jobId,
             change: -mu.quantity,
             unitQuantity: Math.floor(-mu.quantity / sheetsPerUnit),
-            extraSheets: -mu.quantity % sheetsPerUnit,
+            amount: 0, // No cost associated with work order usage in this context
         }));
 
     const allEntries = [...onboardingEntries, ...workOrderEntries].sort(

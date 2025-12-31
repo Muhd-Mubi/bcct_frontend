@@ -35,7 +35,7 @@ import { PlusCircle, Trash2 } from 'lucide-react';
 const paperItemSchema = z.object({
   paperType: z.string().min(1, 'Please select a paper type.'),
   unitQuantity: z.coerce.number().min(1, 'Unit quantity must be at least 1.'),
-  extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
+  amount: z.coerce.number().min(0, 'Amount must be a positive number.'),
 });
 
 const formSchema = z.object({
@@ -61,7 +61,7 @@ export function OnboardingFormDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       supplier: '',
-      papers: [{ paperType: '', unitQuantity: 0, extraSheets: 0 }],
+      papers: [{ paperType: '', unitQuantity: 0, amount: 0 }],
     },
   });
 
@@ -74,7 +74,7 @@ export function OnboardingFormDialog({
 
   useEffect(() => {
     if (isOpen) {
-      form.reset({ supplier: '', papers: [{ paperType: '', unitQuantity: 1, extraSheets: 0 }] });
+      form.reset({ supplier: '', papers: [{ paperType: '', unitQuantity: 1, amount: 0 }] });
     }
   }, [form, isOpen]);
 
@@ -145,12 +145,12 @@ export function OnboardingFormDialog({
                       />
                       <FormField
                         control={form.control}
-                        name={`papers.${index}.extraSheets`}
+                        name={`papers.${index}.amount`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Extra Sheets</FormLabel>
+                            <FormLabel>Amount</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input type="number" {...field} placeholder="Cost" />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -170,7 +170,7 @@ export function OnboardingFormDialog({
               ))}
             </div>
 
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ paperType: '', unitQuantity: 1, extraSheets: 0 })}>
+            <Button type="button" variant="outline" size="sm" onClick={() => append({ paperType: '', unitQuantity: 1, amount: 0 })}>
                 <PlusCircle className="mr-2 h-4 w-4"/>
                 Add Another Paper Type
             </Button>

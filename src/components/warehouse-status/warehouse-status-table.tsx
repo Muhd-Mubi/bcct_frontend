@@ -43,7 +43,7 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
             return (
               <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
-                <TableCell className="text-right">{material.currentStock.toLocaleString()}</TableCell>
+                <TableCell className="text-right">{(material.currentStock || 0).toLocaleString()}</TableCell>
                 <TableCell className="text-right">{units}</TableCell>
                 <TableCell>
                   <div className="flex items-center gap-2 min-w-[150px]">

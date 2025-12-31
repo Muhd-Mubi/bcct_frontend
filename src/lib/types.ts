@@ -96,3 +96,14 @@ export type WorkOrder = {
   date: string;
   materialsUsed?: MaterialsUsed[];
 };
+
+export type StockLedgerEntry = {
+    date: string;
+    materialName: string;
+    source: 'Onboarding' | 'Work Order';
+    jobId: string; // Can be Job ID or Supplier Name
+    change: number;
+    unitQuantity: number;
+    extraSheets: number;
+    updatedStock: number;
+};

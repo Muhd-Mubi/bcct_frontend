@@ -1,79 +1,109 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
-import { TrendCharts } from '@/components/reports/trend-charts';
-import { PredictiveAnalyticsPlaceholder } from '@/components/reports/predictive-analytics-placeholder';
-import { Button } from '@/components/ui/button';
-import { FileDown } from 'lucide-react';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
-import * as XLSX from 'xlsx';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useData } from '@/context/data-context';
-import { trendData } from '@/lib/reports-data';
+import { StockLedgerEntry } from '@/lib/types';
+import { StockReportTable } from '@/components/reports/stock-report-table';
 
 export default function ReportsPage() {
-  const { materials } = useData();
+  const { materials, onloadings, workOrders, measurements } = useData();
+  const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
 
-  const handleExportPDF = () => {
-    const doc = new jsPDF();
-    
-    doc.text("Monthly Stock Trends Report", 14, 16);
+  const stockLedger = useMemo(() => {
+    if (!selectedMaterialId) return [];
 
-    const tableColumn = ["Month", ...materials.map(m => m.name)];
-    const tableRows: (string | number)[][] = [];
+    const material = materials.find(m => m._id === selectedMaterialId);
+    if (!material) return [];
 
-    trendData.forEach(data => {
-      const rowData = [
-        data.month,
-        ...materials.map(m => data[m.name] ?? 0)
-      ];
-      tableRows.push(rowData);
-    });
-    
-    (doc as any).autoTable({
-        head: [tableColumn],
-        body: tableRows,
-        startY: 20,
-    });
+    const measurement = measurements.find(m => m.name === material.type);
+    const sheetsPerUnit = measurement?.sheetsPerUnit || 1;
 
-    doc.save("monthly_stock_trends.pdf");
-  };
+    const onboardingEntries: StockLedgerEntry[] = onloadings
+      .flatMap(o => o.papers.map(p => ({ ...p, onloading: o })))
+      .filter(p => p.paperType === material.name && !p.onloading.isReverted)
+      .map(p => {
+        const totalSheets = p.unitQuantity * sheetsPerUnit + p.extraSheets;
+        return {
+          date: p.onloading.date,
+          materialName: material.name,
+          source: 'Onboarding',
+          jobId: p.onloading.supplier,
+          change: totalSheets,
+          unitQuantity: p.unitQuantity,
+          extraSheets: p.extraSheets,
+        };
+      });
+      
+    const workOrderEntries: StockLedgerEntry[] = workOrders
+        .filter(wo => wo.status === 'Completed' && wo.materialsUsed)
+        .flatMap(wo => 
+            wo.materialsUsed!.map(mu => ({ ...mu, workOrder: wo }))
+        )
+        .filter(mu => mu.materialId === selectedMaterialId)
+        .map(mu => ({
+            date: mu.workOrder.date,
+            materialName: material.name,
+            source: 'Work Order',
+            jobId: mu.workOrder.jobId,
+            change: -mu.quantity,
+            unitQuantity: Math.floor(-mu.quantity / sheetsPerUnit),
+            extraSheets: -mu.quantity % sheetsPerUnit,
+        }));
 
-  const handleExportExcel = () => {
-    const worksheet = XLSX.utils.json_to_sheet(trendData);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Monthly Stock Trends");
-    XLSX.writeFile(workbook, "monthly_stock_trends.xlsx");
-  };
+    const allEntries = [...onboardingEntries, ...workOrderEntries].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
 
+    let runningStock = material.currentStock + allEntries.reduce((acc, entry) => acc - entry.change, 0);
+
+    return allEntries.map(entry => {
+      const updatedStock = runningStock + entry.change;
+      runningStock = updatedStock;
+      return { ...entry, updatedStock };
+    }).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+  }, [selectedMaterialId, materials, onloadings, workOrders, measurements]);
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold font-headline">Reports & Trends</h1>
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={handleExportPDF}>
-            <FileDown />
-            Export PDF
-          </Button>
-          <Button variant="outline" onClick={handleExportExcel}>
-            <FileDown />
-            Export Excel
-          </Button>
-        </div>
-      </div>
+      <h1 className="text-3xl font-bold font-headline">Stock Reports</h1>
 
       <Card>
         <CardHeader>
-          <CardTitle className="font-headline">Monthly Stock Trends</CardTitle>
+          <CardTitle className="font-headline">Material Stock Ledger</CardTitle>
+          <div className="pt-4">
+             <Select onValueChange={setSelectedMaterialId}>
+                <SelectTrigger className="w-[280px]">
+                    <SelectValue placeholder="Select a material to view its ledger" />
+                </SelectTrigger>
+                <SelectContent>
+                    {materials.map(material => (
+                        <SelectItem key={material._id} value={material._id}>
+                            {material.name}
+                        </SelectItem>
+                    ))}
+                </SelectContent>
+            </Select>
+          </div>
         </CardHeader>
         <CardContent>
-          <TrendCharts />
+            {selectedMaterialId ? (
+                <StockReportTable data={stockLedger} />
+            ) : (
+                <div className="flex items-center justify-center h-48 border-2 border-dashed rounded-lg">
+                    <p className="text-muted-foreground">Please select a material to see its report.</p>
+                </div>
+            )}
         </CardContent>
       </Card>
-
-      <PredictiveAnalyticsPlaceholder />
     </div>
   );
 }

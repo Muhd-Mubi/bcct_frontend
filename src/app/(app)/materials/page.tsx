@@ -9,11 +9,14 @@ import { Material } from '@/lib/types';
 import { MaterialFormDialog } from '@/components/materials/material-form-dialog';
 import { UserRoleContext } from '@/lib/types';
 import { useData } from '@/context/data-context';
+import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 
 export default function MaterialsPage() {
   const { materials, saveMaterial, deleteMaterial } = useData();
   const [isFormOpen, setFormOpen] = useState(false);
+  const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
+  const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
   const { isAdmin } = useContext(UserRoleContext);
 
   const handleAdd = () => {
@@ -27,7 +30,16 @@ export default function MaterialsPage() {
   };
 
   const handleDelete = (id: string) => {
-    deleteMaterial(id);
+    setMaterialToDelete(id);
+    setConfirmOpen(true);
+  };
+  
+  const handleConfirmDelete = () => {
+    if (materialToDelete) {
+        deleteMaterial(materialToDelete);
+    }
+    setConfirmOpen(false);
+    setMaterialToDelete(null);
   };
 
   const handleSave = (materialData: Omit<Material, '_id'> | Material) => {
@@ -61,6 +73,12 @@ export default function MaterialsPage() {
           onOpenChange={setFormOpen}
           onSave={handleSave}
           material={selectedMaterial}
+        />
+        
+        <DeleteConfirmationDialog 
+            isOpen={isConfirmOpen}
+            onOpenChange={setConfirmOpen}
+            onConfirm={handleConfirmDelete}
         />
     </div>
   );

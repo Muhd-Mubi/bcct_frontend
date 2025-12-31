@@ -10,19 +10,33 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { Material } from '@/lib/types';
-import { Progress } from '@/components/ui/progress';
 import { useData } from '@/context/data-context';
-
 
 export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
   const { measurements } = useData();
 
-  const getRims = (material: Material) => {
-    const measurement = measurements.find(m => m.name === 'Rim');
-    if (!measurement || material.type !== 'Rim') return 'N/A';
-    const sheetsPerRim = measurement.sheetsPerUnit;
-    return (material.currentStock / sheetsPerRim).toFixed(2);
-  }
+  const getUnitInfo = (material: Material) => {
+    const measurement = measurements.find(m => m.name === material.type);
+    if (!measurement || measurement.sheetsPerUnit === 0) {
+      return { units: 'N/A', extraSheets: material.currentStock };
+    }
+
+    const sheetsPerUnit = measurement.sheetsPerUnit;
+    const totalUnits = Math.floor(material.currentStock / sheetsPerUnit);
+    const extraSheets = material.currentStock % sheetsPerUnit;
+    
+    let unitLabel = '';
+    if (material.type.toLowerCase() === 'rim') {
+        unitLabel = 'rm';
+    } else if (material.type.toLowerCase() === 'packet') {
+        unitLabel = 'p';
+    }
+
+    return {
+      units: `${totalUnits} ${unitLabel}`,
+      extraSheets: extraSheets,
+    };
+  };
 
   return (
     <div className="rounded-md border overflow-x-auto">
@@ -30,27 +44,18 @@ export function WarehouseStatusTable({ materials }: { materials: Material[] }) {
         <TableHeader>
           <TableRow>
             <TableHead>Material Type</TableHead>
-            <TableHead className="text-right">Sheets</TableHead>
-            <TableHead className="text-right">Rims/Units</TableHead>
-            <TableHead>Stock Level</TableHead>
+            <TableHead className="text-right">Units</TableHead>
+            <TableHead className="text-right">Extra Sheets</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {materials.map((material) => {
-            const stockPercentage = (material.currentStock / material.maxStock) * 100;
-            const units = getRims(material);
-
+            const { units, extraSheets } = getUnitInfo(material);
             return (
               <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
-                <TableCell className="text-right">{(material.currentStock || 0).toLocaleString()}</TableCell>
                 <TableCell className="text-right">{units}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2 min-w-[150px]">
-                    <Progress value={stockPercentage} className="w-full" />
-                    <span className="text-xs text-muted-foreground">{stockPercentage.toFixed(1)}%</span>
-                  </div>
-                </TableCell>
+                <TableCell className="text-right">{extraSheets}</TableCell>
               </TableRow>
             );
           })}

@@ -1,4 +1,4 @@
-import type { Material, PaperOnboarding, Measurement, WorkOrder, Job } from './types';
+import type { Material, PaperOnboarding, Measurement, WorkOrder, Job, JobItem } from './types';
 
 export const initialMaterials: Material[] = [];
 
@@ -72,6 +72,7 @@ export const initialWorkOrders: WorkOrder[] = [
     {
         id: 'wo-1',
         jobId: 'job-1',
+        items: [{ name: 'Annual Report', quantity: 1000 }],
         description: 'Print 1000 copies of the annual report.',
         priority: 'High',
         status: 'Pending',
@@ -80,6 +81,7 @@ export const initialWorkOrders: WorkOrder[] = [
     {
         id: 'wo-2',
         jobId: 'job-2',
+        items: [{ name: 'Marketing Brochures', quantity: 5000 }],
         description: 'Fold and bind 5000 marketing brochures.',
         priority: 'Medium',
         status: 'Completed',

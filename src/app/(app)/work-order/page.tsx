@@ -16,6 +16,7 @@ import {
 import { WorkOrdersTable } from '@/components/work-order/work-orders-table';
 import { CreateWorkOrderDialog } from '@/components/work-order/create-work-order-dialog';
 import { CompleteWorkOrderDialog } from '@/components/work-order/complete-work-order-dialog';
+import { ViewWorkOrderDialog } from '@/components/work-order/view-work-order-dialog';
 import { useData } from '@/context/data-context';
 import { WorkOrder, WorkOrderPriority, WorkOrderStatus } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
@@ -30,6 +31,7 @@ export default function WorkOrdersPage() {
   } = useData();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isCompleteOpen, setCompleteOpen] = useState(false);
+  const [isViewOpen, setViewOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
@@ -50,6 +52,11 @@ export default function WorkOrdersPage() {
   const handleCompleteClick = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
     setCompleteOpen(true);
+  };
+
+  const handleViewClick = (order: WorkOrder) => {
+    setSelectedWorkOrder(order);
+    setViewOpen(true);
   };
 
   const handleConfirmComplete = (
@@ -148,6 +155,7 @@ export default function WorkOrdersPage() {
           <WorkOrdersTable
             workOrders={filteredAndSortedWorkOrders}
             onComplete={handleCompleteClick}
+            onView={handleViewClick}
           />
         </CardContent>
       </Card>
@@ -168,6 +176,14 @@ export default function WorkOrdersPage() {
           onConfirm={handleConfirmComplete}
         />
       )}
+       
+       {selectedWorkOrder && (
+        <ViewWorkOrderDialog
+          isOpen={isViewOpen}
+          onOpenChange={setViewOpen}
+          workOrder={selectedWorkOrder}
+        />
+       )}
     </div>
   );
 }

@@ -74,19 +74,22 @@ export type MaterialsUsed = {
   quantity: number;
 };
 
+export type JobItem = {
+  name: string;
+  quantity: number;
+};
+
 export type Job = {
   id: string;
   department: string;
   date: string;
-  items: {
-    name: string;
-    quantity: number;
-  }[];
+  items: JobItem[];
 }
 
 export type WorkOrder = {
   id: string;
   jobId: string;
+  items: JobItem[];
   description?: string;
   priority: WorkOrderPriority;
   status: WorkOrderStatus;

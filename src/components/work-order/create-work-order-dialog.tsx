@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useForm } from 'react-hook-form';
+import React, { useEffect, useState, useMemo } from 'react';
+import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import {
@@ -29,14 +29,22 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Job, WorkOrderPriority } from '@/lib/types';
+import { Job, WorkOrderPriority, JobItem } from '@/lib/types';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ChevronsUpDown } from 'lucide-react';
+import { ChevronsUpDown, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Checkbox } from '../ui/checkbox';
+import { ScrollArea } from '../ui/scroll-area';
+
+const jobItemSchema = z.object({
+  name: z.string(),
+  quantity: z.number(),
+});
 
 const formSchema = z.object({
   jobId: z.string().min(1, 'Please select a Job ID.'),
+  items: z.array(jobItemSchema).min(1, 'Please select at least one item for the work order.'),
   description: z.string().optional(),
   priority: z.enum(['High', 'Medium', 'Low']),
 });
@@ -54,22 +62,39 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
   const [popoverOpen, setPopoverOpen] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { jobId: '', description: '', priority: 'Medium' },
+    defaultValues: { jobId: '', items: [], description: '', priority: 'Medium' },
   });
+
+  const selectedJobId = form.watch('jobId');
+  const selectedJob = useMemo(() => jobs.find(j => j.id === selectedJobId), [selectedJobId, jobs]);
 
   useEffect(() => {
     if (isOpen) {
-      form.reset();
+      form.reset({ jobId: '', items: [], description: '', priority: 'Medium' });
     }
   }, [isOpen, form]);
 
+  // Reset items when job changes
+  useEffect(() => {
+    form.setValue('items', []);
+  }, [selectedJobId, form]);
+
+  const handleItemToggle = (item: JobItem, checked: boolean) => {
+    const currentItems = form.getValues('items');
+    if (checked) {
+      form.setValue('items', [...currentItems, item]);
+    } else {
+      form.setValue('items', currentItems.filter(i => i.name !== item.name));
+    }
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-headline">Create New Work Order</DialogTitle>
           <DialogDescription>
-            Fill in the details for the new work order.
+            Fill in the details for the new work order. Select a job to see available items.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -128,6 +153,36 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
               )}
             />
             
+            {selectedJob && (
+              <FormField
+                control={form.control}
+                name="items"
+                render={() => (
+                  <FormItem>
+                    <div className="mb-4">
+                      <FormLabel>Job Items</FormLabel>
+                      <p className="text-sm text-muted-foreground">Select the items to include in this work order.</p>
+                    </div>
+                    <ScrollArea className="h-40 rounded-md border p-4">
+                      {selectedJob.items.map((item, index) => (
+                        <div key={index} className="flex items-center space-x-2 mb-2">
+                          <Checkbox
+                            id={`item-${index}`}
+                            onCheckedChange={(checked) => handleItemToggle(item, checked as boolean)}
+                            checked={form.getValues('items').some(i => i.name === item.name)}
+                          />
+                          <label htmlFor={`item-${index}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                            {item.name} (Qty: {item.quantity})
+                          </label>
+                        </div>
+                      ))}
+                    </ScrollArea>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
+
             <FormField
               control={form.control}
               name="priority"

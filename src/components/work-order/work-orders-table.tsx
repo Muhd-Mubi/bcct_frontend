@@ -24,6 +24,7 @@ import { format, parseISO } from 'date-fns';
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
   onComplete: (order: WorkOrder) => void;
+  onView: (order: WorkOrder) => void;
 }
 
 const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive'> = {
@@ -37,7 +38,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
     Low: 'default'
 }
 
-export function WorkOrdersTable({ workOrders, onComplete }: WorkOrdersTableProps) {
+export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTableProps) {
   const { isAdmin, isManager } = useContext(UserRoleContext);
   const canPerformActions = isAdmin || isManager;
   const [currentPage, setCurrentPage] = useState(1);
@@ -60,6 +61,7 @@ export function WorkOrdersTable({ workOrders, onComplete }: WorkOrdersTableProps
               <TableHead>Date</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
+              <TableHead>Items</TableHead>
               <TableHead>Materials Used</TableHead>
               {canPerformActions && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
@@ -75,6 +77,13 @@ export function WorkOrdersTable({ workOrders, onComplete }: WorkOrdersTableProps
                 <TableCell>
                   <Badge variant={statusVariant[order.status]}>{order.status}</Badge>
                 </TableCell>
+                <TableCell className="text-xs">
+                  <div className="flex flex-col gap-1">
+                    {order.items.map((item, index) => (
+                      <span key={index}>{item.name} (x{item.quantity})</span>
+                    ))}
+                  </div>
+                </TableCell>
                 <TableCell className="text-xs text-muted-foreground">
                   {order.materialsUsed?.map(m => (
                       <div key={m.materialId}>{m.materialName}: {m.quantity} sheets</div>
@@ -82,7 +91,6 @@ export function WorkOrdersTable({ workOrders, onComplete }: WorkOrdersTableProps
                 </TableCell>
                 {canPerformActions && (
                   <TableCell className="text-right">
-                    {order.status === 'Pending' && (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0">
@@ -91,12 +99,16 @@ export function WorkOrdersTable({ workOrders, onComplete }: WorkOrdersTableProps
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
-                          <DropdownMenuItem onClick={() => onComplete(order)}>
-                            Mark as Completed
+                           <DropdownMenuItem onClick={() => onView(order)}>
+                            View Details
                           </DropdownMenuItem>
+                          {order.status === 'Pending' && (
+                            <DropdownMenuItem onClick={() => onComplete(order)}>
+                              Mark as Completed
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
-                    )}
                   </TableCell>
                 )}
               </TableRow>

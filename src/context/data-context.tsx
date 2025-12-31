@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { initialOnloadings, initialJobs, initialWorkOrders, Material, PaperOnloading, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority } from '@/lib/data';
+import { initialOnloadings, initialJobs, initialWorkOrders, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority, JobItem } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName'>;
@@ -9,7 +9,7 @@ type NewMaterial = Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorder
 
 interface DataContextType {
   materials: Material[];
-  onloadings: PaperOnloading[];
+  onloadings: PaperOnboarding[];
   measurements: Measurement[];
   jobs: Job[];
   workOrders: WorkOrder[];

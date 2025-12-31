@@ -57,7 +57,7 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
            <div className="space-y-2">
             <h4 className="font-medium text-muted-foreground">Included Items</h4>
             <ul className="list-disc list-inside space-y-1 rounded-md border p-3 bg-muted/50">
-              {workOrder.items.map((item, index) => (
+              {workOrder.items && workOrder.items.map((item, index) => (
                 <li key={index}>{item.name} (Quantity: {item.quantity})</li>
               ))}
             </ul>

@@ -1,6 +1,64 @@
+
 import type { Material, PaperOnboarding, Measurement, WorkOrder, Job, JobItem } from './types';
 
-export const initialMaterials: Material[] = [];
+export const initialMaterials: Material[] = [
+  {
+    _id: 'm1',
+    name: 'Standard A4 Paper',
+    type: 'Rim',
+    unitQuantity: 0,
+    extraSheets: 0,
+    currentStock: 5000,
+    maxStock: 10000,
+    reorderThreshold: 15,
+    lastUpdated: '2024-07-20T10:00:00Z',
+  },
+  {
+    _id: 'm2',
+    name: 'Glossy Brochure Paper',
+    type: 'Packet',
+    unitQuantity: 0,
+    extraSheets: 0,
+    currentStock: 2500,
+    maxStock: 5000,
+    reorderThreshold: 20,
+    lastUpdated: '2024-07-22T14:30:00Z',
+  },
+  {
+    _id: 'm3',
+    name: 'Recycled Kraft Paper Roll',
+    type: 'Roll',
+    unitQuantity: 0,
+    extraSheets: 0,
+    currentStock: 800,
+    maxStock: 2000,
+    reorderThreshold: 10,
+    lastUpdated: '2024-07-23T08:00:00Z',
+  },
+  {
+    _id: 'm4',
+    name: 'Heavy Cardstock',
+    type: 'Packet',
+    unitQuantity: 0,
+    extraSheets: 0,
+    currentStock: 1200,
+    maxStock: 3000,
+    reorderThreshold: 25,
+    lastUpdated: '2024-07-21T16:45:00Z',
+  },
+  {
+    _id: 'm5',
+    name: 'Vellum Paper',
+    type: 'Unit',
+    unitQuantity: 0,
+    extraSheets: 0,
+    currentStock: 300,
+    maxStock: 1000,
+    reorderThreshold: 30,
+    lastUpdated: '2024-07-24T11:00:00Z',
+  },
+];
+
 
 export const initialOnloadings: PaperOnboarding[] = [
   {

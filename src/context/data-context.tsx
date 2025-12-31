@@ -1,7 +1,8 @@
+
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { initialOnloadings, initialJobOrders, initialWorkOrders, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority, JobItem } from '@/lib/data';
+import { initialMaterials, initialOnloadings, initialJobOrders, initialWorkOrders, initialMeasurements, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority, JobItem } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName'>;
@@ -47,130 +48,107 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
 
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [materials, setMaterials] = useState<Material[]>([]);
+  const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [onloadings, setOnloadings] = useState<PaperOnboarding[]>(initialOnloadings);
-  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
   const [jobOrders, setJobOrders] = useState<Job[]>(initialJobOrders);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(initialWorkOrders);
 
   const { toast } = useToast();
 
   const fetchMeasurements = useCallback(async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/measurement/get-measurement`);
-      const data = await response.json();
-      if (data.success) {
-        setMeasurements(data.measurements);
-      } else {
-          console.error("API error fetching measurements:", data.message);
-          setMeasurements([]); 
-      }
-    } catch (error) {
-      console.error("Failed to fetch measurements:", error);
-      setMeasurements([]); 
-      toast({
-          title: "Error fetching measurements",
-          description: "Could not connect to the server.",
-          variant: "destructive"
-      });
-    }
+    // try {
+    //   const response = await fetch(`${API_BASE_URL}/measurement/get-measurement`);
+    //   const data = await response.json();
+    //   if (data.success) {
+    //     setMeasurements(data.measurements);
+    //   } else {
+    //       console.error("API error fetching measurements:", data.message);
+    //       setMeasurements([]); 
+    //   }
+    // } catch (error) {
+    //   console.error("Failed to fetch measurements:", error);
+    //   setMeasurements([]); 
+    //   toast({
+    //       title: "Error fetching measurements",
+    //       description: "Could not connect to the server.",
+    //       variant: "destructive"
+    //   });
+    // }
   }, [toast]);
   
   const fetchMaterials = useCallback(async () => {
-    try {
-        const response = await fetch(`${API_BASE_URL}/material/get-material`);
-        const data = await response.json();
-        if (data.success) {
-            const adaptedMaterials = data.materials.map(adaptMaterial);
-            setMaterials(adaptedMaterials);
-        } else {
-            console.error("API error fetching materials:", data.message);
-            setMaterials([]);
-            toast({
-                title: "Error fetching materials",
-                description: data.message || "Could not retrieve materials.",
-                variant: "destructive"
-            });
-        }
-    } catch (error) {
-        console.error("Failed to fetch materials:", error);
-        setMaterials([]);
-        toast({
-            title: "Network Error",
-            description: "Could not fetch materials. Please check your connection.",
-            variant: "destructive"
-        });
-    }
+    // try {
+    //     const response = await fetch(`${API_BASE_URL}/material/get-material`);
+    //     const data = await response.json();
+    //     if (data.success) {
+    //         const adaptedMaterials = data.materials.map(adaptMaterial);
+    //         setMaterials(adaptedMaterials);
+    //     } else {
+    //         console.error("API error fetching materials:", data.message);
+    //         setMaterials([]);
+    //         toast({
+    //             title: "Error fetching materials",
+    //             description: data.message || "Could not retrieve materials.",
+    //             variant: "destructive"
+    //         });
+    //     }
+    // } catch (error) {
+    //     console.error("Failed to fetch materials:", error);
+    //     setMaterials([]);
+    //     toast({
+    //         title: "Network Error",
+    //         description: "Could not fetch materials. Please check your connection.",
+    //         variant: "destructive"
+    //     });
+    // }
   }, [toast]);
 
   useEffect(() => {
-    fetchMeasurements();
-    fetchMaterials();
+    // fetchMeasurements();
+    // fetchMaterials();
   }, [fetchMeasurements, fetchMaterials]);
 
   const saveMaterial = async (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => {
     const isUpdate = '_id' in materialData && materialData._id;
-    const payload = {
-        name: materialData.name,
-        unitQuantity: materialData.unitQuantity,
-        extraSheets: materialData.extraSheets,
-        measurementId: materialData.measurementId || null
-    };
-
+    
     if (isUpdate) {
-        // Update existing material
-        try {
-            const response = await fetch(`${API_BASE_URL}/material/update-material/${materialData._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            const result = await response.json();
-            if (result.success) {
-                fetchMaterials(); // Refetch all materials to get the updated list
-                toast({ title: "Success", description: "Material updated successfully.", variant: 'success' });
-            } else {
-                toast({ title: "Error", description: result.message || "Failed to update material.", variant: "destructive" });
+        const updatedMaterials = materials.map(m => {
+            if (m._id === materialData._id) {
+                const measurement = measurements.find(mes => mes._id === materialData.measurementId);
+                return {
+                    ...m,
+                    name: materialData.name,
+                    unitQuantity: materialData.unitQuantity,
+                    extraSheets: materialData.extraSheets,
+                    type: measurement?.name || m.type,
+                }
             }
-        } catch (error) {
-            toast({ title: "Network Error", description: "Could not update material.", variant: "destructive" });
-        }
+            return m;
+        });
+        setMaterials(updatedMaterials);
+        toast({ title: "Success", description: "Material updated successfully.", variant: 'success' });
     } else {
-        // Create new material
-        try {
-            const response = await fetch(`${API_BASE_URL}/material/create-material`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload),
-            });
-            const result = await response.json();
-            if (result.success) {
-                fetchMaterials(); // Refetch to get the latest list with the new material
-                toast({ title: "Success", description: "Material created successfully.", variant: 'success' });
-            } else {
-                toast({ title: "Error", description: result.message || "Failed to create material.", variant: "destructive" });
-            }
-        } catch (error) {
-            toast({ title: "Network Error", description: "Could not create material.", variant: "destructive" });
-        }
+        const measurement = measurements.find(mes => mes._id === materialData.measurementId);
+        const newMaterial: Material = {
+            _id: `m-${Date.now()}`,
+            name: materialData.name,
+            type: measurement?.name || 'N/A',
+            unitQuantity: materialData.unitQuantity,
+            extraSheets: materialData.extraSheets,
+            currentStock: (materialData.unitQuantity * (measurement?.sheetsPerUnit || 0)) + materialData.extraSheets,
+            maxStock: 10000, // Default value
+            reorderThreshold: 10, // Default value
+            lastUpdated: new Date().toISOString(),
+        };
+        setMaterials(prev => [...prev, newMaterial]);
+        toast({ title: "Success", description: "Material created successfully.", variant: 'success' });
     }
   };
 
   const deleteMaterial = async (id: string) => {
-     try {
-        const response = await fetch(`${API_BASE_URL}/material/delete-material/${id}`, {
-            method: 'DELETE',
-        });
-        const result = await response.json();
-        if (result.success) {
-            setMaterials((prev) => prev.filter((m) => m._id !== id));
-            toast({ title: "Success", description: "Material deleted successfully.", variant: 'success' });
-        } else {
-            toast({ title: "Error", description: result.message || "Failed to delete material.", variant: "destructive" });
-        }
-    } catch (error) {
-        toast({ title: "Network Error", description: "Could not delete material.", variant: "destructive" });
-    }
+    setMaterials((prev) => prev.filter((m) => m._id !== id));
+    toast({ title: "Success", description: "Material deleted successfully.", variant: 'success' });
   };
   
   const saveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date'| 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, amount: number }[]}) => {
@@ -228,72 +206,26 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }));
   }
 
-  const saveMeasurement = async (measurement: Omit<Measurement, '_id'>) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/measurement/create-measurement`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(measurement),
-      });
-      const result = await response.json();
-      if (result.success) {
-        fetchMeasurements(); // Refresh data
-        toast({
-            title: "Success",
-            description: result.message,
-            variant: 'success',
-        });
-      } else {
-        toast({
-            title: "Error",
-            description: result.message || "Failed to save measurement.",
-            variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to save measurement:", error);
-      toast({
-            title: "Network Error",
-            description: "Could not save measurement. Please check your connection.",
-            variant: "destructive",
-        });
-    }
+  const saveMeasurement = (measurement: Omit<Measurement, '_id'>) => {
+    const newMeasurement: Measurement = {
+        _id: `measurement-${Date.now()}`,
+        ...measurement
+    };
+    setMeasurements(prev => [...prev, newMeasurement]);
+    toast({
+        title: "Success",
+        description: "Measurement saved.",
+        variant: 'success',
+    });
   };
 
-  const updateMeasurement = async (measurement: Measurement) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/measurement/update-measurement/${measurement._id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name: measurement.name, sheetsPerUnit: measurement.sheetsPerUnit }),
-      });
-      const result = await response.json();
-      if(result.success) {
-        fetchMeasurements(); // Refresh data
-        toast({
-            title: "Success",
-            description: result.message,
-            variant: 'success',
-        });
-      } else {
-        toast({
-            title: "Error",
-            description: result.message || "Failed to update measurement.",
-            variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error("Failed to update measurement:", error);
-      toast({
-        title: "Network Error",
-        description: "Could not update measurement. Please check your connection.",
-        variant: "destructive",
+  const updateMeasurement = (measurement: Measurement) => {
+    setMeasurements(prev => prev.map(m => m._id === measurement._id ? measurement : m));
+    toast({
+        title: "Success",
+        description: "Measurement updated.",
+        variant: 'success',
     });
-    }
   }
 
   const saveJobOrder = (jobData: Omit<Job, 'date'>) => {

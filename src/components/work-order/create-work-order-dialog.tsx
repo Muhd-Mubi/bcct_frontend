@@ -98,131 +98,135 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSave)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="jobId"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Job Order ID</FormLabel>
-                   <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
-                    <PopoverTrigger asChild>
-                      <FormControl>
-                        <Button
-                          variant="outline"
-                          role="combobox"
-                          className={cn(
-                            "w-full justify-between",
-                            !field.value && "text-muted-foreground"
-                          )}
-                        >
-                          {field.value
-                            ? jobOrders.find(
-                                (job) => job.id === field.value
-                              )?.id
-                            : "Select Job Order ID"}
-                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-                        </Button>
-                      </FormControl>
-                    </PopoverTrigger>
-                    <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
-                       <Command>
-                        <CommandInput placeholder="Search Job Order ID..." />
-                        <CommandList>
-                          <CommandEmpty>No job order found.</CommandEmpty>
-                          <CommandGroup>
-                            {jobOrders.map((job) => (
-                              <CommandItem
-                                value={job.id}
-                                key={job.id}
-                                onSelect={() => {
-                                  form.setValue("jobId", job.id);
-                                  setPopoverOpen(false);
-                                }}
-                              >
-                                {job.id}
-                              </CommandItem>
-                            ))}
-                          </CommandGroup>
-                        </CommandList>
-                      </Command>
-                    </PopoverContent>
-                  </Popover>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            {selectedJob && (
-              <FormField
-                control={form.control}
-                name="items"
-                render={() => (
-                  <FormItem>
-                    <div className="mb-4">
-                      <FormLabel>Job Order Items</FormLabel>
-                      <p className="text-sm text-muted-foreground">Select the items to include in this work order.</p>
-                    </div>
-                    <ScrollArea className="h-40 rounded-md border p-4">
-                      {selectedJob.items.map((item, index) => (
-                        <div key={index} className="flex items-center space-x-2 mb-2">
-                          <Checkbox
-                            id={`item-${index}`}
-                            onCheckedChange={(checked) => handleItemToggle(item, checked as boolean)}
-                            checked={form.getValues('items').some(i => i.name === item.name)}
-                          />
-                          <label htmlFor={`item-${index}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
-                            {item.name} (Qty: {item.quantity})
-                          </label>
+          <form onSubmit={form.handleSubmit(onSave)}>
+            <ScrollArea className="max-h-[60vh] p-4">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="jobId"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Job Order ID</FormLabel>
+                      <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant="outline"
+                              role="combobox"
+                              className={cn(
+                                "w-full justify-between",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value
+                                ? jobOrders.find(
+                                    (job) => job.id === field.value
+                                  )?.id
+                                : "Select Job Order ID"}
+                              <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+                          <Command>
+                            <CommandInput placeholder="Search Job Order ID..." />
+                            <CommandList>
+                              <CommandEmpty>No job order found.</CommandEmpty>
+                              <CommandGroup>
+                                {jobOrders.map((job) => (
+                                  <CommandItem
+                                    value={job.id}
+                                    key={job.id}
+                                    onSelect={() => {
+                                      form.setValue("jobId", job.id);
+                                      setPopoverOpen(false);
+                                    }}
+                                  >
+                                    {job.id}
+                                  </CommandItem>
+                                ))}
+                              </CommandGroup>
+                            </CommandList>
+                          </Command>
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                {selectedJob && (
+                  <FormField
+                    control={form.control}
+                    name="items"
+                    render={() => (
+                      <FormItem>
+                        <div className="mb-4">
+                          <FormLabel>Job Order Items</FormLabel>
+                          <p className="text-sm text-muted-foreground">Select the items to include in this work order.</p>
                         </div>
-                      ))}
-                    </ScrollArea>
-                    <FormMessage />
-                  </FormItem>
+                        <ScrollArea className="h-40 rounded-md border p-4">
+                          {selectedJob.items.map((item, index) => (
+                            <div key={index} className="flex items-center space-x-2 mb-2">
+                              <Checkbox
+                                id={`item-${index}`}
+                                onCheckedChange={(checked) => handleItemToggle(item, checked as boolean)}
+                                checked={form.getValues('items').some(i => i.name === item.name)}
+                              />
+                              <label htmlFor={`item-${index}`} className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
+                                {item.name} (Qty: {item.quantity})
+                              </label>
+                            </div>
+                          ))}
+                        </ScrollArea>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                 )}
-              />
-            )}
 
-            <FormField
-              control={form.control}
-              name="priority"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Priority</FormLabel>
-                   <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Select priority" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {(['High', 'Medium', 'Low'] as WorkOrderPriority[]).map(p => (
-                        <SelectItem key={p} value={p}>{p}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+                <FormField
+                  control={form.control}
+                  name="priority"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Priority</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select priority" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {(['High', 'Medium', 'Low'] as WorkOrderPriority[]).map(p => (
+                            <SelectItem key={p} value={p}>{p}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
 
-            <FormField
-              control={form.control}
-              name="description"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Description</FormLabel>
-                  <FormControl>
-                    <Textarea
-                      {...field}
-                      placeholder="Enter any relevant details about the work order..."
-                    />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <DialogFooter>
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Description</FormLabel>
+                      <FormControl>
+                        <Textarea
+                          {...field}
+                          placeholder="Enter any relevant details about the work order..."
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </ScrollArea>
+            <DialogFooter className="pt-4">
               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

@@ -31,6 +31,7 @@ import {
 } from '@/components/ui/select';
 import { useData } from '@/context/data-context';
 import { PlusCircle, Trash2 } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
 
 const paperItemSchema = z.object({
   paperType: z.string().min(1, 'Please select a paper type.'),
@@ -88,94 +89,98 @@ export function OnboardingFormDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSave)} className="space-y-4">
-            <FormField
-              control={form.control}
-              name="supplier"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Supplier</FormLabel>
-                  <FormControl>
-                    <Input {...field} placeholder="e.g., PaperCorp" />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            
-            <div className="space-y-2 max-h-[300px] overflow-y-auto p-1">
-              <FormLabel>Papers Received</FormLabel>
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
-                   <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
-                      <FormField
-                        control={form.control}
-                        name={`papers.${index}.paperType`}
-                        render={({ field }) => (
-                          <FormItem className="col-span-3">
-                            <FormLabel>Paper Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
-                              <FormControl>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Select paper type" />
-                                </SelectTrigger>
-                              </FormControl>
-                              <SelectContent>
-                                {paperTypes.map(type => (
-                                  <SelectItem key={type} value={type}>{type}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`papers.${index}.unitQuantity`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Unit Quantity</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name={`papers.${index}.amount`}
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Amount</FormLabel>
-                            <FormControl>
-                              <Input type="number" {...field} placeholder="Cost" />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                   </div>
-                   <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      onClick={() => remove(index)}
-                      disabled={fields.length === 1}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+          <form onSubmit={form.handleSubmit(onSave)}>
+            <ScrollArea className="max-h-[60vh] p-4">
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="supplier"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Supplier</FormLabel>
+                      <FormControl>
+                        <Input {...field} placeholder="e.g., PaperCorp" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                
+                <div className="space-y-2">
+                  <FormLabel>Papers Received</FormLabel>
+                  {fields.map((field, index) => (
+                    <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
+                          <FormField
+                            control={form.control}
+                            name={`papers.${index}.paperType`}
+                            render={({ field }) => (
+                              <FormItem className="col-span-3">
+                                <FormLabel>Paper Type</FormLabel>
+                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select paper type" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {paperTypes.map(type => (
+                                      <SelectItem key={type} value={type}>{type}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`papers.${index}.unitQuantity`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Unit Quantity</FormLabel>
+                                <FormControl>
+                                  <Input type="number" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <FormField
+                            control={form.control}
+                            name={`papers.${index}.amount`}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Amount</FormLabel>
+                                <FormControl>
+                                  <Input type="number" {...field} placeholder="Cost" />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                      </div>
+                      <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          onClick={() => remove(index)}
+                          disabled={fields.length === 1}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
 
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ paperType: '', unitQuantity: 1, amount: 0 })}>
-                <PlusCircle className="mr-2 h-4 w-4"/>
-                Add Another Paper Type
-            </Button>
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ paperType: '', unitQuantity: 1, amount: 0 })}>
+                    <PlusCircle className="mr-2 h-4 w-4"/>
+                    Add Another Paper Type
+                </Button>
+              </div>
+            </ScrollArea>
 
-            <DialogFooter>
+            <DialogFooter className="pt-4">
               <Button type="submit">Save Purchase</Button>
             </DialogFooter>
           </form>

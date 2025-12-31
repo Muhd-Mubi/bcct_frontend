@@ -25,6 +25,7 @@ import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { WorkOrder, Material } from '@/lib/types';
 import { PlusCircle, Trash2 } from 'lucide-react';
+import { ScrollArea } from '../ui/scroll-area';
 
 const materialUsedSchema = z.object({
   materialId: z.string().min(1, 'Please select a material.'),
@@ -84,68 +85,69 @@ export function CompleteWorkOrderDialog({
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-4 max-h-[300px] overflow-y-auto p-1">
-              {fields.map((field, index) => (
-                <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
-                  <div className="grid grid-cols-2 gap-2 flex-grow">
-                    <FormField
-                      control={form.control}
-                      name={`materialsUsed.${index}.materialId`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Paper Type</FormLabel>
-                           <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                <FormControl>
-                                  <SelectTrigger>
-                                    <SelectValue placeholder="Select paper" />
-                                  </SelectTrigger>
-                                </FormControl>
-                                <SelectContent>
-                                  {materials.map((m) => (
-                                    <SelectItem key={m._id} value={m._id}>
-                                      {m.name}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                            </Select>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name={`materialsUsed.${index}.quantity`}
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Quantity Used</FormLabel>
-                          <FormControl>
-                            <Input type="number" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <ScrollArea className="max-h-[60vh] p-4">
+              <div className="space-y-4">
+                {fields.map((field, index) => (
+                  <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
+                    <div className="grid grid-cols-2 gap-2 flex-grow">
+                      <FormField
+                        control={form.control}
+                        name={`materialsUsed.${index}.materialId`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Paper Type</FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                  <FormControl>
+                                    <SelectTrigger>
+                                      <SelectValue placeholder="Select paper" />
+                                    </SelectTrigger>
+                                  </FormControl>
+                                  <SelectContent>
+                                    {materials.map((m) => (
+                                      <SelectItem key={m._id} value={m._id}>
+                                        {m.name}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                              </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name={`materialsUsed.${index}.quantity`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quantity Used</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <Button
+                      type="button"
+                      variant="destructive"
+                      size="icon"
+                      onClick={() => remove(index)}
+                      disabled={fields.length === 1}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
-                  <Button
-                    type="button"
-                    variant="destructive"
-                    size="icon"
-                    onClick={() => remove(index)}
-                    disabled={fields.length === 1}
-                  >
-                    <Trash2 className="h-4 w-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-            
-            <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', quantity: 1 })}>
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Another Paper Type
-            </Button>
-
-            <DialogFooter>
+                ))}
+              </div>
+              
+              <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', quantity: 1 })} className="mt-4">
+                <PlusCircle className="mr-2 h-4 w-4" />
+                Add Another Paper Type
+              </Button>
+            </ScrollArea>
+            <DialogFooter className="pt-4">
                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>

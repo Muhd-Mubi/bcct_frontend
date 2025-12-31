@@ -79,7 +79,7 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
                 </TableCell>
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">
-                    {order.items.map((item, index) => (
+                    {order.items && order.items.map((item, index) => (
                       <span key={index}>{item.name} (x{item.quantity})</span>
                     ))}
                   </div>

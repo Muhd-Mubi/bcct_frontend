@@ -38,8 +38,7 @@ export default function WorkOrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriority[]>([]);
-  const { isAdmin, isManager } = useContext(UserRoleContext);
-  const canPerformActions = isAdmin || isManager;
+  const { isAdmin } = useContext(UserRoleContext);
 
 
   const handleCreateNew = () => {
@@ -150,7 +149,7 @@ export default function WorkOrdersPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {canPerformActions && (
+            {isAdmin && (
               <Button size="sm" onClick={handleCreateNew}>
                 <PlusCircle />
                 Create New Work Order

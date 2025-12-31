@@ -17,13 +17,10 @@ import { DataProvider } from '@/context/data-context';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const [userRole, setUserRole] = useState<UserRole>('admin');
-  const [isAdmin, setIsAdmin] = useState(userRole === 'admin');
-  const [isManager, setIsManager] = useState(userRole === 'manager');
+  const isAdmin = userRole === 'admin';
   
   const handleSetRole = (role: UserRole) => {
     setUserRole(role);
-    setIsAdmin(role === 'admin');
-    setIsManager(role === 'manager');
   };
 
   return (
@@ -33,7 +30,6 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
           role: userRole,
           setRole: handleSetRole,
           isAdmin,
-          isManager,
         }}
       >
         <SidebarProvider>

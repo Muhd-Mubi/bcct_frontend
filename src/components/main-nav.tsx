@@ -25,25 +25,22 @@ import { UserRoleContext } from '@/lib/types';
 
 export function MainNav() {
   const pathname = usePathname();
-  const { role } = useContext(UserRoleContext);
 
   const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['chairman', 'admin', 'technician'] },
-    { href: '/jobs', label: 'Jobs', icon: Briefcase, roles: ['admin', 'chairman'] },
-    { href: '/work-order', label: 'Work Orders', icon: FileCheck, roles: ['admin', 'technician', 'chairman'] },
-    { href: '/materials', label: 'Inventory', icon: Package, roles: ['admin', 'chairman'] },
-    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus, roles: ['admin', 'technician'] },
-    { href: '/reports', label: 'Reports', icon: FileText, roles: ['admin', 'chairman'] },
-    { href: '/measurement', label: 'Measurement', icon: Ruler, roles: ['admin'] },
-    { href: '/settings', label: 'Settings', icon: Settings, roles: ['admin', 'chairman'] },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/jobs', label: 'Jobs', icon: Briefcase },
+    { href: '/work-order', label: 'Work Orders', icon: FileCheck },
+    { href: '/materials', label: 'Inventory', icon: Package },
+    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus },
+    { href: '/reports', label: 'Reports', icon: FileText },
+    { href: '/measurement', label: 'Measurement', icon: Ruler },
+    { href: '/settings', label: 'Settings', icon: Settings },
   ];
-  
-  const accessibleNavItems = navItems.filter(item => item.roles.includes(role));
 
   return (
     <nav className="p-2">
       <SidebarMenu>
-        {accessibleNavItems.map((item) => (
+        {navItems.map((item) => (
           <SidebarMenuItem key={item.href}>
             <SidebarMenuButton
               asChild

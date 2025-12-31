@@ -39,8 +39,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
 }
 
 export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTableProps) {
-  const { isAdmin, isManager } = useContext(UserRoleContext);
-  const canPerformActions = isAdmin || isManager;
+  const { isAdmin } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -63,7 +62,7 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
               <TableHead>Status</TableHead>
               <TableHead>Items</TableHead>
               <TableHead>Materials Used</TableHead>
-              {canPerformActions && <TableHead className="text-right">Actions</TableHead>}
+              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -89,7 +88,7 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
                       <div key={m.materialId}>{m.materialName}: {m.quantity} sheets</div>
                   )) ?? 'N/A'}
                 </TableCell>
-                {canPerformActions && (
+                {isAdmin && (
                   <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>

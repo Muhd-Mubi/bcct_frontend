@@ -10,20 +10,13 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-  DropdownMenuSub,
-  DropdownMenuSubTrigger,
-  DropdownMenuPortal,
-  DropdownMenuSubContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
 } from '@/components/ui/dropdown-menu';
 import { ThemeToggle } from './theme-toggle';
-import { User, Users, Wrench, Shield, LogOut } from 'lucide-react';
+import { User } from 'lucide-react';
 import { UserRole, UserRoleContext } from '@/lib/types';
 
 export function UserNav() {
-  const { role, setRole } = useContext(UserRoleContext);
-  const roles: UserRole[] = ['admin', 'manager', 'staff', 'technician'];
+  const { role } = useContext(UserRoleContext);
 
   return (
     <DropdownMenu>
@@ -50,23 +43,6 @@ export function UserNav() {
             <User className="mr-2 h-4 w-4" />
             <span>Profile</span>
           </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <Shield className="mr-2 h-4 w-4" />
-              <span>Role: {role}</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                <DropdownMenuRadioGroup value={role} onValueChange={(value) => setRole(value as UserRole)}>
-                  {roles.map((r) => (
-                     <DropdownMenuRadioItem key={r} value={r}>
-                       {r.charAt(0).toUpperCase() + r.slice(1)}
-                     </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>

@@ -20,6 +20,7 @@ import { ViewWorkOrderDialog } from '@/components/work-order/view-work-order-dia
 import { useData } from '@/context/data-context';
 import { WorkOrder, WorkOrderPriority, WorkOrderStatus } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
+import { CompleteConfirmationDialog } from '@/components/work-order/complete-confirmation-dialog';
 
 export default function WorkOrdersPage() {
   const {
@@ -31,6 +32,7 @@ export default function WorkOrdersPage() {
   } = useData();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isCompleteOpen, setCompleteOpen] = useState(false);
+  const [isConfirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
   const [isViewOpen, setViewOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | undefined>(undefined);
   const [searchTerm, setSearchTerm] = useState('');
@@ -51,8 +53,13 @@ export default function WorkOrdersPage() {
 
   const handleCompleteClick = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
-    setCompleteOpen(true);
+    setConfirmCompleteOpen(true);
   };
+
+  const handleProceedToComplete = () => {
+    setConfirmCompleteOpen(false);
+    setCompleteOpen(true);
+  }
 
   const handleViewClick = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
@@ -166,6 +173,14 @@ export default function WorkOrdersPage() {
         onSave={handleSaveWorkOrder}
         jobs={jobs}
       />
+
+      {selectedWorkOrder && (
+        <CompleteConfirmationDialog
+          isOpen={isConfirmCompleteOpen}
+          onOpenChange={setConfirmCompleteOpen}
+          onConfirm={handleProceedToComplete}
+        />
+      )}
 
       {selectedWorkOrder && (
         <CompleteWorkOrderDialog

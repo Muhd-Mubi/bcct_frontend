@@ -103,7 +103,10 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
                             View Details
                           </DropdownMenuItem>
                           {order.status === 'Pending' && (
-                            <DropdownMenuItem onClick={() => onComplete(order)}>
+                            <DropdownMenuItem 
+                                onClick={() => onComplete(order)}
+                                className="text-destructive focus:text-destructive"
+                            >
                               Mark as Completed
                             </DropdownMenuItem>
                           )}

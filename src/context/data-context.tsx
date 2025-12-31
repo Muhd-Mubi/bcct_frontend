@@ -1,7 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useEffect, useCallback } from 'react';
-import { initialOnloadings, initialJobs, initialWorkOrders, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority, JobItem } from '@/lib/data';
+import { initialOnloadings, initialJobOrders, initialWorkOrders, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority, JobItem } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName'>;
@@ -11,7 +11,7 @@ interface DataContextType {
   materials: Material[];
   onloadings: PaperOnboarding[];
   measurements: Measurement[];
-  jobs: Job[];
+  jobOrders: Job[];
   workOrders: WorkOrder[];
   saveMaterial: (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => void;
   deleteMaterial: (id: string) => void;
@@ -20,7 +20,7 @@ interface DataContextType {
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Omit<Measurement, '_id'>) => void;
   updateMeasurement: (measurement: Measurement) => void;
-  saveJob: (jobData: Omit<Job, 'date'>) => void;
+  saveJobOrder: (jobData: Omit<Job, 'date'>) => void;
   saveWorkOrder: (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => void;
   markWorkOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; quantity: number }[]) => void;
 }
@@ -50,7 +50,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   const [materials, setMaterials] = useState<Material[]>([]);
   const [onloadings, setOnloadings] = useState<PaperOnboarding[]>(initialOnloadings);
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
-  const [jobs, setJobs] = useState<Job[]>(initialJobs);
+  const [jobOrders, setJobOrders] = useState<Job[]>(initialJobOrders);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(initialWorkOrders);
 
   const { toast } = useToast();
@@ -296,12 +296,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }
   }
 
-  const saveJob = (jobData: Omit<Job, 'date'>) => {
+  const saveJobOrder = (jobData: Omit<Job, 'date'>) => {
     const newJob: Job = {
       ...jobData,
       date: new Date().toISOString(),
     };
-    setJobs(prev => [newJob, ...prev]);
+    setJobOrders(prev => [newJob, ...prev]);
   };
   
   const saveWorkOrder = (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
@@ -340,7 +340,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       materials, 
       onloadings,
       measurements,
-      jobs,
+      jobOrders,
       workOrders,
       saveMaterial, 
       deleteMaterial,
@@ -349,7 +349,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       updateMaterialStock,
       saveMeasurement,
       updateMeasurement,
-      saveJob,
+      saveJobOrder,
       saveWorkOrder,
       markWorkOrderAsComplete,
     };

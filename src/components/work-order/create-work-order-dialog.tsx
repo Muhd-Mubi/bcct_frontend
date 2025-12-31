@@ -43,7 +43,7 @@ const jobItemSchema = z.object({
 });
 
 const formSchema = z.object({
-  jobId: z.string().min(1, 'Please select a Job ID.'),
+  jobId: z.string().min(1, 'Please select a Job Order ID.'),
   items: z.array(jobItemSchema).min(1, 'Please select at least one item for the work order.'),
   description: z.string().optional(),
   priority: z.enum(['High', 'Medium', 'Low']),
@@ -55,10 +55,10 @@ interface CreateWorkOrderDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (data: FormValues) => void;
-  jobs: Job[];
+  jobOrders: Job[];
 }
 
-export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: CreateWorkOrderDialogProps) {
+export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders }: CreateWorkOrderDialogProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -66,7 +66,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
   });
 
   const selectedJobId = form.watch('jobId');
-  const selectedJob = useMemo(() => jobs.find(j => j.id === selectedJobId), [selectedJobId, jobs]);
+  const selectedJob = useMemo(() => jobOrders.find(j => j.id === selectedJobId), [selectedJobId, jobOrders]);
 
   useEffect(() => {
     if (isOpen) {
@@ -94,7 +94,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
         <DialogHeader>
           <DialogTitle className="font-headline">Create New Work Order</DialogTitle>
           <DialogDescription>
-            Fill in the details for the new work order. Select a job to see available items.
+            Fill in the details for the new work order. Select a job order to see available items.
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -104,7 +104,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
               name="jobId"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Job ID</FormLabel>
+                  <FormLabel>Job Order ID</FormLabel>
                    <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
                     <PopoverTrigger asChild>
                       <FormControl>
@@ -117,21 +117,21 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
                           )}
                         >
                           {field.value
-                            ? jobs.find(
+                            ? jobOrders.find(
                                 (job) => job.id === field.value
                               )?.id
-                            : "Select Job ID"}
+                            : "Select Job Order ID"}
                           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                         </Button>
                       </FormControl>
                     </PopoverTrigger>
                     <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                        <Command>
-                        <CommandInput placeholder="Search Job ID..." />
+                        <CommandInput placeholder="Search Job Order ID..." />
                         <CommandList>
-                          <CommandEmpty>No job found.</CommandEmpty>
+                          <CommandEmpty>No job order found.</CommandEmpty>
                           <CommandGroup>
-                            {jobs.map((job) => (
+                            {jobOrders.map((job) => (
                               <CommandItem
                                 value={job.id}
                                 key={job.id}
@@ -160,7 +160,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobs }: Cr
                 render={() => (
                   <FormItem>
                     <div className="mb-4">
-                      <FormLabel>Job Items</FormLabel>
+                      <FormLabel>Job Order Items</FormLabel>
                       <p className="text-sm text-muted-foreground">Select the items to include in this work order.</p>
                     </div>
                     <ScrollArea className="h-40 rounded-md border p-4">

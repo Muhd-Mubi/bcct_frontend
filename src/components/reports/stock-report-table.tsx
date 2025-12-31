@@ -25,7 +25,7 @@ export function StockReportTable({ data }: StockReportTableProps) {
           <TableRow>
             <TableHead>Date</TableHead>
             <TableHead>Source</TableHead>
-            <TableHead>Job/Supplier</TableHead>
+            <TableHead>Job Order/Supplier</TableHead>
             <TableHead className="text-right">Unit Change</TableHead>
             <TableHead className="text-right">Amount</TableHead>
             <TableHead className="text-right">Updated Stock</TableHead>

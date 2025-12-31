@@ -56,7 +56,7 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Job ID</TableHead>
+              <TableHead>Job Order ID</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>

@@ -28,7 +28,7 @@ export function MainNav() {
 
   const navItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/jobs', label: 'Jobs', icon: Briefcase },
+    { href: '/job-orders', label: 'Job Orders', icon: Briefcase },
     { href: '/work-order', label: 'Work Orders', icon: FileCheck },
     { href: '/materials', label: 'Inventory', icon: Package },
     { href: '/onboarding', label: 'Onboarding', icon: PackagePlus },

@@ -38,7 +38,7 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
         <DialogHeader>
           <DialogTitle className="font-headline">Work Order Details</DialogTitle>
           <DialogDescription>
-            Complete information for Job ID: {workOrder.jobId}
+            Complete information for Job Order ID: {workOrder.jobId}
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4 py-4 text-sm">

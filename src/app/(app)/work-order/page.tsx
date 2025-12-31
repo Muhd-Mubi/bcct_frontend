@@ -26,7 +26,7 @@ export default function WorkOrdersPage() {
   const {
     workOrders,
     materials,
-    jobs,
+    jobOrders,
     saveWorkOrder,
     markWorkOrderAsComplete,
   } = useData();
@@ -88,7 +88,7 @@ export default function WorkOrdersPage() {
           <CardTitle className="font-headline">Work Orders</CardTitle>
           <div className="flex items-center gap-2">
             <Input
-              placeholder="Search by Job ID..."
+              placeholder="Search by Job Order ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
@@ -170,7 +170,7 @@ export default function WorkOrdersPage() {
         isOpen={isCreateOpen}
         onOpenChange={setCreateOpen}
         onSave={handleSaveWorkOrder}
-        jobs={jobs}
+        jobOrders={jobOrders}
       />
 
       {selectedWorkOrder && (

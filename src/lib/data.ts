@@ -48,7 +48,7 @@ export const initialMeasurements: Measurement[] = [
   },
 ];
 
-export const initialJobs: Job[] = [
+export const initialJobOrders: Job[] = [
     {
         id: 'job-1',
         department: 'Printing',

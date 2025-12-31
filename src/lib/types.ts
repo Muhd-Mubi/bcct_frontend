@@ -99,7 +99,7 @@ export type StockLedgerEntry = {
     date: string;
     materialName: string;
     source: 'Onboarding' | 'Work Order';
-    jobId: string; // Can be Job ID or Supplier Name
+    jobId: string; // Can be Job Order ID or Supplier Name
     change: number;
     unitQuantity: number;
     amount: number;

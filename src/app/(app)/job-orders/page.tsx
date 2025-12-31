@@ -27,7 +27,7 @@ export default function JobOrdersPage() {
   };
 
   const filteredJobOrders = useMemo(() => {
-    return jobOrders.filter(
+    return (jobOrders || []).filter(
       (j) => j.id.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [jobOrders, searchTerm]);

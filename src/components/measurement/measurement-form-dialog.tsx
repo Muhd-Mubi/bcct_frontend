@@ -48,6 +48,7 @@ export function MeasurementFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id: undefined,
       name: '',
       sheetsPerUnit: 1,
     },

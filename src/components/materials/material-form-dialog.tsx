@@ -61,6 +61,7 @@ export function MaterialFormDialog({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      _id: undefined,
       name: '',
       measurementId: '',
       unitQuantity: 0,

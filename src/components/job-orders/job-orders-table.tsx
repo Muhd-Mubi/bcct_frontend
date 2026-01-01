@@ -39,28 +39,6 @@ interface JobOrdersTableProps {
 export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalPages, onPageChange, onEdit, onDelete }: JobOrdersTableProps) {
   
   const renderActions = (job: Job) => {
-    const workOrderCount = workOrderCounts[job.id] || 0;
-    const hasWorkOrders = workOrderCount > 0;
-    
-    if (hasWorkOrders) {
-      return (
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <span tabIndex={0}>
-                <Button variant="ghost" className="h-8 w-8 p-0" disabled>
-                    <MoreHorizontal className="h-4 w-4" />
-                </Button>
-              </span>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Cannot edit or delete job with active work orders.</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      );
-    }
-    
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -90,8 +68,8 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
             <TableRow>
               <TableHead>Job Order ID</TableHead>
               <TableHead>Department</TableHead>
+
               <TableHead>Date Created</TableHead>
-              <TableHead>No. of Work Orders</TableHead>
               <TableHead>Items</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
@@ -102,7 +80,6 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                 <TableCell className="font-medium">{job.id}</TableCell>
                 <TableCell>{job.department}</TableCell>
                 <TableCell>{format(parseISO(job.date), 'PP')}</TableCell>
-                <TableCell>{workOrderCounts[job.id] || 0}</TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1 text-xs">
                     {job.items.map((item, index) => (

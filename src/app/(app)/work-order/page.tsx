@@ -21,6 +21,7 @@ import { useData } from '@/context/data-context';
 import { WorkOrder, WorkOrderPriority, WorkOrderStatus } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
 import { CompleteConfirmationDialog } from '@/components/work-order/complete-confirmation-dialog';
+import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 
 export default function WorkOrdersPage() {
   const {
@@ -29,12 +30,16 @@ export default function WorkOrdersPage() {
     jobOrders,
     saveWorkOrder,
     markWorkOrderAsComplete,
+    deleteWorkOrder,
+    updateWorkOrderStatus,
   } = useData();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isCompleteOpen, setCompleteOpen] = useState(false);
   const [isConfirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
   const [isViewOpen, setViewOpen] = useState(false);
+  const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | undefined>(undefined);
+  const [workOrderToDelete, setWorkOrderToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriority[]>([]);
@@ -42,10 +47,29 @@ export default function WorkOrdersPage() {
 
 
   const handleCreateNew = () => {
+    setSelectedWorkOrder(undefined);
+    setCreateOpen(true);
+  };
+  
+  const handleEdit = (order: WorkOrder) => {
+    setSelectedWorkOrder(order);
     setCreateOpen(true);
   };
 
-  const handleSaveWorkOrder = (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
+  const handleDelete = (orderId: string) => {
+    setWorkOrderToDelete(orderId);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (workOrderToDelete) {
+      deleteWorkOrder(workOrderToDelete);
+    }
+    setDeleteOpen(false);
+    setWorkOrderToDelete(null);
+  };
+
+  const handleSaveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
     saveWorkOrder(orderData);
     setCreateOpen(false);
   };
@@ -53,6 +77,10 @@ export default function WorkOrdersPage() {
   const handleCompleteClick = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
     setConfirmCompleteOpen(true);
+  };
+  
+  const handleStartProgress = (orderId: string) => {
+    updateWorkOrderStatus(orderId, 'In Progress');
   };
 
   const handleProceedToComplete = () => {
@@ -103,23 +131,18 @@ export default function WorkOrdersPage() {
               <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuCheckboxItem
-                  checked={statusFilter.includes('Pending')}
-                  onCheckedChange={() => {
-                    setStatusFilter(prev => prev.includes('Pending') ? prev.filter(s => s !== 'Pending') : [...prev, 'Pending'])
-                  }}
-                >
-                  Pending
-                </DropdownMenuCheckboxItem>
-                <DropdownMenuCheckboxItem
-                  checked={statusFilter.includes('Completed')}
-                  onCheckedChange={() => {
-                    setStatusFilter(prev => prev.includes('Completed') ? prev.filter(s => s !== 'Completed') : [...prev, 'Completed'])
-                  }}
-                >
-                  Completed
-                </DropdownMenuCheckboxItem>
-
+                {(['Pending', 'In Progress', 'Completed'] as WorkOrderStatus[]).map(status => (
+                    <DropdownMenuCheckboxItem
+                        key={status}
+                        checked={statusFilter.includes(status)}
+                        onCheckedChange={() => {
+                            setStatusFilter(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status])
+                        }}
+                    >
+                        {status}
+                    </DropdownMenuCheckboxItem>
+                ))}
+                
                 <DropdownMenuLabel>Priority</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                  <DropdownMenuCheckboxItem
@@ -162,6 +185,9 @@ export default function WorkOrdersPage() {
             workOrders={filteredAndSortedWorkOrders}
             onComplete={handleCompleteClick}
             onView={handleViewClick}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onStartProgress={handleStartProgress}
           />
         </CardContent>
       </Card>
@@ -171,6 +197,13 @@ export default function WorkOrdersPage() {
         onOpenChange={setCreateOpen}
         onSave={handleSaveWorkOrder}
         jobOrders={jobOrders}
+        workOrder={selectedWorkOrder}
+      />
+      
+      <DeleteWorkOrderDialog
+        isOpen={isDeleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleConfirmDelete}
       />
 
       {selectedWorkOrder && (

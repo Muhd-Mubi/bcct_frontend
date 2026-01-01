@@ -63,7 +63,7 @@ export type Measurement = {
   sheetsPerUnit: number;
 };
 
-export type WorkOrderStatus = 'Pending' | 'Completed';
+export type WorkOrderStatus = 'Pending' | 'In Progress' | 'Completed';
 export type WorkOrderPriority = 'High' | 'Medium' | 'Low';
 
 export type MaterialsUsed = {

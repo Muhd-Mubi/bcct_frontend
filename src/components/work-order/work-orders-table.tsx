@@ -14,21 +14,27 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { MoreHorizontal } from 'lucide-react';
 import { WorkOrder, WorkOrderStatus, UserRoleContext, WorkOrderPriority } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
   onComplete: (order: WorkOrder) => void;
   onView: (order: WorkOrder) => void;
+  onEdit: (order: WorkOrder) => void;
+  onDelete: (orderId: string) => void;
+  onStartProgress: (orderId: string) => void;
 }
 
-const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive'> = {
-    Pending: 'secondary',
+const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+    Pending: 'destructive',
+    'In Progress': 'secondary',
     Completed: 'default',
 };
 
@@ -38,7 +44,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
     Low: 'default'
 }
 
-export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTableProps) {
+export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDelete, onStartProgress }: WorkOrdersTableProps) {
   const { isAdmin } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -49,6 +55,79 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
   );
 
   const totalPages = Math.ceil(workOrders.length / itemsPerPage);
+
+  const renderActions = (order: WorkOrder) => {
+      const isPending = order.status === 'Pending';
+      const isInProgress = order.status === 'In Progress';
+
+      return (
+        <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => onView(order)}>
+                View Details
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <TooltipProvider>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
+                                <DropdownMenuItem
+                                    onClick={() => onStartProgress(order.id)}
+                                    disabled={!isPending}
+                                    className="w-full"
+                                >
+                                    Start Progress
+                                </DropdownMenuItem>
+                            </div>
+                        </TooltipTrigger>
+                        {!isPending && <TooltipContent><p>Only pending orders can be started.</p></TooltipContent>}
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
+                                <DropdownMenuItem onClick={() => onComplete(order)} disabled={!isInProgress}>
+                                Mark as Completed
+                                </DropdownMenuItem>
+                            </div>
+                        </TooltipTrigger>
+                        {!isInProgress && <TooltipContent><p>Only in-progress orders can be completed.</p></TooltipContent>}
+                    </Tooltip>
+                    <DropdownMenuSeparator />
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                             <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
+                                <DropdownMenuItem onClick={() => onEdit(order)} disabled={!isPending}>
+                                    Edit
+                                </DropdownMenuItem>
+                            </div>
+                        </TooltipTrigger>
+                        {!isPending && <TooltipContent><p>Only pending orders can be edited.</p></TooltipContent>}
+                    </Tooltip>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
+                                <DropdownMenuItem
+                                    onClick={() => onDelete(order.id)}
+                                    disabled={!isPending}
+                                    className="text-destructive focus:text-destructive"
+                                >
+                                    Delete
+                                </DropdownMenuItem>
+                            </div>
+                        </TooltipTrigger>
+                       {!isPending && <TooltipContent><p>Only pending orders can be deleted.</p></TooltipContent>}
+                    </Tooltip>
+                </TooltipProvider>
+            </DropdownMenuContent>
+        </DropdownMenu>
+      )
+  }
 
   return (
     <div className="space-y-4">
@@ -90,27 +169,7 @@ export function WorkOrdersTable({ workOrders, onComplete, onView }: WorkOrdersTa
                 </TableCell>
                 {isAdmin && (
                   <TableCell className="text-right">
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                           <DropdownMenuItem onClick={() => onView(order)}>
-                            View Details
-                          </DropdownMenuItem>
-                          {order.status === 'Pending' && (
-                            <DropdownMenuItem 
-                                onClick={() => onComplete(order)}
-                                className="text-destructive focus:text-destructive"
-                            >
-                              Mark as Completed
-                            </DropdownMenuItem>
-                          )}
-                        </DropdownMenuContent>
-                      </DropdownMenu>
+                      {renderActions(order)}
                   </TableCell>
                 )}
               </TableRow>

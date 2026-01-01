@@ -9,19 +9,79 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Job } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
+import { MoreHorizontal } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface JobOrdersTableProps {
   jobOrders: Job[];
+  workOrderCounts: { [jobId: string]: number };
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
+  onEdit: (job: Job) => void;
+  onDelete: (jobId: string) => void;
 }
 
-export function JobOrdersTable({ jobOrders, currentPage, totalPages, onPageChange }: JobOrdersTableProps) {
+export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalPages, onPageChange, onEdit, onDelete }: JobOrdersTableProps) {
+  
+  const renderActions = (job: Job) => {
+    const workOrderCount = workOrderCounts[job.id] || 0;
+    const hasWorkOrders = workOrderCount > 0;
+    
+    if (hasWorkOrders) {
+      return (
+        <TooltipProvider>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span tabIndex={0}>
+                <Button variant="ghost" className="h-8 w-8 p-0" disabled>
+                    <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Cannot edit or delete job with active work orders.</p>
+            </TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      );
+    }
+    
+    return (
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="ghost" className="h-8 w-8 p-0">
+            <span className="sr-only">Open menu</span>
+            <MoreHorizontal className="h-4 w-4" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onClick={() => onEdit(job)}>Edit</DropdownMenuItem>
+          <DropdownMenuItem
+            className="text-destructive"
+            onClick={() => onDelete(job.id)}
+          >
+            Delete
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+  };
+
   return (
     <div className="space-y-4">
       <div className="rounded-md border overflow-x-auto">
@@ -31,7 +91,9 @@ export function JobOrdersTable({ jobOrders, currentPage, totalPages, onPageChang
               <TableHead>Job Order ID</TableHead>
               <TableHead>Department</TableHead>
               <TableHead>Date Created</TableHead>
+              <TableHead>No. of Work Orders</TableHead>
               <TableHead>Items</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -40,6 +102,7 @@ export function JobOrdersTable({ jobOrders, currentPage, totalPages, onPageChang
                 <TableCell className="font-medium">{job.id}</TableCell>
                 <TableCell>{job.department}</TableCell>
                 <TableCell>{format(parseISO(job.date), 'PP')}</TableCell>
+                <TableCell>{workOrderCounts[job.id] || 0}</TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1 text-xs">
                     {job.items.map((item, index) => (
@@ -47,6 +110,7 @@ export function JobOrdersTable({ jobOrders, currentPage, totalPages, onPageChang
                     ))}
                   </div>
                 </TableCell>
+                <TableCell className="text-right">{renderActions(job)}</TableCell>
               </TableRow>
             ))}
           </TableBody>

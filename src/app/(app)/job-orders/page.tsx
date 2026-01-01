@@ -9,19 +9,50 @@ import { useData } from '@/context/data-context';
 import { Job } from '@/lib/types';
 import { JobOrdersTable } from '@/components/job-orders/job-orders-table';
 import { CreateJobOrderDialog } from '@/components/job-orders/create-job-order-dialog';
+import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-dialog';
 
 export default function JobOrdersPage() {
-  const { jobOrders, saveJobOrder } = useData();
+  const { jobOrders, workOrders, saveJobOrder, deleteJobOrder } = useData();
   const [isCreateOpen, setCreateOpen] = useState(false);
+  const [isDeleteOpen, setDeleteOpen] = useState(false);
+  const [selectedJob, setSelectedJob] = useState<Job | undefined>(undefined);
+  const [jobToDelete, setJobToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
+  
+  const jobWorkOrderCounts = useMemo(() => {
+    const counts: { [jobId: string]: number } = {};
+    jobOrders.forEach(job => {
+        counts[job.id] = workOrders.filter(wo => wo.jobId === job.id).length;
+    });
+    return counts;
+  }, [jobOrders, workOrders]);
 
   const handleCreateNew = () => {
+    setSelectedJob(undefined);
     setCreateOpen(true);
   };
 
-  const handleSaveJobOrder = (jobData: Omit<Job, 'status' | 'date'>) => {
+  const handleEdit = (job: Job) => {
+    setSelectedJob(job);
+    setCreateOpen(true);
+  };
+  
+  const handleDelete = (jobId: string) => {
+    setJobToDelete(jobId);
+    setDeleteOpen(true);
+  };
+
+  const handleConfirmDelete = () => {
+    if (jobToDelete) {
+      deleteJobOrder(jobToDelete);
+    }
+    setDeleteOpen(false);
+    setJobToDelete(null);
+  };
+
+  const handleSaveJobOrder = (jobData: Job | Omit<Job, 'date'>) => {
     saveJobOrder(jobData);
     setCreateOpen(false);
   };
@@ -60,9 +91,12 @@ export default function JobOrdersPage() {
         <CardContent>
           <JobOrdersTable
             jobOrders={paginatedJobOrders}
+            workOrderCounts={jobWorkOrderCounts}
             currentPage={currentPage}
             totalPages={totalPages}
             onPageChange={setCurrentPage}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </CardContent>
       </Card>
@@ -71,6 +105,13 @@ export default function JobOrdersPage() {
         isOpen={isCreateOpen}
         onOpenChange={setCreateOpen}
         onSave={handleSaveJobOrder}
+        job={selectedJob}
+      />
+
+      <DeleteJobOrderDialog
+        isOpen={isDeleteOpen}
+        onOpenChange={setDeleteOpen}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

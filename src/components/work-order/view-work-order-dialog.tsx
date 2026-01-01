@@ -14,14 +14,9 @@ import { Badge } from '@/components/ui/badge';
 import { WorkOrder, WorkOrderPriority, WorkOrderStatus } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 
-interface ViewWorkOrderDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  workOrder: WorkOrder;
-}
-
-const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive'> = {
-  Pending: 'secondary',
+const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
+  Pending: 'destructive',
+  'In Progress': 'secondary',
   Completed: 'default',
 };
 

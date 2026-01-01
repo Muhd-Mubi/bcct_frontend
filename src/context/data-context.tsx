@@ -21,9 +21,12 @@ interface DataContextType {
   updateMaterialStock: (materialId: string, stockChange: number) => void;
   saveMeasurement: (measurement: Omit<Measurement, '_id'>) => void;
   updateMeasurement: (measurement: Measurement) => void;
-  saveJobOrder: (jobData: Omit<Job, 'date'>) => void;
-  saveWorkOrder: (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => void;
+  saveJobOrder: (jobData: Job | Omit<Job, 'date'>) => void;
+  deleteJobOrder: (jobId: string) => void;
+  saveWorkOrder: (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => void;
+  deleteWorkOrder: (orderId: string) => void;
   markWorkOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; quantity: number }[]) => void;
+  updateWorkOrderStatus: (orderId: string, status: WorkOrderStatus) => void;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
@@ -228,22 +231,40 @@ export function DataProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  const saveJobOrder = (jobData: Omit<Job, 'date'>) => {
-    const newJob: Job = {
-      ...jobData,
-      date: new Date().toISOString(),
-    };
-    setJobOrders(prev => [newJob, ...prev]);
+  const saveJobOrder = (jobData: Job | Omit<Job, 'date'>) => {
+    const isUpdate = 'id' in jobData && jobData.id;
+    if (isUpdate) {
+      setJobOrders(prev => prev.map(j => j.id === jobData.id ? { ...j, ...jobData, date: j.date } as Job : j));
+    } else {
+      const newJob: Job = {
+        ...jobData as Omit<Job, 'date'>,
+        date: new Date().toISOString(),
+      };
+      setJobOrders(prev => [newJob, ...prev]);
+    }
+  };
+
+  const deleteJobOrder = (jobId: string) => {
+    setJobOrders(prev => prev.filter(j => j.id !== jobId));
   };
   
-  const saveWorkOrder = (orderData: Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
-    const newWorkOrder: WorkOrder = {
-      ...orderData,
-      id: `wo-${Date.now()}`,
-      status: 'Pending',
-      date: new Date().toISOString(),
-    };
-    setWorkOrders(prev => [newWorkOrder, ...prev]);
+  const saveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
+    const isUpdate = 'id' in orderData && orderData.id;
+    if (isUpdate) {
+        setWorkOrders(prev => prev.map(wo => wo.id === orderData.id ? { ...wo, ...orderData, date: wo.date } as WorkOrder : wo));
+    } else {
+        const newWorkOrder: WorkOrder = {
+          ...orderData as Omit<WorkOrder, 'id' | 'status' | 'date'>,
+          id: `wo-${Date.now()}`,
+          status: 'Pending',
+          date: new Date().toISOString(),
+        };
+        setWorkOrders(prev => [newWorkOrder, ...prev]);
+    }
+  };
+  
+  const deleteWorkOrder = (orderId: string) => {
+    setWorkOrders(prev => prev.filter(wo => wo.id !== orderId));
   };
 
   const markWorkOrderAsComplete = (orderId: string, materialsUsed: { materialId: string; quantity: number }[]) => {
@@ -268,6 +289,10 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const updateWorkOrderStatus = (orderId: string, status: WorkOrderStatus) => {
+      setWorkOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
+  };
+
   const value = { 
       materials, 
       onloadings,
@@ -282,8 +307,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
       saveMeasurement,
       updateMeasurement,
       saveJobOrder,
+      deleteJobOrder,
       saveWorkOrder,
+      deleteWorkOrder,
       markWorkOrderAsComplete,
+      updateWorkOrderStatus,
     };
 
   return <DataContext.Provider value={value}>{children}</DataContext.Provider>;

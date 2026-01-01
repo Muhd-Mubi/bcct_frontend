@@ -29,7 +29,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Textarea } from '@/components/ui/textarea';
-import { Job, WorkOrderPriority, JobItem, WorkOrder } from '@/lib/types';
+import { Job, WorkOrderPriority, JobItem, WorkOrder, WorkOrderStatus } from '@/lib/types';
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { ChevronsUpDown } from 'lucide-react';
@@ -37,6 +37,8 @@ import { cn } from '@/lib/utils';
 import { Checkbox } from '../ui/checkbox';
 import { ScrollArea } from '../ui/scroll-area';
 import { useData } from '@/context/data-context';
+import { Input } from '../ui/input';
+import { Badge } from '../ui/badge';
 
 const jobItemSchema = z.object({
   name: z.string(),
@@ -44,10 +46,12 @@ const jobItemSchema = z.object({
 });
 
 const formSchema = z.object({
+  id: z.string().optional(),
   jobId: z.string().min(1, 'Please select a Job Order ID.'),
   items: z.array(jobItemSchema).min(1, 'Please select at least one item for the work order.'),
   description: z.string().optional(),
   priority: z.enum(['High', 'Medium', 'Low']),
+  status: z.enum(['Pending', 'In Progress', 'Completed']).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -57,11 +61,14 @@ interface CreateWorkOrderDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: (data: FormValues) => void;
   jobOrders: Job[];
+  workOrder?: WorkOrder;
 }
 
-export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders }: CreateWorkOrderDialogProps) {
+export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders, workOrder }: CreateWorkOrderDialogProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const { workOrders } = useData();
+  const isEditing = !!workOrder;
+  
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { jobId: '', items: [], description: '', priority: 'Medium' },
@@ -79,7 +86,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
       quantities[item.name] = item.quantity;
     }
 
-    const relatedWorkOrders = workOrders.filter(wo => wo.jobId === selectedJob.id);
+    const relatedWorkOrders = workOrders.filter(wo => wo.jobId === selectedJob.id && wo.id !== workOrder?.id);
     for (const wo of relatedWorkOrders) {
       for (const item of wo.items) {
         if (quantities[item.name] !== undefined) {
@@ -88,18 +95,31 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
       }
     }
     return quantities;
-  }, [selectedJob, workOrders]);
+  }, [selectedJob, workOrders, workOrder]);
 
 
   useEffect(() => {
     if (isOpen) {
-      form.reset({ jobId: '', items: [], description: '', priority: 'Medium' });
+      if (isEditing && workOrder) {
+        form.reset({
+            id: workOrder.id,
+            jobId: workOrder.jobId,
+            items: workOrder.items,
+            priority: workOrder.priority,
+            description: workOrder.description,
+            status: workOrder.status
+        });
+      } else {
+        form.reset({ jobId: '', items: [], description: '', priority: 'Medium' });
+      }
     }
-  }, [isOpen, form]);
+  }, [isOpen, form, isEditing, workOrder]);
 
   useEffect(() => {
-    form.setValue('items', []);
-  }, [selectedJobId, form]);
+    if (!isEditing) {
+      form.setValue('items', []);
+    }
+  }, [selectedJobId, form, isEditing]);
 
   const handleItemToggle = (item: JobItem, checked: boolean) => {
     const currentItems = form.getValues('items');
@@ -110,19 +130,36 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
     }
   };
 
+  const onSubmit = (data: FormValues) => {
+    onSave(data);
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-headline">Create New Work Order</DialogTitle>
+          <DialogTitle className="font-headline">{isEditing ? 'Edit Work Order' : 'Create New Work Order'}</DialogTitle>
           <DialogDescription>
-            Fill in the details for the new work order. Select a job order to see available items.
+            {isEditing ? 'Update the details for this work order.' : 'Fill in the details for the new work order. Select a job order to see available items.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSave)}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
             <ScrollArea className="max-h-[60vh] p-4">
               <div className="space-y-4">
+                 {isEditing && workOrder && (
+                     <div className='flex justify-between items-center'>
+                        <FormItem>
+                            <FormLabel>Status</FormLabel>
+                            <Badge variant={
+                                workOrder.status === 'Completed' ? 'default' : 
+                                workOrder.status === 'In Progress' ? 'secondary' : 'destructive'
+                            }>
+                                {workOrder.status}
+                            </Badge>
+                        </FormItem>
+                     </div>
+                 )}
                 <FormField
                   control={form.control}
                   name="jobId"
@@ -135,6 +172,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
                             <Button
                               variant="outline"
                               role="combobox"
+                              disabled={isEditing}
                               className={cn(
                                 "w-full justify-between",
                                 !field.value && "text-muted-foreground"
@@ -190,7 +228,10 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
                         <ScrollArea className="h-40 rounded-md border p-4">
                           {selectedJob.items.map((item, index) => {
                             const remaining = remainingQuantities[item.name] ?? 0;
-                            const isFulfilled = remaining <= 0;
+                            const currentItem = workOrder?.items.find(i => i.name === item.name);
+                            const alreadyInOrder = currentItem ? currentItem.quantity : 0;
+                            const available = remaining + (isEditing ? alreadyInOrder : 0);
+                            const isFulfilled = available <= 0 && !form.getValues('items').some(i => i.name === item.name);
                             return (
                                <div key={index} className="flex items-center space-x-2 mb-2">
                                 <Checkbox
@@ -200,7 +241,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders 
                                   disabled={isFulfilled}
                                 />
                                 <label htmlFor={`item-${index}`} className={cn("text-sm font-medium leading-none", isFulfilled ? "text-muted-foreground line-through" : "")}>
-                                    {item.name} (Required: {item.quantity}, Remaining: {remaining})
+                                    {item.name} (Required: {item.quantity}, Remaining: {available})
                                 </label>
                               </div>
                             )

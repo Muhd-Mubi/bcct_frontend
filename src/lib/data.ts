@@ -142,7 +142,7 @@ export const initialWorkOrders: WorkOrder[] = [
         items: [{ name: 'Marketing Brochures', quantity: 5000 }],
         description: 'Fold and bind 5000 marketing brochures.',
         priority: 'Medium',
-        status: 'Completed',
+        status: 'In Progress',
         date: '2024-07-26T12:00:00Z',
         materialsUsed: [
             { materialId: 'm3', materialName: 'Glossy Brochure Paper', quantity: 500 }

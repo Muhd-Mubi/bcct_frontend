@@ -42,7 +42,7 @@ export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
               <TableCell>
                  <div className="flex flex-col gap-1 text-xs">
                     {item.papers.map((p, index) => (
-                      <span key={index}>{p.paperType} (Units: {p.unitQuantity}, Amount: ${p.amount.toFixed(2)})</span>
+                      <span key={index}>{p.paperType} (Units: {p.unitQuantity}, Amount: Rs {p.amount.toFixed(2)})</span>
                     ))}
                   </div>
               </TableCell>

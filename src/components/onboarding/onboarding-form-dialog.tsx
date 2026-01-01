@@ -151,9 +151,9 @@ export function OnboardingFormDialog({
                             name={`papers.${index}.amount`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Amount</FormLabel>
+                                <FormLabel>Amount (Rs)</FormLabel>
                                 <FormControl>
-                                  <Input type="number" {...field} placeholder="Cost" />
+                                  <Input type="number" {...field} placeholder="Cost in Rs" />
                                 </FormControl>
                                 <FormMessage />
                               </FormItem>

@@ -52,9 +52,9 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
 
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [materials, setMaterials] = useState<Material[]>(initialMaterials);
+  const [materials, setMaterials] = useState<Material[]>([]);
   const [onloadings, setOnloadings] = useState<PaperOnboarding[]>(initialOnloadings);
-  const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
+  const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [jobOrders, setJobOrders] = useState<Job[]>(initialJobOrders);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(initialWorkOrders);
 
@@ -109,8 +109,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [toast]);
 
   useEffect(() => {
-    // fetchMeasurements();
-    // fetchMaterials();
+    fetchMeasurements();
+    fetchMaterials();
   }, [fetchMeasurements, fetchMaterials]);
 
   const saveMaterial = async (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => {

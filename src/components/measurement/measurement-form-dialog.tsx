@@ -47,7 +47,7 @@ export function MeasurementFormDialog({
 }: MeasurementFormDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: measurement || {
+    defaultValues: {
       name: '',
       sheetsPerUnit: 1,
     },

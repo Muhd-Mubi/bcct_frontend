@@ -9,12 +9,15 @@ import { useData } from '@/context/data-context';
 import { MeasurementFormDialog } from '@/components/measurement/measurement-form-dialog';
 import { Measurement } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
+import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 
 
 export default function MeasurementPage() {
-    const { measurements, setMeasurements, saveMeasurement, updateMeasurement } = useData();
+    const { measurements, setMeasurements, saveMeasurement, updateMeasurement, deleteMeasurement } = useData();
     const [isFormOpen, setFormOpen] = useState(false);
+    const [isConfirmOpen, setConfirmOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
+    const [measurementToDelete, setMeasurementToDelete] = useState<string | null>(null);
     const { isAdmin } = useContext(UserRoleContext);
     
     const handleAdd = () => {
@@ -25,6 +28,19 @@ export default function MeasurementPage() {
     const handleEdit = (measurement: Measurement) => {
         setSelectedMeasurement(measurement);
         setFormOpen(true);
+    };
+
+    const handleDelete = (id: string) => {
+        setMeasurementToDelete(id);
+        setConfirmOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (measurementToDelete) {
+            deleteMeasurement(measurementToDelete);
+        }
+        setConfirmOpen(false);
+        setMeasurementToDelete(null);
     };
 
     const handleSave = (measurementData: Measurement | Omit<Measurement, '_id'>) => {
@@ -52,6 +68,7 @@ export default function MeasurementPage() {
           <MeasurementTable
             data={measurements.filter(Boolean)}
             onEdit={handleEdit}
+            onDelete={handleDelete}
           />
         </CardContent>
       </Card>
@@ -62,6 +79,12 @@ export default function MeasurementPage() {
         onSave={handleSave}
         measurement={selectedMeasurement}
        />
+
+        <DeleteConfirmationDialog 
+            isOpen={isConfirmOpen}
+            onOpenChange={setConfirmOpen}
+            onConfirm={handleConfirmDelete}
+        />
 
     </div>
     );

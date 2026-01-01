@@ -22,9 +22,10 @@ import { Measurement, UserRoleContext } from '@/lib/types';
 interface MeasurementTableProps {
   data: Measurement[];
   onEdit: (measurement: Measurement) => void;
+  onDelete: (id: string) => void;
 }
 
-export function MeasurementTable({ data, onEdit }: MeasurementTableProps) {
+export function MeasurementTable({ data, onEdit, onDelete }: MeasurementTableProps) {
     const { isAdmin } = useContext(UserRoleContext);
 
   return (
@@ -54,6 +55,12 @@ export function MeasurementTable({ data, onEdit }: MeasurementTableProps) {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem onClick={() => onEdit(measurement)}>
                           Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                          className="text-destructive"
+                          onClick={() => onDelete(measurement._id)}
+                        >
+                          Delete
                         </DropdownMenuItem>
                       </DropdownMenuContent>
                     </DropdownMenu>

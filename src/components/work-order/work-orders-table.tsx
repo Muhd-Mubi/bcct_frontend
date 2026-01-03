@@ -15,6 +15,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
   DropdownMenuSeparator,
+  DropdownMenuSub,
+  DropdownMenuSubTrigger,
+  DropdownMenuSubContent,
+  DropdownMenuPortal
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -25,11 +29,11 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
-  onComplete: (order: WorkOrder) => void;
+  onStatusChange: (orderId: string, newStatus: WorkOrderStatus) => void;
   onView: (order: WorkOrder) => void;
   onEdit: (order: WorkOrder) => void;
   onDelete: (orderId: string) => void;
-  onStartProgress: (orderId: string) => void;
+  onRevert: (orderId: string) => void;
 }
 
 const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -44,7 +48,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
     Low: 'default'
 }
 
-export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDelete, onStartProgress }: WorkOrdersTableProps) {
+export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
   const { isAdmin } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -58,7 +62,7 @@ export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDele
 
   const renderActions = (order: WorkOrder) => {
       const isPending = order.status === 'Pending';
-      const isInProgress = order.status === 'In Progress';
+      const isCompleted = order.status === 'Completed';
 
       return (
         <DropdownMenu>
@@ -70,35 +74,23 @@ export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDele
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
                 <DropdownMenuItem onClick={() => onView(order)}>
-                View Details
+                  View Details
                 </DropdownMenuItem>
+                
+                <DropdownMenuSub>
+                    <DropdownMenuSubTrigger>Change Status</DropdownMenuSubTrigger>
+                    <DropdownMenuPortal>
+                        <DropdownMenuSubContent>
+                             <DropdownMenuItem onClick={() => onStatusChange(order.id, 'Pending')} disabled={order.status === 'Pending'}>Pending</DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => onStatusChange(order.id, 'In Progress')} disabled={order.status === 'In Progress'}>In Progress</DropdownMenuItem>
+                             <DropdownMenuItem onClick={() => onStatusChange(order.id, 'Completed')} disabled={order.status === 'Completed'}>Completed</DropdownMenuItem>
+                        </DropdownMenuSubContent>
+                    </DropdownMenuPortal>
+                </DropdownMenuSub>
+                
                 <DropdownMenuSeparator />
+                
                 <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
-                                <DropdownMenuItem
-                                    onClick={() => onStartProgress(order.id)}
-                                    disabled={!isPending}
-                                    className="w-full"
-                                >
-                                    Start Progress
-                                </DropdownMenuItem>
-                            </div>
-                        </TooltipTrigger>
-                        {!isPending && <TooltipContent><p>Only pending orders can be started.</p></TooltipContent>}
-                    </Tooltip>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
-                                <DropdownMenuItem onClick={() => onComplete(order)} disabled={!isInProgress}>
-                                Mark as Completed
-                                </DropdownMenuItem>
-                            </div>
-                        </TooltipTrigger>
-                        {!isInProgress && <TooltipContent><p>Only in-progress orders can be completed.</p></TooltipContent>}
-                    </Tooltip>
-                    <DropdownMenuSeparator />
                     <Tooltip>
                         <TooltipTrigger asChild>
                              <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
@@ -109,6 +101,13 @@ export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDele
                         </TooltipTrigger>
                         {!isPending && <TooltipContent><p>Only pending orders can be edited.</p></TooltipContent>}
                     </Tooltip>
+                    
+                    {isCompleted && (
+                       <DropdownMenuItem onClick={() => onRevert(order.id)}>
+                         Revert Completion
+                       </DropdownMenuItem>
+                    )}
+
                     <Tooltip>
                         <TooltipTrigger asChild>
                             <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
@@ -137,10 +136,9 @@ export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDele
             <TableRow>
               <TableHead>Job Order ID</TableHead>
               <TableHead>Date</TableHead>
+              <TableHead>Tasks</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead>Items</TableHead>
-              <TableHead>Materials Used</TableHead>
               {isAdmin && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
@@ -149,12 +147,6 @@ export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDele
               <TableRow key={order.id}>
                 <TableCell className="font-medium">{order.jobId}</TableCell>
                 <TableCell>{format(parseISO(order.date), 'PP')}</TableCell>
-                <TableCell>
-                  <Badge variant={priorityVariant[order.priority]}>{order.priority}</Badge>
-                </TableCell>
-                <TableCell>
-                  <Badge variant={statusVariant[order.status]}>{order.status}</Badge>
-                </TableCell>
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">
                     {order.items && order.items.map((item, index) => (
@@ -162,10 +154,11 @@ export function WorkOrdersTable({ workOrders, onComplete, onView, onEdit, onDele
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="text-xs text-muted-foreground">
-                  {order.materialsUsed?.map(m => (
-                      <div key={m.materialId}>{m.materialName}: {m.quantity} sheets</div>
-                  )) ?? 'N/A'}
+                <TableCell>
+                  <Badge variant={priorityVariant[order.priority]}>{order.priority}</Badge>
+                </TableCell>
+                <TableCell>
+                  <Badge variant={statusVariant[order.status]}>{order.status}</Badge>
                 </TableCell>
                 {isAdmin && (
                   <TableCell className="text-right">

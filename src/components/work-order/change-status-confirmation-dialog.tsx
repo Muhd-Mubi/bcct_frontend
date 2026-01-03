@@ -13,36 +13,40 @@ import {
 } from '@/components/ui/alert-dialog';
 import { buttonVariants } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { WorkOrderStatus } from '@/lib/types';
 
-interface RevertConfirmationDialogProps {
+interface ChangeStatusConfirmationDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
-  description?: string;
+  status?: WorkOrderStatus;
 }
 
-export function RevertConfirmationDialog({
+export function ChangeStatusConfirmationDialog({
   isOpen,
   onOpenChange,
   onConfirm,
-  description = "This action will revert the stock additions from this onboarding event and cannot be undone."
-}: RevertConfirmationDialogProps) {
+  status
+}: ChangeStatusConfirmationDialogProps) {
+  const isDestructive = status === 'Completed';
+
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
           <AlertDialogDescription>
-            {description}
+            This will change the work order status to "{status}". 
+            {isDestructive && " This will affect inventory levels and cannot be easily undone."}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancel</AlertDialogCancel>
           <AlertDialogAction 
             onClick={onConfirm}
-            className={cn(buttonVariants({ variant: "destructive" }))}
+            className={cn(isDestructive && buttonVariants({ variant: "destructive" }))}
           >
-            Confirm Revert
+            Yes, Change Status
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

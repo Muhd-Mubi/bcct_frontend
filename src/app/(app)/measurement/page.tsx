@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useMemo } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,12 +13,23 @@ import { DeleteConfirmationDialog } from '@/components/materials/delete-confirma
 
 
 export default function MeasurementPage() {
-    const { measurements, setMeasurements, saveMeasurement, updateMeasurement, deleteMeasurement } = useData();
+    const { measurements, materials, saveMeasurement, updateMeasurement, deleteMeasurement } = useData();
     const [isFormOpen, setFormOpen] = useState(false);
     const [isConfirmOpen, setConfirmOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const [measurementToDelete, setMeasurementToDelete] = useState<string | null>(null);
     const { isAdmin } = useContext(UserRoleContext);
+    
+    const measurementUsage = useMemo(() => {
+        const counts: { [key: string]: number } = {};
+        measurements.forEach(m => counts[m.name] = 0);
+        materials.forEach(material => {
+            if (counts[material.type] !== undefined) {
+                counts[material.type]++;
+            }
+        });
+        return counts;
+    }, [measurements, materials]);
     
     const handleAdd = () => {
         setSelectedMeasurement(undefined);
@@ -67,6 +78,7 @@ export default function MeasurementPage() {
         <CardContent>
           <MeasurementTable
             data={measurements.filter(Boolean)}
+            usage={measurementUsage}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

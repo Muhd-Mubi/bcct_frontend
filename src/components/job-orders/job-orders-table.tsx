@@ -39,6 +39,9 @@ interface JobOrdersTableProps {
 export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalPages, onPageChange, onEdit, onDelete }: JobOrdersTableProps) {
   
   const renderActions = (job: Job) => {
+    const workOrderCount = workOrderCounts[job.id] || 0;
+    const canModify = workOrderCount === 0;
+
     return (
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
@@ -48,13 +51,32 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={() => onEdit(job)}>Edit</DropdownMenuItem>
-          <DropdownMenuItem
-            className="text-destructive"
-            onClick={() => onDelete(job.id)}
-          >
-            Delete
-          </DropdownMenuItem>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-full">
+                  <DropdownMenuItem onClick={() => onEdit(job)} disabled={!canModify} className="w-full">
+                    Edit
+                  </DropdownMenuItem>
+                </div>
+              </TooltipTrigger>
+              {!canModify && <TooltipContent><p>Cannot edit a job with active work orders.</p></TooltipContent>}
+            </Tooltip>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="w-full">
+                  <DropdownMenuItem
+                    className="text-destructive focus:text-destructive w-full"
+                    onClick={() => onDelete(job.id)}
+                    disabled={!canModify}
+                  >
+                    Delete
+                  </DropdownMenuItem>
+                </div>
+              </TooltipTrigger>
+              {!canModify && <TooltipContent><p>Cannot delete a job with active work orders.</p></TooltipContent>}
+            </Tooltip>
+          </TooltipProvider>
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -68,9 +90,9 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
             <TableRow>
               <TableHead>Job Order ID</TableHead>
               <TableHead>Department</TableHead>
-
               <TableHead>Date Created</TableHead>
-              <TableHead>Items</TableHead>
+              <TableHead>Tasks</TableHead>
+              <TableHead className="text-center">No. of Work Orders</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -87,6 +109,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                     ))}
                   </div>
                 </TableCell>
+                <TableCell className="text-center">{workOrderCounts[job.id] || 0}</TableCell>
                 <TableCell className="text-right">{renderActions(job)}</TableCell>
               </TableRow>
             ))}

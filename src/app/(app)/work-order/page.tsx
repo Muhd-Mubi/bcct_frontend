@@ -20,8 +20,9 @@ import { ViewWorkOrderDialog } from '@/components/work-order/view-work-order-dia
 import { useData } from '@/context/data-context';
 import { WorkOrder, WorkOrderPriority, WorkOrderStatus } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
-import { CompleteConfirmationDialog } from '@/components/work-order/complete-confirmation-dialog';
+import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
+import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
 
 export default function WorkOrdersPage() {
   const {
@@ -32,14 +33,18 @@ export default function WorkOrdersPage() {
     markWorkOrderAsComplete,
     deleteWorkOrder,
     updateWorkOrderStatus,
+    revertWorkOrderCompletion,
   } = useData();
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isCompleteOpen, setCompleteOpen] = useState(false);
-  const [isConfirmCompleteOpen, setConfirmCompleteOpen] = useState(false);
   const [isViewOpen, setViewOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
+  const [isStatusConfirmOpen, setStatusConfirmOpen] = useState(false);
+  const [isRevertConfirmOpen, setRevertConfirmOpen] = useState(false);
   const [selectedWorkOrder, setSelectedWorkOrder] = useState<WorkOrder | undefined>(undefined);
   const [workOrderToDelete, setWorkOrderToDelete] = useState<string | null>(null);
+  const [statusChange, setStatusChange] = useState<{ id: string, status: WorkOrderStatus } | null>(null);
+  const [workOrderToRevert, setWorkOrderToRevert] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriority[]>([]);
@@ -74,19 +79,37 @@ export default function WorkOrdersPage() {
     setCreateOpen(false);
   };
 
-  const handleCompleteClick = (order: WorkOrder) => {
-    setSelectedWorkOrder(order);
-    setConfirmCompleteOpen(true);
-  };
-  
-  const handleStartProgress = (orderId: string) => {
-    updateWorkOrderStatus(orderId, 'In Progress');
+  const handleStatusChangeClick = (orderId: string, newStatus: WorkOrderStatus) => {
+    setStatusChange({ id: orderId, status: newStatus });
+    setStatusConfirmOpen(true);
   };
 
-  const handleProceedToComplete = () => {
-    setConfirmCompleteOpen(false);
-    setCompleteOpen(true);
+  const handleConfirmStatusChange = () => {
+    if (statusChange) {
+      if (statusChange.status === 'Completed') {
+        const order = workOrders.find(wo => wo.id === statusChange.id);
+        setSelectedWorkOrder(order);
+        setCompleteOpen(true);
+      } else {
+        updateWorkOrderStatus(statusChange.id, statusChange.status);
+      }
+    }
+    setStatusConfirmOpen(false);
+    setStatusChange(null);
+  };
+  
+  const handleRevertClick = (orderId: string) => {
+    setWorkOrderToRevert(orderId);
+    setRevertConfirmOpen(true);
   }
+
+  const handleConfirmRevert = () => {
+    if (workOrderToRevert) {
+      revertWorkOrderCompletion(workOrderToRevert);
+    }
+    setRevertConfirmOpen(false);
+    setWorkOrderToRevert(null);
+  };
 
   const handleViewClick = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
@@ -183,11 +206,11 @@ export default function WorkOrdersPage() {
         <CardContent>
           <WorkOrdersTable
             workOrders={filteredAndSortedWorkOrders}
-            onComplete={handleCompleteClick}
+            onStatusChange={handleStatusChangeClick}
             onView={handleViewClick}
             onEdit={handleEdit}
             onDelete={handleDelete}
-            onStartProgress={handleStartProgress}
+            onRevert={handleRevertClick}
           />
         </CardContent>
       </Card>
@@ -206,13 +229,19 @@ export default function WorkOrdersPage() {
         onConfirm={handleConfirmDelete}
       />
 
-      {selectedWorkOrder && (
-        <CompleteConfirmationDialog
-          isOpen={isConfirmCompleteOpen}
-          onOpenChange={setConfirmCompleteOpen}
-          onConfirm={handleProceedToComplete}
-        />
-      )}
+      <ChangeStatusConfirmationDialog
+        isOpen={isStatusConfirmOpen}
+        onOpenChange={setStatusConfirmOpen}
+        onConfirm={handleConfirmStatusChange}
+        status={statusChange?.status}
+      />
+      
+      <RevertConfirmationDialog
+        isOpen={isRevertConfirmOpen}
+        onOpenChange={setRevertConfirmOpen}
+        onConfirm={handleConfirmRevert}
+        description="This will revert the work order to 'In Progress' and add the used materials back to the inventory."
+      />
 
       {selectedWorkOrder && (
         <CompleteWorkOrderDialog

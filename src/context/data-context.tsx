@@ -27,6 +27,7 @@ interface DataContextType {
   saveWorkOrder: (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => void;
   deleteWorkOrder: (orderId: string) => void;
   markWorkOrderAsComplete: (orderId: string, materialsUsed: { materialId: string; quantity: number }[]) => void;
+  revertWorkOrderCompletion: (orderId: string) => void;
   updateWorkOrderStatus: (orderId: string, status: WorkOrderStatus) => void;
 }
 
@@ -52,9 +53,9 @@ const adaptMaterial = (apiMaterial: APIMaterial): Material => {
 
 
 export function DataProvider({ children }: { children: ReactNode }) {
-  const [materials, setMaterials] = useState<Material[]>([]);
+  const [materials, setMaterials] = useState<Material[]>(initialMaterials);
   const [onloadings, setOnloadings] = useState<PaperOnboarding[]>(initialOnloadings);
-  const [measurements, setMeasurements] = useState<Measurement[]>([]);
+  const [measurements, setMeasurements] = useState<Measurement[]>(initialMeasurements);
   const [jobOrders, setJobOrders] = useState<Job[]>(initialJobOrders);
   const [workOrders, setWorkOrders] = useState<WorkOrder[]>(initialWorkOrders);
 
@@ -109,8 +110,8 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, [toast]);
 
   useEffect(() => {
-    fetchMeasurements();
-    fetchMaterials();
+    // fetchMeasurements();
+    // fetchMaterials();
   }, [fetchMeasurements, fetchMaterials]);
 
   const saveMaterial = async (materialData: (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 'reorderThreshold' | 'lastUpdated' | 'type'> & { measurementId?: string }) | (Material & { measurementId?: string })) => {
@@ -319,6 +320,30 @@ export function DataProvider({ children }: { children: ReactNode }) {
       return o;
     }));
   };
+  
+  const revertWorkOrderCompletion = (orderId: string) => {
+    const orderToRevert = workOrders.find(o => o.id === orderId);
+    if (!orderToRevert || !orderToRevert.materialsUsed) return;
+
+    // Add stock back
+    orderToRevert.materialsUsed.forEach(mu => {
+      updateMaterialStock(mu.materialId, mu.quantity);
+    });
+
+    // Revert status and clear materials used
+    setWorkOrders(prev => prev.map(o => {
+      if (o.id === orderId) {
+        return { ...o, status: 'In Progress', materialsUsed: [] };
+      }
+      return o;
+    }));
+
+    toast({
+      title: "Success",
+      description: "Work order reverted and stock updated.",
+      variant: 'success'
+    });
+  };
 
   const updateWorkOrderStatus = (orderId: string, status: WorkOrderStatus) => {
       setWorkOrders(prev => prev.map(o => o.id === orderId ? { ...o, status } : o));
@@ -343,6 +368,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       saveWorkOrder,
       deleteWorkOrder,
       markWorkOrderAsComplete,
+      revertWorkOrderCompletion,
       updateWorkOrderStatus,
     };
 

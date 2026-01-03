@@ -21,11 +21,12 @@ import { Measurement, UserRoleContext } from '@/lib/types';
 
 interface MeasurementTableProps {
   data: Measurement[];
+  usage: { [key: string]: number };
   onEdit: (measurement: Measurement) => void;
   onDelete: (id: string) => void;
 }
 
-export function MeasurementTable({ data, onEdit, onDelete }: MeasurementTableProps) {
+export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementTableProps) {
     const { isAdmin } = useContext(UserRoleContext);
 
   return (
@@ -35,7 +36,8 @@ export function MeasurementTable({ data, onEdit, onDelete }: MeasurementTablePro
           <TableRow>
             <TableHead>Name</TableHead>
             <TableHead className="text-right">Sheets Per Unit</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead className="text-center">No. of Materials</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -43,7 +45,8 @@ export function MeasurementTable({ data, onEdit, onDelete }: MeasurementTablePro
             <TableRow key={measurement._id || index}>
               <TableCell className="font-medium">{measurement.name}</TableCell>
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
-              <TableCell>
+              <TableCell className="text-center">{usage[measurement.name] || 0}</TableCell>
+              <TableCell className="text-right">
                   {isAdmin ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -57,7 +60,7 @@ export function MeasurementTable({ data, onEdit, onDelete }: MeasurementTablePro
                           Edit
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                          className="text-destructive"
+                          className="text-destructive focus:text-destructive"
                           onClick={() => onDelete(measurement._id)}
                         >
                           Delete

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo, useContext, useEffect } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,10 +17,11 @@ export default function JobOrdersPage() {
   const { role } = useContext(UserRoleContext);
   const router = useRouter();
 
-  if (role === 'technical') {
-    router.push('/dashboard');
-    return null;
-  }
+  useEffect(() => {
+    if (role === 'technical') {
+      router.push('/dashboard');
+    }
+  }, [role, router]);
 
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
@@ -82,6 +83,10 @@ export default function JobOrdersPage() {
   }, [filteredJobOrders, currentPage]);
 
   const totalPages = Math.ceil(filteredJobOrders.length / jobsPerPage);
+  
+  if (role === 'technical') {
+    return null;
+  }
 
   return (
     <div className="space-y-6">

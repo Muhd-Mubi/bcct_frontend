@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useContext, useMemo } from 'react';
+import React, { useState, useContext, useMemo, useEffect } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -18,10 +18,11 @@ export default function MeasurementPage() {
     const { isAdmin, isLeadership } = useContext(UserRoleContext);
     const router = useRouter();
 
-    if (!isAdmin && !isLeadership) {
-        router.push('/dashboard');
-        return null;
-    }
+    useEffect(() => {
+        if (!isAdmin && !isLeadership) {
+            router.push('/dashboard');
+        }
+    }, [isAdmin, isLeadership, router]);
 
     const [isFormOpen, setFormOpen] = useState(false);
     const [isConfirmOpen, setConfirmOpen] = useState(false);
@@ -70,6 +71,10 @@ export default function MeasurementPage() {
         }
         setFormOpen(false);
     };
+    
+    if (!isAdmin && !isLeadership) {
+        return null;
+    }
 
     return (
     <div className="space-y-6">

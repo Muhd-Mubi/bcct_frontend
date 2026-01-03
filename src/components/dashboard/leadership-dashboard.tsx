@@ -32,9 +32,9 @@ export default function LeadershipDashboard() {
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
 
-  const pendingWorkOrders = workOrders.filter(
+  const activeWorkOrders = workOrders.filter(
     (o) => o.status === 'Pending' || o.status === 'In Progress'
-  ).length;
+  );
 
   // Dummy functions for WorkOrdersTable props - these actions are handled on the work-order page
   const handleStatusChange = () => {};
@@ -54,7 +54,7 @@ export default function LeadershipDashboard() {
         <Link href="/work-order">
           <MetricCard
             title="Active Work Orders"
-            value={pendingWorkOrders}
+            value={activeWorkOrders.length}
             icon={<ClipboardList className="size-6 text-muted-foreground" />}
           />
         </Link>
@@ -81,7 +81,7 @@ export default function LeadershipDashboard() {
             </CardHeader>
             <CardContent>
                 <WorkOrdersTable
-                    workOrders={workOrders}
+                    workOrders={activeWorkOrders}
                     onStatusChange={handleStatusChange}
                     onView={handleView}
                     onEdit={handleEdit}

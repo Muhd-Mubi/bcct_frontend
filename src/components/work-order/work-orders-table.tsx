@@ -27,6 +27,7 @@ import { MoreHorizontal } from 'lucide-react';
 import { WorkOrder, WorkOrderStatus, UserRoleContext, WorkOrderPriority } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
+import { usePathname } from 'next/navigation';
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
@@ -51,6 +52,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
 
 export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
   const { isLeadership, isAdmin, isTechnical } = useContext(UserRoleContext);
+  const pathname = usePathname();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -62,13 +64,18 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
   const totalPages = Math.ceil(workOrders.length / itemsPerPage);
 
   const handleRowClick = (e: React.MouseEvent, order: WorkOrder) => {
-    if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]')) {
+    if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]') || (e.target as HTMLElement).tagName === 'A') {
       return;
     }
     onView(order);
   };
+  
+  const isDashboard = pathname.includes('/dashboard');
 
   const renderActions = (order: WorkOrder) => {
+      if (isDashboard) {
+        return null;
+      }
       const canChangeStatus = isLeadership || isTechnical;
       const canEdit = (isLeadership) || (isAdmin && order.status !== 'Completed');
       const canDelete = (isLeadership) || (isAdmin && order.status !== 'Completed');
@@ -141,7 +148,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               <TableHead>Tasks</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {!isDashboard && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -172,35 +179,39 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
                 <TableCell>
                   <Badge variant={statusVariant[order.status]}>{order.status}</Badge>
                 </TableCell>
-                <TableCell className="text-right">
-                    {renderActions(order)}
-                </TableCell>
+                {!isDashboard && (
+                    <TableCell className="text-right">
+                        {renderActions(order)}
+                    </TableCell>
+                )}
               </TableRow>
             ))}
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-          disabled={currentPage === 1}
-        >
-          Previous
-        </Button>
-        <span className="text-sm">
-          Page {currentPage} of {totalPages}
-        </span>
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-          disabled={currentPage === totalPages}
-        >
-          Next
-        </Button>
-      </div>
+      {!isDashboard && workOrders.length > itemsPerPage && (
+        <div className="flex items-center justify-end space-x-2 py-4">
+            <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            disabled={currentPage === 1}
+            >
+            Previous
+            </Button>
+            <span className="text-sm">
+            Page {currentPage} of {totalPages}
+            </span>
+            <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            disabled={currentPage === totalPages}
+            >
+            Next
+            </Button>
+        </div>
+      )}
     </div>
   );
 }

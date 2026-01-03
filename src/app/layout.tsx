@@ -3,19 +3,18 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/context/auth-context';
-import { DataProvider } from '@/context/data-context';
 import { Inter, Space_Grotesk, PT_Sans, Roboto_Mono, Rubik } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
   weight: ['400', '700'],
-  variable: '--font-pt-sans',
+  variable: '--font-body',
 });
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ['latin'],
-  variable: '--font-space-grotesk',
+  variable: '--font-headline',
 });
 
 const inter = Inter({
@@ -54,10 +53,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <DataProvider>
-              {children}
-              <Toaster />
-            </DataProvider>
+            {children}
+            <Toaster />
           </AuthProvider>
         </ThemeProvider>
       </body>

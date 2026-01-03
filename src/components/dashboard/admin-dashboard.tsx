@@ -54,7 +54,7 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-6">
           <Card>
-            <InventoryTable materials={materials} isClient={true} />
+            <InventoryTable materials={materials} />
           </Card>
           <InventoryCompositionChart materials={materials} />
           <SensorGraphs />

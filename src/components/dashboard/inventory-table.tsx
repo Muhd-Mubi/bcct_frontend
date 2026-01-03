@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -44,7 +44,13 @@ const statusConfig: Record<
   },
 };
 
-export function InventoryTable({ materials, isClient }: { materials: Material[], isClient: boolean }) {
+export function InventoryTable({ materials }: { materials: Material[] }) {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
   return (
     <div className="overflow-x-auto">
       <Table>

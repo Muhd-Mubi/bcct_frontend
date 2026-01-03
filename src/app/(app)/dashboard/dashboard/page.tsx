@@ -35,6 +35,10 @@ export default function DashboardPage() {
   );
   
   const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
+  
+  if (!isClient) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col gap-6">
@@ -60,7 +64,7 @@ export default function DashboardPage() {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-6">
           <Card>
-            <InventoryTable materials={materials} isClient={isClient} />
+            <InventoryTable materials={materials} />
           </Card>
           <SensorGraphs />
           <InventoryCompositionChart materials={materials} />

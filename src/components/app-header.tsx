@@ -33,18 +33,26 @@ export function AppHeader() {
 
     return () => clearInterval(timer);
   }, [pathname]);
+  
+  if (!isClient) {
+    return (
+     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
+        <SidebarTrigger className="sm:hidden" />
+      </header>
+    );
+  }
 
   return (
     <header className="sticky top-0 z-10 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <SidebarTrigger className="sm:hidden" />
       <div className="flex items-center gap-4">
         <h1 className="text-xl font-bold font-headline sm:block">
-          {isClient ? pageTitle : ''}
+          {pageTitle}
         </h1>
       </div>
       <div className="flex items-center gap-4 ml-auto">
         <div className="hidden sm:flex items-center gap-2 text-sm text-muted-foreground">
-          {isClient ? currentTime : ''}
+          {currentTime}
         </div>
         <div className="hidden sm:flex items-center gap-2">
             <Badge variant="secondary" className="gap-1">

@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   Card,
@@ -14,7 +14,8 @@ import { WorkOrder, WorkOrderPriority, WorkOrderStatus } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { Separator } from '@/components/ui/separator';
 import { useData } from '@/context/data-context';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Loader2 } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
 const statusVariant: Record<
   WorkOrderStatus,
@@ -34,7 +35,7 @@ const priorityVariant: Record<
   Low: 'default',
 };
 
-export default function WorkOrderViewerPage() {
+function WorkOrderViewer() {
   const searchParams = useSearchParams();
   const { workOrders } = useData();
   const workOrderId = searchParams.get('id');
@@ -44,10 +45,10 @@ export default function WorkOrderViewerPage() {
   if (!workOrder) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
-          <AlertCircle className="size-16 text-muted-foreground" />
+        <AlertCircle className="size-16 text-muted-foreground" />
         <h1 className="text-2xl font-bold font-headline">Work Order Not Found</h1>
         <p className="text-muted-foreground">
-          Please select a work order from the list to view its details.
+          The requested work order could not be found or you do not have permission to view it.
         </p>
       </div>
     );
@@ -144,5 +145,54 @@ export default function WorkOrderViewerPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function LoadingSkeleton() {
+    return (
+        <div className="space-y-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between">
+            <div>
+                <Skeleton className="h-9 w-72 mb-2" />
+                <Skeleton className="h-5 w-96" />
+            </div>
+             <div className="flex items-center gap-4 mt-4 md:mt-0">
+                <Skeleton className="h-6 w-24" />
+                <Skeleton className="h-6 w-24" />
+            </div>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <Skeleton className="h-7 w-64 mb-2" />
+              <Skeleton className="h-5 w-80" />
+            </CardHeader>
+            <CardContent className="space-y-6">
+                <div className="space-y-3">
+                    <Skeleton className="h-6 w-32" />
+                    <Skeleton className="h-24 w-full" />
+                </div>
+                 <Separator />
+                <div className="grid md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-36 w-full" />
+                    </div>
+                    <div className="space-y-3">
+                        <Skeleton className="h-6 w-32" />
+                        <Skeleton className="h-36 w-full" />
+                    </div>
+                </div>
+            </CardContent>
+          </Card>
+        </div>
+    )
+}
+
+export default function WorkOrderViewerPage() {
+  return (
+    <Suspense fallback={<LoadingSkeleton />}>
+      <WorkOrderViewer />
+    </Suspense>
   );
 }

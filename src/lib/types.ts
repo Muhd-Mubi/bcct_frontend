@@ -103,6 +103,8 @@ export type StockLedgerEntry = {
     unitQuantity: number;
     extraSheets: number;
     changeInSheets: number;
+    unitPrice: number;
+    totalPrice: number;
     stockBefore: { units: number; extraSheets: number };
     stockAfter: { units: number; extraSheets: number };
     date: string;

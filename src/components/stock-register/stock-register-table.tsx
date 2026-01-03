@@ -58,6 +58,8 @@ export function StockRegisterTable({ data }: StockRegisterTableProps) {
               <TableHead>Type</TableHead>
               <TableHead>Unit Quantity</TableHead>
               <TableHead>Extra Sheets</TableHead>
+              <TableHead className="text-right">Unit Price (Rs)</TableHead>
+              <TableHead className="text-right">Total Price (Rs)</TableHead>
               <TableHead>Stock Before</TableHead>
               <TableHead>Stock After</TableHead>
               <TableHead>Date</TableHead>
@@ -84,6 +86,12 @@ export function StockRegisterTable({ data }: StockRegisterTableProps) {
                           {entry.extraSheets > 0 ? '+' : ''}{entry.extraSheets}
                       </span>
                   </TableCell>
+                  <TableCell className="text-right">
+                    {entry.unitPrice > 0 ? entry.unitPrice.toFixed(2) : 'N/A'}
+                  </TableCell>
+                   <TableCell className={cn("text-right", entry.totalPrice > 0 ? 'text-green-600' : 'text-red-600')}>
+                    {entry.totalPrice !== 0 ? entry.totalPrice.toFixed(2) : 'N/A'}
+                  </TableCell>
                   <TableCell>{renderStock(entry.stockBefore)}</TableCell>
                   <TableCell>{renderStock(entry.stockAfter)}</TableCell>
                   <TableCell>{format(parseISO(entry.date), 'PP')}</TableCell>
@@ -91,7 +99,7 @@ export function StockRegisterTable({ data }: StockRegisterTableProps) {
               ))
             ) : (
               <TableRow>
-                <TableCell colSpan={7} className="h-24 text-center">
+                <TableCell colSpan={9} className="h-24 text-center">
                   No stock history found for this material.
                 </TableCell>
               </TableRow>

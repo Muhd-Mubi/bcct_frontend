@@ -40,6 +40,8 @@ export default function StockRegisterPage() {
         onloading.papers.forEach(paper => {
             if (paper.paperType === material.name) {
                 const sheetChange = paper.unitQuantity * sheetsPerUnit;
+                const unitPrice = paper.unitQuantity > 0 ? paper.amount / paper.unitQuantity : 0;
+
                 if (onloading.isReverted) {
                     allEntries.push({
                         id: `${onloading.id}-${paper.paperType}`,
@@ -49,6 +51,8 @@ export default function StockRegisterPage() {
                         extraSheets: 0,
                         changeInSheets: -sheetChange,
                         date: onloading.date,
+                        unitPrice: unitPrice,
+                        totalPrice: -paper.amount,
                     });
                 } else {
                     allEntries.push({
@@ -59,6 +63,8 @@ export default function StockRegisterPage() {
                         extraSheets: 0,
                         changeInSheets: sheetChange,
                         date: onloading.date,
+                        unitPrice: unitPrice,
+                        totalPrice: paper.amount,
                     });
                 }
             }
@@ -80,18 +86,12 @@ export default function StockRegisterPage() {
                             extraSheets: -mu.quantity % sheetsPerUnit,
                             changeInSheets: -mu.quantity,
                             date: wo.date,
+                            unitPrice: 0,
+                            totalPrice: 0,
                         });
                     }
                 }
             });
-        }
-        // Handle reversals
-        if(wo.status !== 'Completed' && wo.materialsUsed && wo.materialsUsed.length > 0) {
-             const originalCompletion = workOrders.find(w => w.id === wo.id && w.status === 'Completed');
-             if(originalCompletion) {
-                // This implies a reversal happened, but the logic is tricky.
-                // Assuming a revert puts stock back.
-             }
         }
     });
 

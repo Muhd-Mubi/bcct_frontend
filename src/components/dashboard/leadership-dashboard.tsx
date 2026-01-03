@@ -6,30 +6,42 @@ import { useData } from '@/context/data-context';
 import {
   Package,
   AlertTriangle,
-  Box,
   ClipboardList,
   Briefcase,
 } from 'lucide-react';
 import Link from 'next/link';
-import { Card } from '../ui/card';
-import { InventoryTable } from './inventory-table';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
+import { WorkOrdersTable } from '../work-order/work-orders-table';
 import { ReorderSuggestions } from './reorder-suggestions';
 import { AlertsPanel } from './alerts-panel';
 import { SensorGraphs } from './sensor-graphs';
 import { InventoryCompositionChart } from './inventory-composition-chart';
 
 export default function LeadershipDashboard() {
-  const { materials, workOrders, jobOrders } = useData();
+  const {
+    materials,
+    workOrders,
+    jobOrders,
+    updateWorkOrderStatus,
+    markWorkOrderAsComplete,
+    deleteWorkOrder,
+    revertWorkOrderCompletion,
+  } = useData();
 
   const lowStockItems = materials.filter(
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
 
-  const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
-
   const pendingWorkOrders = workOrders.filter(
     (o) => o.status === 'Pending' || o.status === 'In Progress'
   ).length;
+
+  // Dummy functions for WorkOrdersTable props - these actions are handled on the work-order page
+  const handleStatusChange = () => {};
+  const handleView = () => {};
+  const handleEdit = () => {};
+  const handleDelete = () => {};
+  const handleRevert = () => {};
 
   return (
     <>
@@ -64,7 +76,19 @@ export default function LeadershipDashboard() {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-6">
           <Card>
-            <InventoryTable materials={materials} isClient={true} />
+            <CardHeader>
+                <CardTitle>Work Orders Overview</CardTitle>
+            </CardHeader>
+            <CardContent>
+                <WorkOrdersTable
+                    workOrders={workOrders}
+                    onStatusChange={handleStatusChange}
+                    onView={handleView}
+                    onEdit={handleEdit}
+                    onDelete={handleDelete}
+                    onRevert={handleRevert}
+                />
+            </CardContent>
           </Card>
           <InventoryCompositionChart materials={materials} />
           <SensorGraphs />

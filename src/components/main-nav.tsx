@@ -34,7 +34,6 @@ export function MainNav() {
     { href: '/materials', label: 'Inventory', icon: Package },
     { href: '/onboarding', label: 'Onboarding', icon: PackagePlus },
     { href: '/stock-register', label: 'Stock Register', icon: BookCopy },
-    { href: '/reports', label: 'Reports', icon: FileText },
     { href: '/measurement', label: 'Measurement', icon: Ruler },
     { href: '/settings', label: 'Settings', icon: Settings },
   ];

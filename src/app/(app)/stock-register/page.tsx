@@ -9,9 +9,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Button } from '@/components/ui/button';
+import { Download } from 'lucide-react';
 import { useData } from '@/context/data-context';
-import { StockLedgerEntry } from '@/lib/types';
+import { StockLedgerEntry, Material } from '@/lib/types';
 import { StockRegisterTable } from '@/components/stock-register/stock-register-table';
+import { generateStockLedgerPDF } from '@/lib/report-generator';
 
 export default function StockRegisterPage() {
   const { materials, onloadings, workOrders, measurements } = useData();
@@ -118,6 +121,14 @@ export default function StockRegisterPage() {
     return ledgerWithStock;
 
   }, [selectedMaterialId, materials, onloadings, workOrders, measurements]);
+  
+  const handleDownload = () => {
+    if (!selectedMaterialId) return;
+    const material = materials.find(m => m._id === selectedMaterialId);
+    if (material) {
+        generateStockLedgerPDF(material, stockLedger);
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -126,7 +137,7 @@ export default function StockRegisterPage() {
       <Card>
         <CardHeader>
           <CardTitle className="font-headline">Material Stock Ledger</CardTitle>
-          <div className="pt-4">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 pt-4">
              <Select onValueChange={setSelectedMaterialId}>
                 <SelectTrigger className="w-full md:w-[320px]">
                     <SelectValue placeholder="Select a material to view its stock register" />
@@ -139,6 +150,10 @@ export default function StockRegisterPage() {
                     ))}
                 </SelectContent>
             </Select>
+            <Button onClick={handleDownload} disabled={!selectedMaterialId}>
+                <Download className="mr-2 h-4 w-4" />
+                Download PDF
+            </Button>
           </div>
         </CardHeader>
         <CardContent>

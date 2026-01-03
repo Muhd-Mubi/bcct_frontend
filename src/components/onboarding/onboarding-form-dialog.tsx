@@ -181,6 +181,7 @@ export function OnboardingFormDialog({
             </ScrollArea>
 
             <DialogFooter className="pt-4">
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
               <Button type="submit">Save Purchase</Button>
             </DialogFooter>
           </form>

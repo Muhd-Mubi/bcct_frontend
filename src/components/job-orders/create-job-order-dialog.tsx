@@ -60,7 +60,7 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
 
   useEffect(() => {
     if (isOpen) {
-      if (isEditing) {
+      if (isEditing && job) {
         form.reset(job);
       } else {
         form.reset({ id: `job-${Date.now()}`, department: '', items: [{ name: '', quantity: 1 }] });

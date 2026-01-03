@@ -50,7 +50,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
 }
 
 export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
-  const { isAdmin } = useContext(UserRoleContext);
+  const { isLeadership, isAdmin, isTechnical } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -62,7 +62,6 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
   const totalPages = Math.ceil(workOrders.length / itemsPerPage);
 
   const handleRowClick = (e: React.MouseEvent, order: WorkOrder) => {
-    // Check if the click was on the action menu trigger
     if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]')) {
       return;
     }
@@ -70,8 +69,10 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
   };
 
   const renderActions = (order: WorkOrder) => {
-      const isPending = order.status === 'Pending';
-      const isCompleted = order.status === 'Completed';
+      const canChangeStatus = isLeadership || isTechnical;
+      const canEdit = (isLeadership) || (isAdmin && order.status !== 'Completed');
+      const canDelete = (isLeadership) || (isAdmin && order.status !== 'Completed');
+      const canRevert = (isLeadership || isTechnical) && order.status === 'Completed';
 
       return (
         <DropdownMenu>
@@ -86,51 +87,42 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
                   View Details
                 </DropdownMenuItem>
                 
-                <DropdownMenuSub>
-                    <DropdownMenuSubTrigger>Change Status</DropdownMenuSubTrigger>
-                    <DropdownMenuPortal>
-                        <DropdownMenuSubContent>
-                             <DropdownMenuItem onClick={() => onStatusChange(order.id, 'Pending')} disabled={order.status === 'Pending'}>Pending</DropdownMenuItem>
-                             <DropdownMenuItem onClick={() => onStatusChange(order.id, 'In Progress')} disabled={order.status === 'In Progress'}>In Progress</DropdownMenuItem>
-                             <DropdownMenuItem onClick={() => onStatusChange(order.id, 'Completed')} disabled={order.status === 'Completed'}>Completed</DropdownMenuItem>
-                        </DropdownMenuSubContent>
-                    </DropdownMenuPortal>
-                </DropdownMenuSub>
+                {canChangeStatus && (
+                  <DropdownMenuSub>
+                      <DropdownMenuSubTrigger>Change Status</DropdownMenuSubTrigger>
+                      <DropdownMenuPortal>
+                          <DropdownMenuSubContent>
+                               <DropdownMenuItem onClick={() => onStatusChange(order.id, 'Pending')} disabled={order.status === 'Pending'}>Pending</DropdownMenuItem>
+                               <DropdownMenuItem onClick={() => onStatusChange(order.id, 'In Progress')} disabled={order.status === 'In Progress'}>In Progress</DropdownMenuItem>
+                               <DropdownMenuItem onClick={() => onStatusChange(order.id, 'Completed')} disabled={order.status === 'Completed'}>Completed</DropdownMenuItem>
+                          </DropdownMenuSubContent>
+                      </DropdownMenuPortal>
+                  </DropdownMenuSub>
+                )}
                 
                 <DropdownMenuSeparator />
                 
                 <TooltipProvider>
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                             <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
-                                <DropdownMenuItem onClick={() => onEdit(order)} disabled={!isPending}>
-                                    Edit
-                                </DropdownMenuItem>
-                            </div>
-                        </TooltipTrigger>
-                        {!isPending && <TooltipContent><p>Only pending orders can be edited.</p></TooltipContent>}
-                    </Tooltip>
+                    {canEdit && (
+                       <DropdownMenuItem onClick={() => onEdit(order)}>
+                           Edit
+                       </DropdownMenuItem>
+                    )}
                     
-                    {isCompleted && (
+                    {canRevert && (
                        <DropdownMenuItem onClick={() => onRevert(order.id)}>
                          Revert Completion
                        </DropdownMenuItem>
                     )}
 
-                    <Tooltip>
-                        <TooltipTrigger asChild>
-                            <div className='relative flex cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none transition-colors focus:bg-accent focus:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50'>
-                                <DropdownMenuItem
-                                    onClick={() => onDelete(order.id)}
-                                    disabled={!isPending}
-                                    className="text-destructive focus:text-destructive"
-                                >
-                                    Delete
-                                </DropdownMenuItem>
-                            </div>
-                        </TooltipTrigger>
-                       {!isPending && <TooltipContent><p>Only pending orders can be deleted.</p></TooltipContent>}
-                    </Tooltip>
+                    {canDelete && (
+                         <DropdownMenuItem
+                            onClick={() => onDelete(order.id)}
+                            className="text-destructive focus:text-destructive"
+                        >
+                            Delete
+                        </DropdownMenuItem>
+                    )}
                 </TooltipProvider>
             </DropdownMenuContent>
         </DropdownMenu>
@@ -149,7 +141,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               <TableHead>Tasks</TableHead>
               <TableHead>Priority</TableHead>
               <TableHead>Status</TableHead>
-              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
+              <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -180,11 +172,9 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
                 <TableCell>
                   <Badge variant={statusVariant[order.status]}>{order.status}</Badge>
                 </TableCell>
-                {isAdmin && (
-                  <TableCell className="text-right">
-                      {renderActions(order)}
-                  </TableCell>
-                )}
+                <TableCell className="text-right">
+                    {renderActions(order)}
+                </TableCell>
               </TableRow>
             ))}
           </TableBody>

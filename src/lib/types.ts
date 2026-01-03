@@ -31,18 +31,20 @@ export type Material = {
 export type QualityStatus = 'Good' | 'Low' | 'Very Low';
 export type LiveStatus = 'Normal' | 'Near Low' | 'Low';
 
-export type UserRole = 'admin';
+export type UserRole = 'leadership' | 'admin' | 'technical';
 
 type UserRoleContextType = {
   role: UserRole;
-  setRole: (role: UserRole) => void;
   isAdmin: boolean;
+  isLeadership: boolean;
+  isTechnical: boolean;
 };
 
 export const UserRoleContext = React.createContext<UserRoleContextType>({
-  role: 'admin',
-  setRole: () => {},
-  isAdmin: true,
+  role: 'technical',
+  isAdmin: false,
+  isLeadership: false,
+  isTechnical: true,
 });
 
 export type PaperOnboarding = {

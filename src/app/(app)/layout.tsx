@@ -6,31 +6,29 @@ import {
   Sidebar,
   SidebarHeader,
   SidebarContent,
-  SidebarInset,
 } from '@/components/ui/sidebar';
 import { MainNav } from '@/components/main-nav';
 import { AppHeader } from '@/components/app-header';
 import { Package2 } from 'lucide-react';
-import { UserRoleContext } from '@/lib/types';
-import { UserRole } from '@/lib/types';
+import { UserRoleContext, UserRole } from '@/lib/types';
 import { DataProvider } from '@/context/data-context';
+import { useAuth } from '@/context/auth-context';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const [userRole, setUserRole] = useState<UserRole>('admin');
+  const { user } = useAuth();
   
-  const handleSetRole = (role: UserRole) => {
-    setUserRole(role);
-  };
-
-  const isAdmin = userRole === 'admin';
+  // Default to a non-privileged role if user is not available
+  const userRole = user?.role || 'technical'; 
+  const isAdmin = userRole === 'leadership' || userRole === 'admin';
 
   return (
     <DataProvider>
       <UserRoleContext.Provider
         value={{
           role: userRole,
-          setRole: handleSetRole,
-          isAdmin,
+          isAdmin: isAdmin,
+          isLeadership: userRole === 'leadership',
+          isTechnical: userRole === 'technical',
         }}
       >
         <SidebarProvider>
@@ -49,10 +47,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <MainNav />
             </SidebarContent>
           </Sidebar>
-          <SidebarInset>
+          <div className="flex-1">
             <AppHeader />
             <main className="p-4 sm:p-6 lg:p-8">{children}</main>
-          </SidebarInset>
+          </div>
         </SidebarProvider>
       </UserRoleContext.Provider>
     </DataProvider>

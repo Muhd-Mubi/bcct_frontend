@@ -17,7 +17,9 @@ export default function MaterialsPage() {
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
   const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
-  const { isAdmin } = useContext(UserRoleContext);
+  const { isLeadership, isTechnical } = useContext(UserRoleContext);
+  
+  const canAdd = isLeadership || isTechnical;
 
   const handleAdd = () => {
     setSelectedMaterial(undefined);
@@ -52,7 +54,7 @@ export default function MaterialsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline">Inventory</CardTitle>
-          {isAdmin && (
+          {canAdd && (
             <Button size="sm" onClick={handleAdd}>
               <PlusCircle />
               Add Material

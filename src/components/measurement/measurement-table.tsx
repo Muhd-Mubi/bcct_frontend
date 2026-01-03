@@ -27,7 +27,8 @@ interface MeasurementTableProps {
 }
 
 export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementTableProps) {
-    const { isAdmin } = useContext(UserRoleContext);
+    const { isAdmin, isLeadership } = useContext(UserRoleContext);
+    const canPerformActions = isAdmin || isLeadership;
 
   return (
     <div className="rounded-md border">
@@ -47,7 +48,7 @@ export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementT
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
               <TableCell className="text-center">{usage[measurement.name] || 0}</TableCell>
               <TableCell className="text-right">
-                  {isAdmin ? (
+                  {canPerformActions ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">

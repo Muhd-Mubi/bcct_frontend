@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useContext } from 'react';
 import {
   Table,
   TableBody,
@@ -9,7 +9,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { PaperOnboarding } from '@/lib/types';
+import { PaperOnboarding, UserRoleContext } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -20,6 +20,9 @@ interface OnboardingTableProps {
 }
 
 export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
+  const { isTechnical, isLeadership } = useContext(UserRoleContext);
+  const canRevert = isTechnical || isLeadership;
+
   const calculateTotalPrice = (papers: PaperOnboarding['papers']) => {
     return papers.reduce((total, paper) => total + paper.amount, 0);
   };
@@ -61,14 +64,16 @@ export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
                 )}
               </TableCell>
               <TableCell>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => onRevertClick(item.id)}
-                  disabled={item.isReverted}
-                >
-                  Revert
-                </Button>
+                {canRevert && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => onRevertClick(item.id)}
+                      disabled={item.isReverted}
+                    >
+                      Revert
+                    </Button>
+                )}
               </TableCell>
             </TableRow>
           ))}

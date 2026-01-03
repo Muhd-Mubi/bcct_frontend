@@ -1,11 +1,11 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { OnboardingTable } from '@/components/onboarding/onboarding-table';
-import { PaperOnboarding } from '@/lib/data';
+import { PaperOnboarding, UserRoleContext } from '@/lib/types';
 import { OnboardingFormDialog } from '@/components/onboarding/onboarding-form-dialog';
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/data-context';
@@ -14,10 +14,14 @@ import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirm
 
 export default function OnboardingPage() {
   const { onloadings, saveOnloading, revertOnloading } = useData();
+  const { isLeadership, isTechnical } = useContext(UserRoleContext);
+
   const [isFormOpen, setFormOpen] = useState(false);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedOnloadingId, setSelectedOnloadingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  
+  const canPerformActions = isLeadership || isTechnical;
 
   const handleAddOnloading = () => {
     setFormOpen(true);
@@ -60,10 +64,12 @@ export default function OnboardingPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
-            <Button size="sm" onClick={handleAddOnloading}>
-              <PlusCircle />
-              Add New Purchase
-            </Button>
+            {canPerformActions && (
+              <Button size="sm" onClick={handleAddOnloading}>
+                <PlusCircle />
+                Add New Purchase
+              </Button>
+            )}
           </div>
         </CardHeader>
         <CardContent>

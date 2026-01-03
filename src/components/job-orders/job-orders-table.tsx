@@ -28,7 +28,7 @@ import {
 
 interface JobOrdersTableProps {
   jobOrders: Job[];
-  workOrderCounts: { [jobId: string]: number };
+  workOrderCounts: { [jobId: string]: { total: number; open: number } };
   currentPage: number;
   totalPages: number;
   onPageChange: (page: number) => void;
@@ -39,8 +39,8 @@ interface JobOrdersTableProps {
 export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalPages, onPageChange, onEdit, onDelete }: JobOrdersTableProps) {
   
   const renderActions = (job: Job) => {
-    const workOrderCount = workOrderCounts[job.id] || 0;
-    const canModify = workOrderCount === 0;
+    const openWorkOrderCount = workOrderCounts[job.id]?.open || 0;
+    const canModify = openWorkOrderCount === 0;
 
     return (
       <DropdownMenu>
@@ -60,7 +60,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                   </DropdownMenuItem>
                 </div>
               </TooltipTrigger>
-              {!canModify && <TooltipContent><p>Cannot edit a job with active work orders.</p></TooltipContent>}
+              {!canModify && <TooltipContent><p>Cannot edit a job with open work orders.</p></TooltipContent>}
             </Tooltip>
             <Tooltip>
               <TooltipTrigger asChild>
@@ -74,7 +74,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                   </DropdownMenuItem>
                 </div>
               </TooltipTrigger>
-              {!canModify && <TooltipContent><p>Cannot delete a job with active work orders.</p></TooltipContent>}
+              {!canModify && <TooltipContent><p>Cannot delete a job with open work orders.</p></TooltipContent>}
             </Tooltip>
           </TooltipProvider>
         </DropdownMenuContent>
@@ -109,7 +109,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="text-center">{workOrderCounts[job.id] || 0}</TableCell>
+                <TableCell className="text-center">{workOrderCounts[job.id]?.total || 0}</TableCell>
                 <TableCell className="text-right">{renderActions(job)}</TableCell>
               </TableRow>
             ))}

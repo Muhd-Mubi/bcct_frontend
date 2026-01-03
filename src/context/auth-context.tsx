@@ -2,33 +2,63 @@
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
+import { UserRole } from '@/lib/types';
+
+interface User {
+    username: string;
+    name: string;
+    email: string;
+    role: UserRole;
+}
 
 interface AuthContextType {
-  user: any;
+  user: User | null;
   login: (username: string, pass: string) => boolean;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
+const mockUsers: Record<string, { pass: string, user: User }> = {
+    leadership: {
+        pass: 'password',
+        user: { username: 'leadership', name: 'Leadership User', email: 'leadership@bcct.com', role: 'leadership' }
+    },
+    admin: {
+        pass: 'password',
+        user: { username: 'admin', name: 'Admin User', email: 'admin@bcct.com', role: 'admin' }
+    },
+    technical: {
+        pass: 'password',
+        user: { username: 'technical', name: 'Technical Staff', email: 'tech@bcct.com', role: 'technical' }
+    }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    // On initial load, check if user is logged in (e.g., from a token in localStorage)
-    // For this simple example, we'll just check if the user state is set.
+    const storedUser = sessionStorage.getItem('user');
+    if (storedUser) {
+        setUser(JSON.parse(storedUser));
+    } else if (pathname !== '/login') {
+      router.push('/login');
+    }
+  }, []);
+
+  useEffect(() => {
     if (!user && pathname !== '/login') {
       router.push('/login');
     }
   }, [user, pathname, router]);
 
   const login = (username: string, pass: string) => {
-    // Hardcoded credentials
-    if (username === 'admin' && pass === 'password') {
-      const userData = { username: 'admin', name: 'Admin User' };
-      setUser(userData);
+    const userData = mockUsers[username];
+    if (userData && userData.pass === pass) {
+      setUser(userData.user);
+      sessionStorage.setItem('user', JSON.stringify(userData.user));
       return true;
     }
     return false;
@@ -36,6 +66,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = () => {
     setUser(null);
+    sessionStorage.removeItem('user');
     router.push('/login');
   };
 

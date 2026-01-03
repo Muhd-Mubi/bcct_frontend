@@ -10,35 +10,34 @@ import {
 import {
   LayoutDashboard,
   Package,
-  FileText,
   Settings,
-  ClipboardList,
   PackagePlus,
-  Warehouse,
-  Ruler,
-  Briefcase,
-  FileCheck,
   BookCopy,
   FileSearch,
+  Briefcase,
+  FileCheck,
+  Ruler
 } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { useContext } from 'react';
 import { UserRoleContext } from '@/lib/types';
 
 export function MainNav() {
   const pathname = usePathname();
+  const { role } = useContext(UserRoleContext);
 
-  const navItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/job-orders', label: 'Job Orders', icon: Briefcase },
-    { href: '/work-order', label: 'Work Orders', icon: FileCheck },
-    { href: '/materials', label: 'Inventory', icon: Package },
-    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus },
-    { href: '/stock-register', label: 'Stock Register', icon: BookCopy },
-    { href: '/measurement', label: 'Measurement', icon: Ruler },
-    { href: '/work-order-viewer', label: 'Work Order Viewer', icon: FileSearch },
-    { href: '/settings', label: 'Settings', icon: Settings },
+  const allNavItems = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/job-orders', label: 'Job Orders', icon: Briefcase, roles: ['leadership', 'admin'] },
+    { href: '/work-order', label: 'Work Orders', icon: FileCheck, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/materials', label: 'Inventory', icon: Package, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/stock-register', label: 'Stock Register', icon: BookCopy, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/measurement', label: 'Measurement', icon: Ruler, roles: ['leadership', 'admin'] },
+    { href: '/work-order-viewer', label: 'Work Order Viewer', icon: FileSearch, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/settings', label: 'Settings', icon: Settings, roles: ['leadership', 'admin', 'technical'] },
   ];
+
+  const navItems = allNavItems.filter(item => item.roles.includes(role));
 
   return (
     <nav className="p-2">

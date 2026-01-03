@@ -1,18 +1,27 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useContext } from 'react';
 import { PlusCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/data-context';
-import { Job } from '@/lib/types';
+import { Job, UserRoleContext } from '@/lib/types';
 import { JobOrdersTable } from '@/components/job-orders/job-orders-table';
 import { CreateJobOrderDialog } from '@/components/job-orders/create-job-order-dialog';
 import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-dialog';
+import { useRouter } from 'next/navigation';
 
 export default function JobOrdersPage() {
   const { jobOrders, workOrders, saveJobOrder, deleteJobOrder } = useData();
+  const { role } = useContext(UserRoleContext);
+  const router = useRouter();
+
+  if (role === 'technical') {
+    router.push('/dashboard');
+    return null;
+  }
+
   const [isCreateOpen, setCreateOpen] = useState(false);
   const [isDeleteOpen, setDeleteOpen] = useState(false);
   const [selectedJob, setSelectedJob] = useState<Job | undefined>(undefined);
@@ -22,9 +31,13 @@ export default function JobOrdersPage() {
   const jobsPerPage = 10;
   
   const jobWorkOrderCounts = useMemo(() => {
-    const counts: { [jobId: string]: number } = {};
+    const counts: { [jobId: string]: { total: number; open: number } } = {};
     jobOrders.forEach(job => {
-        counts[job.id] = workOrders.filter(wo => wo.jobId === job.id).length;
+        const relatedWos = workOrders.filter(wo => wo.jobId === job.id);
+        counts[job.id] = {
+            total: relatedWos.length,
+            open: relatedWos.filter(wo => wo.status === 'Pending' || wo.status === 'In Progress').length
+        };
     });
     return counts;
   }, [jobOrders, workOrders]);

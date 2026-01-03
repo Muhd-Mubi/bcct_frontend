@@ -33,7 +33,10 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
   const [searchTerm, setSearchTerm] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
-  const { isAdmin } = useContext(UserRoleContext);
+  const { isLeadership, isAdmin, isTechnical } = useContext(UserRoleContext);
+  
+  const canEdit = isLeadership || isTechnical;
+  const canDelete = isLeadership || isAdmin;
 
   const filteredAndSortedData = useMemo(() => {
     let filtered = data.filter((m) =>
@@ -107,7 +110,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                 <TableCell>{material.unitQuantity}</TableCell>
                 <TableCell>{material.extraSheets}</TableCell>
                 <TableCell>
-                  {isAdmin ? (
+                  {(canEdit || canDelete) ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">
@@ -116,15 +119,19 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                         </Button>
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onEdit(material)}>
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => onDelete(material._id)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
+                        {canEdit && (
+                            <DropdownMenuItem onClick={() => onEdit(material)}>
+                              Edit
+                            </DropdownMenuItem>
+                        )}
+                        {canDelete && (
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => onDelete(material._id)}
+                            >
+                              Delete
+                            </DropdownMenuItem>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (

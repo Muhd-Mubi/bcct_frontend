@@ -30,6 +30,8 @@ const priorityOrder: Record<WorkOrderPriority, number> = {
   Low: 3,
 };
 
+const dateSortOrder = (a: WorkOrder, b: WorkOrder) => new Date(b.date).getTime() - new Date(a.date).getTime();
+
 export default function WorkOrdersPage() {
   const {
     workOrders,
@@ -54,7 +56,7 @@ export default function WorkOrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriority[]>([]);
-  const { isAdmin } = useContext(UserRoleContext);
+  const { isAdmin, isLeadership } = useContext(UserRoleContext);
 
 
   const handleCreateNew = () => {
@@ -140,9 +142,11 @@ export default function WorkOrdersPage() {
         if (priorityComparison !== 0) {
           return priorityComparison;
         }
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
+        return dateSortOrder(a, b);
       });
   }, [workOrders, searchTerm, statusFilter, priorityFilter]);
+
+  const canCreate = isLeadership || isAdmin;
 
   return (
     <div className="space-y-6">
@@ -207,7 +211,7 @@ export default function WorkOrdersPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {isAdmin && (
+            {canCreate && (
               <Button size="sm" onClick={handleCreateNew}>
                 <PlusCircle />
                 Create New Work Order

@@ -10,15 +10,23 @@ import { MeasurementFormDialog } from '@/components/measurement/measurement-form
 import { Measurement } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
+import { useRouter } from 'next/navigation';
 
 
 export default function MeasurementPage() {
     const { measurements, materials, saveMeasurement, updateMeasurement, deleteMeasurement } = useData();
+    const { isAdmin, isLeadership } = useContext(UserRoleContext);
+    const router = useRouter();
+
+    if (!isAdmin && !isLeadership) {
+        router.push('/dashboard');
+        return null;
+    }
+
     const [isFormOpen, setFormOpen] = useState(false);
     const [isConfirmOpen, setConfirmOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const [measurementToDelete, setMeasurementToDelete] = useState<string | null>(null);
-    const { isAdmin } = useContext(UserRoleContext);
     
     const measurementUsage = useMemo(() => {
         const counts: { [key: string]: number } = {};
@@ -68,7 +76,7 @@ export default function MeasurementPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline">Measurements</CardTitle>
-            {isAdmin && (
+            {(isAdmin || isLeadership) && (
                 <Button size="sm" onClick={handleAdd}>
                   <PlusCircle />
                   Add Measurement

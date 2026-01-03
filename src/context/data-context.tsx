@@ -1,8 +1,7 @@
-
 'use client';
 
 import React, { createContext, useContext, useState, ReactNode, useCallback } from 'react';
-import { initialMaterials, initialOnloadings, initialJobOrders, initialWorkOrders, initialMeasurements, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, APIMaterial, Job, WorkOrderPriority, JobItem } from '@/lib/data';
+import { initialMaterials, initialOnloadings, initialJobOrders, initialWorkOrders, initialMeasurements, Material, PaperOnboarding, Measurement, WorkOrder, WorkOrderStatus, MaterialsUsed, Job, JobItem, UserRoleContext } from '@/lib/data';
 import { useToast } from '@/hooks/use-toast';
 
 type NewMaterialsUsed = Omit<MaterialsUsed, 'materialName'>;
@@ -162,6 +161,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     } else {
       const newJob: Job = {
         ...jobData as Omit<Job, 'date'>,
+        id: `job-${Date.now()}`,
         date: new Date().toISOString(),
       };
       setJobOrders(prev => [newJob, ...prev]);
@@ -169,6 +169,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
   const deleteJobOrder = (jobId: string) => {
+    const openWorkOrders = workOrders.filter(wo => wo.jobId === jobId && (wo.status === 'Pending' || wo.status === 'In Progress')).length;
+    if (openWorkOrders > 0) {
+        toast({ title: "Error", description: "Cannot delete a job order with open work orders.", variant: 'destructive' });
+        return;
+    }
     setJobOrders(prev => prev.filter(j => j.id !== jobId));
   };
   

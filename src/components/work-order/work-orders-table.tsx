@@ -143,6 +143,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead>No.</TableHead>
               <TableHead>Job Order ID</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Tasks</TableHead>
@@ -152,8 +153,9 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedWorkOrders.map((order) => (
+            {paginatedWorkOrders.map((order, index) => (
               <TableRow key={order.id} onClick={(e) => handleRowClick(e, order)} className="cursor-pointer">
+                <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
                 <TableCell className="font-medium">
                   <Link
                     href={`/work-order-viewer?id=${order.id}`}

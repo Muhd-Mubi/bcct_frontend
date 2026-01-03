@@ -24,6 +24,12 @@ import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-s
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
 
+const priorityOrder: Record<WorkOrderPriority, number> = {
+  High: 1,
+  Medium: 2,
+  Low: 3,
+};
+
 export default function WorkOrdersPage() {
   const {
     workOrders,
@@ -129,7 +135,13 @@ export default function WorkOrdersPage() {
       .filter((o) => o.jobId.toLowerCase().includes(searchTerm.toLowerCase()))
       .filter((o) => statusFilter.length === 0 || statusFilter.includes(o.status))
       .filter((o) => priorityFilter.length === 0 || priorityFilter.includes(o.priority))
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+      .sort((a, b) => {
+        const priorityComparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+        if (priorityComparison !== 0) {
+          return priorityComparison;
+        }
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      });
   }, [workOrders, searchTerm, statusFilter, priorityFilter]);
 
   return (

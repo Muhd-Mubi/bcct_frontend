@@ -20,6 +20,10 @@ interface OnboardingTableProps {
 }
 
 export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
+  const calculateTotalPrice = (papers: PaperOnboarding['papers']) => {
+    return papers.reduce((total, paper) => total + paper.amount, 0);
+  };
+
   return (
     <div className="rounded-md border overflow-x-auto">
       <Table>
@@ -28,7 +32,7 @@ export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
             <TableHead>Date</TableHead>
             <TableHead>Supplier</TableHead>
             <TableHead>Papers</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Total Price</TableHead>
             <TableHead>Actions</TableHead>
           </TableRow>
         </TableHeader>
@@ -41,13 +45,20 @@ export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
               <TableCell>{item.supplier}</TableCell>
               <TableCell>
                  <div className="flex flex-col gap-1 text-xs">
-                    {item.papers.map((p, index) => (
-                      <span key={index}>{p.paperType} (Units: {p.unitQuantity}, Amount: Rs {p.amount.toFixed(2)})</span>
-                    ))}
+                    {item.papers.map((p, index) => {
+                      const unitPrice = p.unitQuantity > 0 ? p.amount / p.unitQuantity : 0;
+                      return (
+                        <span key={index}>{p.paperType} (Units: {p.unitQuantity}, Amount: Rs {unitPrice.toFixed(2)} / Unit)</span>
+                      )
+                    })}
                   </div>
               </TableCell>
               <TableCell>
-                {item.isReverted && <Badge variant="destructive">Reverted</Badge>}
+                {item.isReverted ? (
+                    <Badge variant="destructive">Reverted</Badge>
+                ) : (
+                    `Rs ${calculateTotalPrice(item.papers).toFixed(2)}`
+                )}
               </TableCell>
               <TableCell>
                 <Button

@@ -15,6 +15,7 @@ interface AuthContextType {
   user: User | null;
   login: (username: string, pass: string) => boolean;
   logout: () => void;
+  switchRole: (role: UserRole) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -70,7 +71,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.push('/login');
   };
 
-  const value = { user, login, logout };
+  const switchRole = (role: UserRole) => {
+    if (mockUsers[role]) {
+        login(role, mockUsers[role].pass);
+        router.push('/dashboard');
+    }
+  };
+
+  const value = { user, login, logout, switchRole };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

@@ -36,7 +36,7 @@ export default function DashboardPage() {
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
   );
 
-  const pendingWorkOrders = workOrders.filter(o => o.status === 'Pending').length;
+  const pendingWorkOrders = workOrders.filter(o => o.status === 'Pending' || o.status === 'In Progress').length;
   
   const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
 

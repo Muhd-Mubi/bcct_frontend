@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useContext, useState } from 'react';
+import Link from 'next/link';
 import {
   Table,
   TableBody,
@@ -29,7 +30,6 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
-  onRowClick: (order: WorkOrder) => void;
   onStatusChange: (orderId: string, newStatus: WorkOrderStatus) => void;
   onView: (order: WorkOrder) => void;
   onEdit: (order: WorkOrder) => void;
@@ -49,7 +49,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
     Low: 'default'
 }
 
-export function WorkOrdersTable({ workOrders, onRowClick, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
+export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
   const { isAdmin } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -60,6 +60,14 @@ export function WorkOrdersTable({ workOrders, onRowClick, onStatusChange, onView
   );
 
   const totalPages = Math.ceil(workOrders.length / itemsPerPage);
+
+  const handleRowClick = (e: React.MouseEvent, order: WorkOrder) => {
+    // Check if the click was on the action menu trigger
+    if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]')) {
+      return;
+    }
+    onView(order);
+  };
 
   const renderActions = (order: WorkOrder) => {
       const isPending = order.status === 'Pending';
@@ -145,8 +153,17 @@ export function WorkOrdersTable({ workOrders, onRowClick, onStatusChange, onView
           </TableHeader>
           <TableBody>
             {paginatedWorkOrders.map((order) => (
-              <TableRow key={order.id} onClick={() => onRowClick(order)} className="cursor-pointer">
-                <TableCell className="font-medium">{order.jobId}</TableCell>
+              <TableRow key={order.id} onClick={(e) => handleRowClick(e, order)} className="cursor-pointer">
+                <TableCell className="font-medium">
+                  <Link
+                    href={`/work-order-viewer?id=${order.id}`}
+                    target="_blank"
+                    className="hover:underline text-primary"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {order.jobId}
+                  </Link>
+                </TableCell>
                 <TableCell>{format(parseISO(order.date), 'PP')}</TableCell>
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">

@@ -206,7 +206,6 @@ export default function WorkOrdersPage() {
         <CardContent>
           <WorkOrdersTable
             workOrders={filteredAndSortedWorkOrders}
-            onRowClick={handleViewClick}
             onStatusChange={handleStatusChangeClick}
             onView={handleViewClick}
             onEdit={handleEdit}

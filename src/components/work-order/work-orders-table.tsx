@@ -29,6 +29,7 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
+  onRowClick: (order: WorkOrder) => void;
   onStatusChange: (orderId: string, newStatus: WorkOrderStatus) => void;
   onView: (order: WorkOrder) => void;
   onEdit: (order: WorkOrder) => void;
@@ -48,7 +49,7 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
     Low: 'default'
 }
 
-export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
+export function WorkOrdersTable({ workOrders, onRowClick, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
   const { isAdmin } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
@@ -72,7 +73,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
+            <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
                 <DropdownMenuItem onClick={() => onView(order)}>
                   View Details
                 </DropdownMenuItem>
@@ -144,7 +145,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
           </TableHeader>
           <TableBody>
             {paginatedWorkOrders.map((order) => (
-              <TableRow key={order.id}>
+              <TableRow key={order.id} onClick={() => onRowClick(order)} className="cursor-pointer">
                 <TableCell className="font-medium">{order.jobId}</TableCell>
                 <TableCell>{format(parseISO(order.date), 'PP')}</TableCell>
                 <TableCell className="text-xs">

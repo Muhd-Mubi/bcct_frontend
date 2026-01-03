@@ -43,8 +43,8 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
             Complete information for Job Order ID: {workOrder.jobId}
           </DialogDescription>
         </DialogHeader>
-        <ScrollArea className="max-h-[60vh] p-4">
-          <div className="space-y-4 text-sm">
+        <ScrollArea className="max-h-[60vh] pr-4">
+          <div className="space-y-4 py-4 text-sm">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Date Created:</span>
               <span className="font-medium">{format(parseISO(workOrder.date), 'PPP')}</span>

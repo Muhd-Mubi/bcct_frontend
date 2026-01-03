@@ -145,8 +145,8 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <ScrollArea className="max-h-[60vh] p-4">
-              <div className="space-y-4">
+            <ScrollArea className="max-h-[60vh] pr-4">
+              <div className="space-y-4 py-4">
                  {isEditing && workOrder && (
                      <div className='flex justify-between items-center'>
                         <FormItem>

@@ -79,7 +79,7 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSave)}>
-            <ScrollArea className="max-h-[60vh] p-4">
+            <ScrollArea className="max-h-[60vh] pr-4">
               <div className="space-y-4">
                 <FormField
                   control={form.control}

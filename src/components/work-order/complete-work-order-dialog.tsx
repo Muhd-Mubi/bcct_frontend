@@ -86,8 +86,8 @@ export function CompleteWorkOrderDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <ScrollArea className="max-h-[60vh] p-4">
-              <div className="space-y-4">
+            <ScrollArea className="max-h-[60vh] pr-4">
+              <div className="space-y-4 py-4">
                 {fields.map((field, index) => (
                   <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
                     <div className="grid grid-cols-2 gap-2 flex-grow">
@@ -140,12 +140,13 @@ export function CompleteWorkOrderDialog({
                     </Button>
                   </div>
                 ))}
-              </div>
+              
               
               <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', quantity: 1 })} className="mt-4">
                 <PlusCircle className="mr-2 h-4 w-4" />
                 Add Another Paper Type
               </Button>
+              </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
                <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>

@@ -19,7 +19,13 @@ export const generateStockLedgerPDF = (material: Material, ledgerData: StockLedg
   const doc = new jsPDF() as jsPDFWithAutoTable;
   
   // Add Header
-  doc.addImage(kuLogoBase64, 'PNG', 15, 10, 40, 15);
+  if (kuLogoBase64) {
+    try {
+        doc.addImage(kuLogoBase64, 'PNG', 15, 10, 40, 15);
+    } catch (e) {
+        console.error("Failed to add logo to PDF:", e);
+    }
+  }
   doc.setFontSize(22);
   doc.setFont('helvetica', 'bold');
   doc.text('Stock Ledger Report', 105, 20, { align: 'center' });

@@ -96,12 +96,14 @@ export type WorkOrder = {
 };
 
 export type StockLedgerEntry = {
-    date: string;
-    materialName: string;
-    source: 'Onboarding' | 'Work Order';
-    jobId: string; // Can be Job Order ID or Supplier Name
-    change: number;
+    id: string;
+    jobId: string; // Job Order ID or Supplier Name
+    workOrderId?: string;
+    type: "WORK_ORDER" | "ONBOARDING" | "ONBOARDING_REVERSAL" | "WORK_ORDER_REVERSAL";
     unitQuantity: number;
-    amount: number;
-    updatedStock: number;
+    extraSheets: number;
+    changeInSheets: number;
+    stockBefore: { units: number; extraSheets: number };
+    stockAfter: { units: number; extraSheets: number };
+    date: string;
 };

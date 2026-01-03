@@ -18,6 +18,7 @@ import {
   Ruler,
   Briefcase,
   FileCheck,
+  BookCopy,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useContext } from 'react';
@@ -32,6 +33,7 @@ export function MainNav() {
     { href: '/work-order', label: 'Work Orders', icon: FileCheck },
     { href: '/materials', label: 'Inventory', icon: Package },
     { href: '/onboarding', label: 'Onboarding', icon: PackagePlus },
+    { href: '/stock-register', label: 'Stock Register', icon: BookCopy },
     { href: '/reports', label: 'Reports', icon: FileText },
     { href: '/measurement', label: 'Measurement', icon: Ruler },
     { href: '/settings', label: 'Settings', icon: Settings },

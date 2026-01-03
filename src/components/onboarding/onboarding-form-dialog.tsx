@@ -62,7 +62,7 @@ export function OnboardingFormDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       supplier: '',
-      papers: [{ paperType: '', unitQuantity: 0, amount: 0 }],
+      papers: [{ paperType: '', unitQuantity: 1, amount: 0 }],
     },
   });
 

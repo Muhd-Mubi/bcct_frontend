@@ -19,6 +19,7 @@ import {
   Briefcase,
   FileCheck,
   BookCopy,
+  FileSearch,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useContext } from 'react';
@@ -35,6 +36,7 @@ export function MainNav() {
     { href: '/onboarding', label: 'Onboarding', icon: PackagePlus },
     { href: '/stock-register', label: 'Stock Register', icon: BookCopy },
     { href: '/measurement', label: 'Measurement', icon: Ruler },
+    { href: '/work-order-viewer', label: 'Work Order Viewer', icon: FileSearch },
     { href: '/settings', label: 'Settings', icon: Settings },
   ];
 

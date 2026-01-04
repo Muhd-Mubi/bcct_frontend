@@ -76,6 +76,33 @@ export default function MeasurementPage() {
     //     return null;
     // }
 
+    const data = [
+            {
+                "_id": "695892a23726575a864a5013",
+                "name": "Ream",
+                "sheetsPerUnit": 500,
+                "__v": 0,
+                "numberOfMaterials": 2,
+                "id": "695892a23726575a864a5013"
+            },
+            {
+                "_id": "695a11be0a9c44dad40b8116",
+                "name": "Packet",
+                "sheetsPerUnit": 100,
+                "__v": 0,
+                "numberOfMaterials": 0,
+                "id": "695a11be0a9c44dad40b8116"
+            },
+            {
+                "_id": "695a11cc0a9c44dad40b8119",
+                "name": "Single sheet",
+                "sheetsPerUnit": 1,
+                "__v": 0,
+                "numberOfMaterials": 0,
+                "id": "695a11cc0a9c44dad40b8119"
+            }
+        ]
+
     return (
     <div className="space-y-6">
       <Card>
@@ -90,7 +117,7 @@ export default function MeasurementPage() {
         </CardHeader>
         <CardContent>
           <MeasurementTable
-            data={measurements.filter(Boolean)}
+            data={data}
             usage={measurementUsage}
             onEdit={handleEdit}
             onDelete={handleDelete}

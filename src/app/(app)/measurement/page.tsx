@@ -11,7 +11,8 @@ import { Measurement } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 import { useRouter } from 'next/navigation';
-import { useGetMeasurements } from '@/api/react-query/queries/measurement'
+import { useGetMeasurements, useEditMeasurement } from '@/api/react-query/queries/measurement'
+import { toast } from 'react-toastify';
 
 
 export default function MeasurementPage() {
@@ -29,6 +30,15 @@ export default function MeasurementPage() {
     const [isConfirmOpen, setConfirmOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const [measurementToDelete, setMeasurementToDelete] = useState<string | null>(null);
+
+    const { data, isLoading, error, refetch } = useGetMeasurements();
+    const {
+        mutate: editMeasurement,
+        isPending,
+        isError,
+        error: editError,
+        isSuccess,
+    } = useEditMeasurement();
 
     const measurementUsage = useMemo(() => {
         const counts: { [key: string]: number } = {};
@@ -64,13 +74,21 @@ export default function MeasurementPage() {
         setMeasurementToDelete(null);
     };
 
-    const handleSave = (measurementData: Measurement | Omit<Measurement, '_id'>) => {
-        if ('_id' in measurementData && measurementData._id) {
-            updateMeasurement(measurementData as Measurement);
-        } else {
-            saveMeasurement(measurementData as Omit<Measurement, '_id'>);
+    const handleSave = (measurementData: Measurement) => {
+        const updatedData = {
+            id: measurementData?._id,
+            data: measurementData
         }
-        setFormOpen(false);
+        editMeasurement(updatedData, {
+            onSuccess: (data) => {
+                toast.success(data.message);
+                refetch()
+                setFormOpen(false);
+            },
+            onError: (error) => {
+                toast.success(error.message);
+            },
+        })
     };
 
     // if (!isAdmin && !isLeadership) {
@@ -104,8 +122,6 @@ export default function MeasurementPage() {
     //     }
     // ]
 
-    const { data, isLoading, error } = useGetMeasurements();
-
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>{error.message}</p>;
 
@@ -136,6 +152,7 @@ export default function MeasurementPage() {
                 onOpenChange={setFormOpen}
                 onSave={handleSave}
                 measurement={selectedMeasurement}
+                disableButtons={isPending}
             />
 
             <DeleteConfirmationDialog

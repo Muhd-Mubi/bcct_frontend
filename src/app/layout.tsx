@@ -6,6 +6,8 @@ import { AuthProvider } from '@/context/auth-context';
 import Providers from '@/app/providers'
 import { Inter, Space_Grotesk, PT_Sans, Roboto_Mono, Rubik } from 'next/font/google';
 import { cn } from '@/lib/utils';
+ import { ToastContainer } from 'react-toastify';
+
 
 const ptSans = PT_Sans({
   subsets: ['latin'],
@@ -56,6 +58,7 @@ export default function RootLayout({
           <AuthProvider>
             <Providers>{children}</Providers>
             <Toaster />
+            <ToastContainer />
           </AuthProvider>
         </ThemeProvider>
       </body>

@@ -38,6 +38,7 @@ interface MeasurementFormDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: (measurement: FormValues) => void;
   measurement?: Measurement;
+  disableButtons?: boolean 
 }
 
 export function MeasurementFormDialog({
@@ -45,6 +46,7 @@ export function MeasurementFormDialog({
   onOpenChange,
   onSave,
   measurement,
+  disableButtons
 }: MeasurementFormDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -118,8 +120,8 @@ export function MeasurementFormDialog({
               </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit">Save</Button>
+              <Button disabled={disableButtons} type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button disabled={disableButtons} type="submit">Save</Button>
             </DialogFooter>
           </form>
         </Form>

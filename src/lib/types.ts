@@ -97,13 +97,13 @@ export type WorkOrder = {
   _id: string;
   job: string;
   tasks: JobItem[];
-  description: string;
+  description?: string;
   priority: WorkOrderPriority ;
   status: WorkOrderStatus;
   createdAt: string | Date;
-  deliveryDate : Date | null
+  deliveryDate?: Date | null
   materialsUsed?: MaterialsUsed[];
-  __v : number
+  __v? : number
 };
 
 export type StockLedgerEntry = {

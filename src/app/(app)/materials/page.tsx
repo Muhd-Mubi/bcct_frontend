@@ -49,6 +49,23 @@ export default function MaterialsPage() {
     setFormOpen(false);
   };
 
+     const data = [
+        {
+            "_id": "695896020cb268e7e9c60845",
+            "name": "A4",
+            "measurement": "Ream",
+            "unitQuantity": 1,
+            "extraSheets": 22
+        },
+        {
+            "_id": "695896900cb268e7e9c60852",
+            "name": "A3",
+            "measurement": "Ream",
+            "unitQuantity": 1,
+            "extraSheets": 236
+        }
+    ]
+
   return (
     <div className="space-y-6">
       <Card>
@@ -63,7 +80,7 @@ export default function MaterialsPage() {
         </CardHeader>
         <CardContent>
           <MaterialsTable
-            data={materials}
+            data={data}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

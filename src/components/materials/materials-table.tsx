@@ -96,7 +96,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
           <TableHeader>
             <TableRow>
               <SortableHeader sortKeyName="name">Name</SortableHeader>
-              <SortableHeader sortKeyName="type">Measurement Unit</SortableHeader>
+              <SortableHeader sortKeyName="measurement">Measurement Unit</SortableHeader>
               <SortableHeader sortKeyName="unitQuantity">Unit Quantity</SortableHeader>
               <SortableHeader sortKeyName="extraSheets">Extra Sheets</SortableHeader>
               <TableHead>Actions</TableHead>
@@ -106,7 +106,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
             {filteredAndSortedData.map((material) => (
               <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
-                <TableCell>{material.type}</TableCell>
+                <TableCell>{material.measurement}</TableCell>
                 <TableCell>{material.unitQuantity}</TableCell>
                 <TableCell>{material.extraSheets}</TableCell>
                 <TableCell>

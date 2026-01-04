@@ -19,13 +19,14 @@ export type APIMaterial = {
 export type Material = {
   _id: string;
   name: string;
-  type: string; // Will be 'N/A' if measurementId is null
+  type?: string; // Will be 'N/A' if measurementId is null
+  measurement : string;
   unitQuantity: number;
   extraSheets: number;
-  currentStock: number;
-  maxStock: number;
-  reorderThreshold: number;
-  lastUpdated: string;
+  currentStock?: number;
+  maxStock?: number;
+  reorderThreshold?: number;
+  lastUpdated?: string;
 };
 
 export type QualityStatus = 'Good' | 'Low' | 'Very Low';

@@ -10,7 +10,9 @@ import { MaterialFormDialog } from '@/components/materials/material-form-dialog'
 import { UserRoleContext } from '@/lib/types';
 import { useData } from '@/context/data-context';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
-import { useGeMaterials } from '@/api/react-query/queries/material'
+import { useGetMeasurements } from '@/api/react-query/queries/measurement'
+import { useGeMaterials, useCreateMaterial } from '@/api/react-query/queries/material'
+import { toast } from 'react-toastify';
 
 export default function MaterialsPage() {
   const { materials, saveMaterial, deleteMaterial } = useData();
@@ -20,7 +22,12 @@ export default function MaterialsPage() {
   const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
   const { isLeadership, isTechnical } = useContext(UserRoleContext);
 
+  const { data : measurementData, isLoading : isLoadingMeasurement, error : isErrorMeasurement } = useGetMeasurements();
   const { data, isLoading, error, refetch } = useGeMaterials();
+  const {
+    mutate: createMeasurement,
+    isPending: creatingMeasurement,
+  } = useCreateMaterial();
 
   const canAdd = isLeadership || isTechnical;
 
@@ -47,10 +54,26 @@ export default function MaterialsPage() {
     setMaterialToDelete(null);
   };
 
-  const handleSave = (materialData: Omit<Material, '_id'> | Material) => {
-    saveMaterial(materialData);
-    setFormOpen(false);
+  const handleSave = (materialData: Material) => {
+    const newData = {
+      data: materialData,
+    }
+    createMeasurement(newData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        refetch()
+        closeCreateEditModal();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
   };
+
+  const closeCreateEditModal = () => {
+    setSelectedMaterial(undefined);
+    setFormOpen(false);
+  }
 
   // const data = [
   //   {
@@ -71,6 +94,8 @@ export default function MaterialsPage() {
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
+
+  const disableButtons = creatingMeasurement
 
   return (
     <div className="space-y-6">
@@ -95,9 +120,12 @@ export default function MaterialsPage() {
 
       <MaterialFormDialog
         isOpen={isFormOpen}
-        onOpenChange={setFormOpen}
+        onCLose={closeCreateEditModal}
         onSave={handleSave}
         material={selectedMaterial}
+        disableButtons={disableButtons}
+        measurementsList={measurementData?.measurements || []}
+        loadingMeasurements={isLoadingMeasurement}
       />
 
       <DeleteConfirmationDialog

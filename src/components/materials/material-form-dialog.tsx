@@ -32,6 +32,7 @@ import {
 import { Material } from '@/lib/types';
 import { useData } from '@/context/data-context';
 import { ScrollArea } from '../ui/scroll-area';
+import { Measurement } from '@/lib/types';
 
 const formSchema = z.object({
   _id: z.string().optional(),
@@ -46,16 +47,22 @@ type MaterialPayload = (Omit<Material, '_id' | 'currentStock' | 'maxStock' | 're
 
 interface MaterialFormDialogProps {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  onCLose: () => void;
   onSave: (material: MaterialPayload) => void;
   material?: Material;
+  disableButtons?: boolean;
+  measurementsList: Measurement[];
+  loadingMeasurements?: boolean
 }
 
 export function MaterialFormDialog({
   isOpen,
-  onOpenChange,
+  onCLose,
   onSave,
   material,
+  disableButtons,
+  measurementsList,
+  loadingMeasurements = false
 }: MaterialFormDialogProps) {
   const { measurements } = useData();
   const form = useForm<FormValues>({
@@ -68,24 +75,24 @@ export function MaterialFormDialog({
       extraSheets: 0,
     },
   });
-  
+
   useEffect(() => {
     if (isOpen) {
-        if (material) {
-          const measurement = measurements.find(m => m.name === material.type);
-          form.reset({
-            ...material,
-            measurementId: measurement?._id || '',
-          });
-        } else {
-          form.reset({
-            _id: undefined,
-            name: '', 
-            measurementId: '', 
-            unitQuantity: 0, 
-            extraSheets: 0
-          });
-        }
+      if (material) {
+        const measurement = measurements.find(m => m.name === material.type);
+        form.reset({
+          ...material,
+          measurementId: measurement?._id || '',
+        });
+      } else {
+        form.reset({
+          _id: undefined,
+          name: '',
+          measurementId: '',
+          unitQuantity: 0,
+          extraSheets: 0
+        });
+      }
     }
   }, [material, form, isOpen, measurements]);
 
@@ -95,7 +102,7 @@ export function MaterialFormDialog({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle className="font-headline">
@@ -122,31 +129,33 @@ export function MaterialFormDialog({
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="measurementId"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Measurement Unit (Optional)</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder="Select a unit" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {measurements.map(m => (
-                            <SelectItem key={m._id} value={m._id}>{m.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                {!loadingMeasurements && (
+                  <FormField
+                    control={form.control}
+                    name="measurementId"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Measurement Unit (Optional)</FormLabel>
+                        <Select
+                          onValueChange={field.onChange}
+                          value={field.value}
+                        >
+                          <FormControl>
+                            <SelectTrigger>
+                              <SelectValue placeholder="Select a unit" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {measurementsList.map(m => (
+                              <SelectItem key={m._id} value={m._id}>{m.name}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                )}
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
                     control={form.control}
@@ -178,8 +187,8 @@ export function MaterialFormDialog({
               </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit">Save</Button>
+              <Button type="button" variant="outline" disabled={disableButtons} onClick={onCLose}>Cancel</Button>
+              <Button type="submit" disabled={disableButtons}>Save</Button>
             </DialogFooter>
           </form>
         </Form>

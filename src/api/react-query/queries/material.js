@@ -9,15 +9,15 @@ export function useGeMaterials() {
   });
 }
 
-// export function useCreateMeasurement() {
-//   return useMutation({
-//     mutationFn: ({ data }) =>
-//       apiClient(`/measurement/create-measurement`, {
-//         method: 'POST',
-//         body: data,
-//       }),
-//   });
-// }
+export function useCreateMaterial() {
+  return useMutation({
+    mutationFn: ({ data }) =>
+      apiClient(`/material/create-material`, {
+        method: 'POST',
+        body: data,
+      }),
+  });
+}
 
 // export function useEditMeasurement() {
 //   return useMutation({

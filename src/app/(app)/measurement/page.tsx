@@ -127,7 +127,7 @@ export default function MeasurementPage() {
                 onSuccess: (data) => {
                     toast.success(data.message);
                     refetch()
-                    setFormOpen(false);
+                    closeCreateEditModal();
                 },
                 onError: (error) => {
                     toast.error(error.message);

@@ -84,9 +84,9 @@ export default function JobOrdersPage() {
 
   const totalPages = Math.ceil(filteredJobOrders.length / jobsPerPage);
   
-  if (role === 'technical') {
-    return null;
-  }
+  // if (role === 'technical') {
+  //   return null;
+  // }
 
   return (
     <div className="space-y-6">

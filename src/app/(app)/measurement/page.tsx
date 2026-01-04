@@ -72,9 +72,9 @@ export default function MeasurementPage() {
         setFormOpen(false);
     };
     
-    if (!isAdmin && !isLeadership) {
-        return null;
-    }
+    // if (!isAdmin && !isLeadership) {
+    //     return null;
+    // }
 
     return (
     <div className="space-y-6">

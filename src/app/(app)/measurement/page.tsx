@@ -117,7 +117,7 @@ export default function MeasurementPage() {
         </CardHeader>
         <CardContent>
           <MeasurementTable
-            data={data}
+            data={data ||  []}
             usage={measurementUsage}
             onEdit={handleEdit}
             onDelete={handleDelete}

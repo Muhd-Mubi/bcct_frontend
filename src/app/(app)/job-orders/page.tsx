@@ -150,7 +150,7 @@ export default function JobOrdersPage() {
         </CardHeader>
         <CardContent>
           <JobOrdersTable
-            jobOrders={data}
+            jobOrders={data || []}
             workOrderCounts={jobWorkOrderCounts}
             currentPage={currentPage}
             totalPages={totalPages}

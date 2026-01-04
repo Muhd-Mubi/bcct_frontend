@@ -244,7 +244,7 @@ export default function WorkOrdersPage() {
         </CardHeader>
         <CardContent>
           <WorkOrdersTable
-            workOrders={data}
+            workOrders={data || []}
             onStatusChange={handleStatusChangeClick}
             onView={handleViewClick}
             onEdit={handleEdit}

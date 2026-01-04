@@ -18,7 +18,7 @@ export default function MaterialsPage() {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
   const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
   const { isLeadership, isTechnical } = useContext(UserRoleContext);
-  
+
   const canAdd = isLeadership || isTechnical;
 
   const handleAdd = () => {
@@ -35,10 +35,10 @@ export default function MaterialsPage() {
     setMaterialToDelete(id);
     setConfirmOpen(true);
   };
-  
+
   const handleConfirmDelete = () => {
     if (materialToDelete) {
-        deleteMaterial(materialToDelete);
+      deleteMaterial(materialToDelete);
     }
     setConfirmOpen(false);
     setMaterialToDelete(null);
@@ -49,22 +49,22 @@ export default function MaterialsPage() {
     setFormOpen(false);
   };
 
-     const data = [
-        {
-            "_id": "695896020cb268e7e9c60845",
-            "name": "A4",
-            "measurement": "Ream",
-            "unitQuantity": 1,
-            "extraSheets": 22
-        },
-        {
-            "_id": "695896900cb268e7e9c60852",
-            "name": "A3",
-            "measurement": "Ream",
-            "unitQuantity": 1,
-            "extraSheets": 236
-        }
-    ]
+  const data = [
+    {
+      "_id": "695896020cb268e7e9c60845",
+      "name": "A4",
+      "measurement": "Ream",
+      "unitQuantity": 1,
+      "extraSheets": 22
+    },
+    {
+      "_id": "695896900cb268e7e9c60852",
+      "name": "A3",
+      "measurement": "Ream",
+      "unitQuantity": 1,
+      "extraSheets": 236
+    }
+  ]
 
   return (
     <div className="space-y-6">
@@ -80,25 +80,25 @@ export default function MaterialsPage() {
         </CardHeader>
         <CardContent>
           <MaterialsTable
-            data={data}
+            data={data || []}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />
         </CardContent>
       </Card>
 
-        <MaterialFormDialog
-          isOpen={isFormOpen}
-          onOpenChange={setFormOpen}
-          onSave={handleSave}
-          material={selectedMaterial}
-        />
-        
-        <DeleteConfirmationDialog 
-            isOpen={isConfirmOpen}
-            onOpenChange={setConfirmOpen}
-            onConfirm={handleConfirmDelete}
-        />
+      <MaterialFormDialog
+        isOpen={isFormOpen}
+        onOpenChange={setFormOpen}
+        onSave={handleSave}
+        material={selectedMaterial}
+      />
+
+      <DeleteConfirmationDialog
+        isOpen={isConfirmOpen}
+        onOpenChange={setConfirmOpen}
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }

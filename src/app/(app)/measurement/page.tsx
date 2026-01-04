@@ -11,7 +11,7 @@ import { Measurement } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 import { useRouter } from 'next/navigation';
-import { useGetMeasurements, useEditMeasurement } from '@/api/react-query/queries/measurement'
+import { useGetMeasurements, useCreateMeasurement, useEditMeasurement } from '@/api/react-query/queries/measurement'
 import { toast } from 'react-toastify';
 
 
@@ -34,11 +34,13 @@ export default function MeasurementPage() {
     const { data, isLoading, error, refetch } = useGetMeasurements();
     const {
         mutate: editMeasurement,
-        isPending,
-        isError,
-        error: editError,
-        isSuccess,
+        isPending: updatingMeasurement,
     } = useEditMeasurement();
+
+    const {
+        mutate: createMeasurement,
+        isPending: creatingMeasurement,
+    } = useCreateMeasurement();
 
     const measurementUsage = useMemo(() => {
         const counts: { [key: string]: number } = {};
@@ -74,21 +76,44 @@ export default function MeasurementPage() {
         setMeasurementToDelete(null);
     };
 
+    const closeModal = () => {
+        setFormOpen(false);
+        setSelectedMeasurement(undefined);
+    }
+
     const handleSave = (measurementData: Measurement) => {
-        const updatedData = {
-            id: measurementData?._id,
-            data: measurementData
+        const isEdit = !!measurementData?._id
+
+        if (isEdit) {
+            const updatedData = {
+                id: measurementData?._id,
+                data: measurementData
+            }
+            editMeasurement(updatedData, {
+                onSuccess: (data) => {
+                    toast.success(data.message);
+                    refetch()
+                    closeModal()
+                },
+                onError: (error) => {
+                    toast.error(error.message);
+                },
+            })
+        } else {
+            const newData = {
+                data: measurementData,
+            }
+            createMeasurement(newData, {
+                onSuccess: (data) => {
+                    toast.success(data.message);
+                    refetch()
+                    setFormOpen(false);
+                },
+                onError: (error) => {
+                    toast.error(error.message);
+                },
+            })
         }
-        editMeasurement(updatedData, {
-            onSuccess: (data) => {
-                toast.success(data.message);
-                refetch()
-                setFormOpen(false);
-            },
-            onError: (error) => {
-                toast.success(error.message);
-            },
-        })
     };
 
     // if (!isAdmin && !isLeadership) {
@@ -125,12 +150,20 @@ export default function MeasurementPage() {
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>{error.message}</p>;
 
+    const disableButtons = updatingMeasurement || creatingMeasurement
+
     return (
         <div className="space-y-6">
             <Card>
                 <CardHeader className="flex flex-row items-center justify-between">
                     <CardTitle className="font-headline">Measurements</CardTitle>
-                    {(isAdmin || isLeadership) && (
+                    {/* {(isAdmin || isLeadership) && (
+                        <Button size="sm" onClick={handleAdd}>
+                            <PlusCircle />
+                            Add Measurement
+                        </Button>
+                    )} */}
+                    {true && (
                         <Button size="sm" onClick={handleAdd}>
                             <PlusCircle />
                             Add Measurement
@@ -152,7 +185,7 @@ export default function MeasurementPage() {
                 onOpenChange={setFormOpen}
                 onSave={handleSave}
                 measurement={selectedMeasurement}
-                disableButtons={isPending}
+                disableButtons={disableButtons}
             />
 
             <DeleteConfirmationDialog

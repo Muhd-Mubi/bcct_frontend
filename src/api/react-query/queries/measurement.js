@@ -9,6 +9,16 @@ export function useGetMeasurements() {
   });
 }
 
+export function useCreateMeasurement() {
+  return useMutation({
+    mutationFn: ({ data }) =>
+      apiClient(`/measurement/create-measurement`, {
+        method: 'POST',
+        body: data,
+      }),
+  });
+}
+
 export function useEditMeasurement() {
   return useMutation({
     mutationFn: ({ id, data }) =>

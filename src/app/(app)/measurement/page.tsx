@@ -11,12 +11,12 @@ import { Measurement } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 import { useRouter } from 'next/navigation';
-import { useGetMeasurements, useCreateMeasurement, useEditMeasurement } from '@/api/react-query/queries/measurement'
+import { useGetMeasurements, useCreateMeasurement, useEditMeasurement, useDeleteMeasurement } from '@/api/react-query/queries/measurement'
 import { toast } from 'react-toastify';
 
 
 export default function MeasurementPage() {
-    const { measurements, materials, saveMeasurement, updateMeasurement, deleteMeasurement } = useData();
+    const { measurements, materials, saveMeasurement, updateMeasurement } = useData();
     const { isAdmin, isLeadership } = useContext(UserRoleContext);
     const router = useRouter();
 
@@ -33,14 +33,17 @@ export default function MeasurementPage() {
 
     const { data, isLoading, error, refetch } = useGetMeasurements();
     const {
-        mutate: editMeasurement,
-        isPending: updatingMeasurement,
-    } = useEditMeasurement();
-
-    const {
         mutate: createMeasurement,
         isPending: creatingMeasurement,
     } = useCreateMeasurement();
+    const {
+        mutate: editMeasurement,
+        isPending: updatingMeasurement,
+    } = useEditMeasurement();
+    const {
+        mutate: deleteMeasurement,
+        isPending: deletingMeasurement,
+    } = useDeleteMeasurement();
 
     const measurementUsage = useMemo(() => {
         const counts: { [key: string]: number } = {};
@@ -70,15 +73,32 @@ export default function MeasurementPage() {
 
     const handleConfirmDelete = () => {
         if (measurementToDelete) {
-            deleteMeasurement(measurementToDelete);
+            const deletData = {
+                id: measurementToDelete
+            }
+            deleteMeasurement(deletData, {
+                onSuccess: (data) => {
+                    toast.success(data.message);
+                    refetch()
+                    closeDeleteModal()
+                },
+                onError: (error) => {
+                    toast.error(error.message);
+                },
+            })
+        } else {
+            closeDeleteModal()
         }
-        setConfirmOpen(false);
-        setMeasurementToDelete(null);
     };
 
-    const closeModal = () => {
+    const closeCreateEditModal = () => {
         setFormOpen(false);
         setSelectedMeasurement(undefined);
+    }
+
+    const closeDeleteModal = () => {
+        setConfirmOpen(false);
+        setMeasurementToDelete(null);
     }
 
     const handleSave = (measurementData: Measurement) => {
@@ -93,7 +113,7 @@ export default function MeasurementPage() {
                 onSuccess: (data) => {
                     toast.success(data.message);
                     refetch()
-                    closeModal()
+                    closeCreateEditModal()
                 },
                 onError: (error) => {
                     toast.error(error.message);
@@ -150,7 +170,7 @@ export default function MeasurementPage() {
     if (isLoading) return <p>Loading...</p>;
     if (error) return <p>{error.message}</p>;
 
-    const disableButtons = updatingMeasurement || creatingMeasurement
+    const disableButtons = creatingMeasurement || updatingMeasurement || deletingMeasurement
 
     return (
         <div className="space-y-6">
@@ -190,8 +210,9 @@ export default function MeasurementPage() {
 
             <DeleteConfirmationDialog
                 isOpen={isConfirmOpen}
-                onOpenChange={setConfirmOpen}
+                onCancel={closeDeleteModal}
                 onConfirm={handleConfirmDelete}
+                disableButtons={disableButtons}
             />
 
         </div>

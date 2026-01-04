@@ -16,17 +16,19 @@ import { cn } from '@/lib/utils';
 
 interface DeleteConfirmationDialogProps {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  onCancel: () => void;
   onConfirm: () => void;
+  disableButtons?: boolean
 }
 
 export function DeleteConfirmationDialog({
   isOpen,
-  onOpenChange,
+  onCancel,
   onConfirm,
+  disableButtons = false
 }: DeleteConfirmationDialogProps) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -36,9 +38,10 @@ export function DeleteConfirmationDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={disableButtons} onClick={onCancel}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
+            disabled={disableButtons}
             className={cn(buttonVariants({ variant: 'destructive' }))}
           >
             Yes, delete material

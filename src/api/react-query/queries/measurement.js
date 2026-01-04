@@ -28,3 +28,12 @@ export function useEditMeasurement() {
       }),
   });
 }
+
+export function useDeleteMeasurement() {
+  return useMutation({
+    mutationFn: ({ id }) =>
+      apiClient(`/measurement/delete-measurement/${id}`, {
+        method: 'DELETE',
+      }),
+  });
+}

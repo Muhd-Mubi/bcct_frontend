@@ -83,6 +83,48 @@ export default function JobOrdersPage() {
   }, [filteredJobOrders, currentPage]);
 
   const totalPages = Math.ceil(filteredJobOrders.length / jobsPerPage);
+
+          const data = [
+        {
+            "_id": "69589e5c332b4a3df524cdd3",
+            "job_id": "2",
+            "department": "Pharmacy",
+            "tasks": [
+                {
+                    "name": "G1 Form",
+                    "quantity": 200
+                },
+                {
+                    "name": "G2 Form",
+                    "quantity": 500
+                }
+            ],
+            "createdAt": "2026-01-03T04:43:08.046Z",
+            "__v": 0,
+            "numberOfWorkOrders": 1,
+            "id": "69589e5c332b4a3df524cdd3"
+        },
+        {
+            "_id": "69589977550f68c9157647a0",
+            "job_id": "1",
+            "department": "Chemistry",
+            "tasks": [
+                {
+                    "name": "Repeaters Form",
+                    "quantity": 50
+                },
+                {
+                    "name": "G1 Form",
+                    "quantity": 220
+                }
+            ],
+            "createdAt": "2026-01-03T04:22:15.167Z",
+            "__v": 0,
+            "numberOfWorkOrders": 0,
+            "id": "69589977550f68c9157647a0"
+        }
+    ]
+
   
   // if (role === 'technical') {
   //   return null;
@@ -108,7 +150,7 @@ export default function JobOrdersPage() {
         </CardHeader>
         <CardContent>
           <JobOrdersTable
-            jobOrders={paginatedJobOrders}
+            jobOrders={data}
             workOrderCounts={jobWorkOrderCounts}
             currentPage={currentPage}
             totalPages={totalPages}

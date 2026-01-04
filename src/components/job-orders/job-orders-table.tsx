@@ -39,7 +39,7 @@ interface JobOrdersTableProps {
 export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalPages, onPageChange, onEdit, onDelete }: JobOrdersTableProps) {
   
   const renderActions = (job: Job) => {
-    const openWorkOrderCount = workOrderCounts[job.id]?.open || 0;
+    const openWorkOrderCount = workOrderCounts[job._id]?.open || 0;
     const canModify = openWorkOrderCount === 0;
 
     return (
@@ -67,7 +67,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                 <div className="w-full">
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive w-full"
-                    onClick={() => onDelete(job.id)}
+                    onClick={() => onDelete(job._id)}
                     disabled={!canModify}
                   >
                     Delete
@@ -99,17 +99,20 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
           <TableBody>
             {jobOrders.map((job) => (
               <TableRow key={job.id}>
-                <TableCell className="font-medium">{job.id}</TableCell>
+                <TableCell className="font-medium">{job.job_id}</TableCell>
                 <TableCell>{job.department}</TableCell>
-                <TableCell>{format(parseISO(job.date), 'PP')}</TableCell>
+                <TableCell>{format(parseISO(String(job.createdAt)), 'PP')}</TableCell>
                 <TableCell>
                   <div className="flex flex-col gap-1 text-xs">
-                    {job.items.map((item, index) => (
-                      <span key={index}>{item.name} (x{item.quantity})</span>
+                    {job.tasks.map((item, index) => (
+                      <span className='flex gap-[2px]' key={index}>
+                       <div className='text-[#F97316]'>{item.name}</div>
+                       <div className='text-[#9cafa9]'> (x{item.quantity})</div>
+                      </span>
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="text-center">{workOrderCounts[job.id]?.total || 0}</TableCell>
+                <TableCell className="text-center">{job.numberOfWorkOrders}</TableCell>
                 <TableCell className="text-right">{renderActions(job)}</TableCell>
               </TableRow>
             ))}

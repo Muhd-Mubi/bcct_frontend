@@ -1,5 +1,6 @@
 'use client';
 import React from 'react';
+import { date } from 'zod';
 
 export type APIMaterial = {
   _id: string;
@@ -82,10 +83,14 @@ export type JobItem = {
 };
 
 export type Job = {
-  id: string;
+  _id: string;
+  job_id: string;
   department: string;
-  date: string;
-  items: JobItem[];
+  createdAt: String | Date;
+  tasks: JobItem[];
+__v?: number;
+numberOfWorkOrders?: number;
+id?: string;
 }
 
 export type WorkOrder = {

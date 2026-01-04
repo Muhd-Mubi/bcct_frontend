@@ -64,7 +64,6 @@ export function MaterialFormDialog({
   measurementsList,
   loadingMeasurements = false
 }: MaterialFormDialogProps) {
-  const { measurements } = useData();
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -79,7 +78,7 @@ export function MaterialFormDialog({
   useEffect(() => {
     if (isOpen) {
       if (material) {
-        const measurement = measurements.find(m => m.name === material.type);
+        const measurement = measurementsList.find(m => m.name === material.measurement);
         form.reset({
           ...material,
           measurementId: measurement?._id || '',
@@ -94,7 +93,7 @@ export function MaterialFormDialog({
         });
       }
     }
-  }, [material, form, isOpen, measurements]);
+  }, [material, form, isOpen]);
 
 
   const onSubmit = (values: FormValues) => {
@@ -135,7 +134,7 @@ export function MaterialFormDialog({
                     name="measurementId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Measurement Unit (Optional)</FormLabel>
+                        <FormLabel>Measurement Unit</FormLabel>
                         <Select
                           onValueChange={field.onChange}
                           value={field.value}
@@ -158,6 +157,7 @@ export function MaterialFormDialog({
                 )}
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
+                    disabled={true}
                     control={form.control}
                     name="unitQuantity"
                     render={({ field }) => (
@@ -171,6 +171,7 @@ export function MaterialFormDialog({
                     )}
                   />
                   <FormField
+                    disabled={true}
                     control={form.control}
                     name="extraSheets"
                     render={({ field }) => (

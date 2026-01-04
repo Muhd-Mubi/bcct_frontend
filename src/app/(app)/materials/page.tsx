@@ -11,7 +11,7 @@ import { UserRoleContext } from '@/lib/types';
 import { useData } from '@/context/data-context';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 import { useGetMeasurements } from '@/api/react-query/queries/measurement'
-import { useGeMaterials, useCreateMaterial } from '@/api/react-query/queries/material'
+import { useGeMaterials, useCreateMaterial, useEditMaterial } from '@/api/react-query/queries/material'
 import { toast } from 'react-toastify';
 
 export default function MaterialsPage() {
@@ -22,12 +22,16 @@ export default function MaterialsPage() {
   const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
   const { isLeadership, isTechnical } = useContext(UserRoleContext);
 
-  const { data : measurementData, isLoading : isLoadingMeasurement, error : isErrorMeasurement } = useGetMeasurements();
+  const { data: measurementData, isLoading: isLoadingMeasurement, error: isErrorMeasurement } = useGetMeasurements();
   const { data, isLoading, error, refetch } = useGeMaterials();
   const {
     mutate: createMeasurement,
     isPending: creatingMeasurement,
   } = useCreateMaterial();
+  const {
+    mutate: editMeasurement,
+    isPending: editingMeasurement,
+  } = useEditMaterial();
 
   const canAdd = isLeadership || isTechnical;
 
@@ -55,19 +59,38 @@ export default function MaterialsPage() {
   };
 
   const handleSave = (materialData: Material) => {
-    const newData = {
-      data: materialData,
+    const isEdit = materialData?._id
+    if (isEdit) {
+      const updatedData = {
+        id: materialData?._id,
+        data: materialData
+      }
+      editMeasurement(updatedData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeCreateEditModal();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
+    } else {
+      const newData = {
+        data: materialData,
+      }
+      createMeasurement(newData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeCreateEditModal();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
     }
-    createMeasurement(newData, {
-      onSuccess: (data) => {
-        toast.success(data.message);
-        refetch()
-        closeCreateEditModal();
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    })
+
   };
 
   const closeCreateEditModal = () => {
@@ -95,7 +118,7 @@ export default function MaterialsPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingMeasurement
+  const disableButtons = creatingMeasurement || editingMeasurement
 
   return (
     <div className="space-y-6">

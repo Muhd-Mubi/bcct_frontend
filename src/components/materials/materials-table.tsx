@@ -124,7 +124,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                               Edit
                             </DropdownMenuItem>
                         )}
-                        {canDelete && (
+                        {true && (
                             <DropdownMenuItem
                               className="text-destructive focus:text-destructive"
                               onClick={() => onDelete(material._id)}

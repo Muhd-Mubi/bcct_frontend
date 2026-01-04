@@ -29,11 +29,11 @@ export function useEditMaterial() {
     });
 }
 
-// export function useDeleteMeasurement() {
-//   return useMutation({
-//     mutationFn: ({ id }) =>
-//       apiClient(`/measurement/delete-measurement/${id}`, {
-//         method: 'DELETE',
-//       }),
-//   });
-// }
+export function useDeleteMaterial() {
+  return useMutation({
+    mutationFn: ({ id }) =>
+      apiClient(`/material/delete-material/${id}`, {
+        method: 'DELETE',
+      }),
+  });
+}

@@ -11,11 +11,11 @@ import { UserRoleContext } from '@/lib/types';
 import { useData } from '@/context/data-context';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 import { useGetMeasurements } from '@/api/react-query/queries/measurement'
-import { useGeMaterials, useCreateMaterial, useEditMaterial } from '@/api/react-query/queries/material'
+import { useGeMaterials, useCreateMaterial, useEditMaterial, useDeleteMaterial } from '@/api/react-query/queries/material'
 import { toast } from 'react-toastify';
 
 export default function MaterialsPage() {
-  const { materials, saveMaterial, deleteMaterial } = useData();
+  // const { materials, saveMaterial, deleteMaterial } = useData();
   const [isFormOpen, setFormOpen] = useState(false);
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
@@ -25,13 +25,18 @@ export default function MaterialsPage() {
   const { data: measurementData, isLoading: isLoadingMeasurement, error: isErrorMeasurement } = useGetMeasurements();
   const { data, isLoading, error, refetch } = useGeMaterials();
   const {
-    mutate: createMeasurement,
+    mutate: createMaterial,
     isPending: creatingMeasurement,
   } = useCreateMaterial();
   const {
-    mutate: editMeasurement,
+    mutate: editMaterial,
     isPending: editingMeasurement,
   } = useEditMaterial();
+  const {
+    mutate: deleteMaterial,
+    isPending: deletingMeasurement,
+  } = useDeleteMaterial();
+
 
   const canAdd = isLeadership || isTechnical;
 
@@ -52,10 +57,22 @@ export default function MaterialsPage() {
 
   const handleConfirmDelete = () => {
     if (materialToDelete) {
-      deleteMaterial(materialToDelete);
+      const deleteData = {
+        id: materialToDelete
+      }
+      deleteMaterial(deleteData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeDeleteModal()
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
+    } else {
+      closeDeleteModal()
     }
-    setConfirmOpen(false);
-    setMaterialToDelete(null);
   };
 
   const handleSave = (materialData: Material) => {
@@ -65,7 +82,7 @@ export default function MaterialsPage() {
         id: materialData?._id,
         data: materialData
       }
-      editMeasurement(updatedData, {
+      editMaterial(updatedData, {
         onSuccess: (data) => {
           toast.success(data.message);
           refetch()
@@ -79,7 +96,7 @@ export default function MaterialsPage() {
       const newData = {
         data: materialData,
       }
-      createMeasurement(newData, {
+      createMaterial(newData, {
         onSuccess: (data) => {
           toast.success(data.message);
           refetch()
@@ -96,6 +113,11 @@ export default function MaterialsPage() {
   const closeCreateEditModal = () => {
     setSelectedMaterial(undefined);
     setFormOpen(false);
+  }
+
+  const closeDeleteModal = () => {
+    setMaterialToDelete(null);
+    setConfirmOpen(false);
   }
 
   // const data = [
@@ -118,7 +140,7 @@ export default function MaterialsPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingMeasurement || editingMeasurement
+  const disableButtons = creatingMeasurement || editingMeasurement || deletingMeasurement
 
   return (
     <div className="space-y-6">
@@ -153,6 +175,7 @@ export default function MaterialsPage() {
 
       <DeleteConfirmationDialog
         isOpen={isConfirmOpen}
+        onCancel={closeDeleteModal}
         onOpenChange={setConfirmOpen}
         onConfirm={handleConfirmDelete}
       />

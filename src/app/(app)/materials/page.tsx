@@ -10,6 +10,7 @@ import { MaterialFormDialog } from '@/components/materials/material-form-dialog'
 import { UserRoleContext } from '@/lib/types';
 import { useData } from '@/context/data-context';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
+import { useGeMaterials } from '@/api/react-query/queries/material'
 
 export default function MaterialsPage() {
   const { materials, saveMaterial, deleteMaterial } = useData();
@@ -18,6 +19,8 @@ export default function MaterialsPage() {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
   const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
   const { isLeadership, isTechnical } = useContext(UserRoleContext);
+
+  const { data, isLoading, error, refetch } = useGeMaterials();
 
   const canAdd = isLeadership || isTechnical;
 
@@ -49,22 +52,25 @@ export default function MaterialsPage() {
     setFormOpen(false);
   };
 
-  const data = [
-    {
-      "_id": "695896020cb268e7e9c60845",
-      "name": "A4",
-      "measurement": "Ream",
-      "unitQuantity": 1,
-      "extraSheets": 22
-    },
-    {
-      "_id": "695896900cb268e7e9c60852",
-      "name": "A3",
-      "measurement": "Ream",
-      "unitQuantity": 1,
-      "extraSheets": 236
-    }
-  ]
+  // const data = [
+  //   {
+  //     "_id": "695896020cb268e7e9c60845",
+  //     "name": "A4",
+  //     "measurement": "Ream",
+  //     "unitQuantity": 1,
+  //     "extraSheets": 22
+  //   },
+  //   {
+  //     "_id": "695896900cb268e7e9c60852",
+  //     "name": "A3",
+  //     "measurement": "Ream",
+  //     "unitQuantity": 1,
+  //     "extraSheets": 236
+  //   }
+  // ]
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error.message}</p>;
 
   return (
     <div className="space-y-6">
@@ -80,7 +86,7 @@ export default function MaterialsPage() {
         </CardHeader>
         <CardContent>
           <MaterialsTable
-            data={data || []}
+            data={data?.materials || []}
             onEdit={handleEdit}
             onDelete={handleDelete}
           />

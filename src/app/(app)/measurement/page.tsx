@@ -11,6 +11,7 @@ import { Measurement } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
 import { DeleteConfirmationDialog } from '@/components/materials/delete-confirmation-dialog';
 import { useRouter } from 'next/navigation';
+import { useGetMeasurements } from '@/api/react-query/queries/measurement'
 
 
 export default function MeasurementPage() {
@@ -28,7 +29,7 @@ export default function MeasurementPage() {
     const [isConfirmOpen, setConfirmOpen] = useState(false);
     const [selectedMeasurement, setSelectedMeasurement] = useState<Measurement | undefined>(undefined);
     const [measurementToDelete, setMeasurementToDelete] = useState<string | null>(null);
-    
+
     const measurementUsage = useMemo(() => {
         const counts: { [key: string]: number } = {};
         measurements.forEach(m => counts[m.name] = 0);
@@ -39,12 +40,12 @@ export default function MeasurementPage() {
         });
         return counts;
     }, [measurements, materials]);
-    
+
     const handleAdd = () => {
         setSelectedMeasurement(undefined);
         setFormOpen(true);
     };
-    
+
     const handleEdit = (measurement: Measurement) => {
         setSelectedMeasurement(measurement);
         setFormOpen(true);
@@ -71,73 +72,78 @@ export default function MeasurementPage() {
         }
         setFormOpen(false);
     };
-    
+
     // if (!isAdmin && !isLeadership) {
     //     return null;
     // }
 
-    const data = [
-            {
-                "_id": "695892a23726575a864a5013",
-                "name": "Ream",
-                "sheetsPerUnit": 500,
-                "__v": 0,
-                "numberOfMaterials": 2,
-                "id": "695892a23726575a864a5013"
-            },
-            {
-                "_id": "695a11be0a9c44dad40b8116",
-                "name": "Packet",
-                "sheetsPerUnit": 100,
-                "__v": 0,
-                "numberOfMaterials": 0,
-                "id": "695a11be0a9c44dad40b8116"
-            },
-            {
-                "_id": "695a11cc0a9c44dad40b8119",
-                "name": "Single sheet",
-                "sheetsPerUnit": 1,
-                "__v": 0,
-                "numberOfMaterials": 0,
-                "id": "695a11cc0a9c44dad40b8119"
-            }
-        ]
+    // const data = [
+    //     {
+    //         "_id": "695892a23726575a864a5013",
+    //         "name": "Ream",
+    //         "sheetsPerUnit": 500,
+    //         "__v": 0,
+    //         "numberOfMaterials": 2,
+    //         "id": "695892a23726575a864a5013"
+    //     },
+    //     {
+    //         "_id": "695a11be0a9c44dad40b8116",
+    //         "name": "Packet",
+    //         "sheetsPerUnit": 100,
+    //         "__v": 0,
+    //         "numberOfMaterials": 0,
+    //         "id": "695a11be0a9c44dad40b8116"
+    //     },
+    //     {
+    //         "_id": "695a11cc0a9c44dad40b8119",
+    //         "name": "Single sheet",
+    //         "sheetsPerUnit": 1,
+    //         "__v": 0,
+    //         "numberOfMaterials": 0,
+    //         "id": "695a11cc0a9c44dad40b8119"
+    //     }
+    // ]
+
+    const { data, isLoading, error } = useGetMeasurements();
+
+    if (isLoading) return <p>Loading...</p>;
+    if (error) return <p>{error.message}</p>;
 
     return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
-          <CardTitle className="font-headline">Measurements</CardTitle>
-            {(isAdmin || isLeadership) && (
-                <Button size="sm" onClick={handleAdd}>
-                  <PlusCircle />
-                  Add Measurement
-                </Button>
-            )}
-        </CardHeader>
-        <CardContent>
-          <MeasurementTable
-            data={data ||  []}
-            usage={measurementUsage}
-            onEdit={handleEdit}
-            onDelete={handleDelete}
-          />
-        </CardContent>
-      </Card>
+        <div className="space-y-6">
+            <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                    <CardTitle className="font-headline">Measurements</CardTitle>
+                    {(isAdmin || isLeadership) && (
+                        <Button size="sm" onClick={handleAdd}>
+                            <PlusCircle />
+                            Add Measurement
+                        </Button>
+                    )}
+                </CardHeader>
+                <CardContent>
+                    <MeasurementTable
+                        data={data?.measurements || []}
+                        usage={measurementUsage}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                    />
+                </CardContent>
+            </Card>
 
-      <MeasurementFormDialog
-        isOpen={isFormOpen}
-        onOpenChange={setFormOpen}
-        onSave={handleSave}
-        measurement={selectedMeasurement}
-       />
+            <MeasurementFormDialog
+                isOpen={isFormOpen}
+                onOpenChange={setFormOpen}
+                onSave={handleSave}
+                measurement={selectedMeasurement}
+            />
 
-        <DeleteConfirmationDialog 
-            isOpen={isConfirmOpen}
-            onOpenChange={setConfirmOpen}
-            onConfirm={handleConfirmDelete}
-        />
+            <DeleteConfirmationDialog
+                isOpen={isConfirmOpen}
+                onOpenChange={setConfirmOpen}
+                onConfirm={handleConfirmDelete}
+            />
 
-    </div>
+        </div>
     );
 }

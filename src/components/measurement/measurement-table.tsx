@@ -48,7 +48,7 @@ export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementT
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
               <TableCell className="text-center">{measurement.numberOfMaterials}</TableCell>
               <TableCell className="text-right">
-                  {canPerformActions ? (
+                  {true ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
                         <Button variant="ghost" className="h-8 w-8 p-0">

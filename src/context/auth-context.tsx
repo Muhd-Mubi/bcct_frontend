@@ -45,13 +45,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (storedUser) {
         setUser(JSON.parse(storedUser));
     } else if (pathname !== '/login') {
-      router.push('/login');
+      // router.push('/login');
     }
   }, []);
 
   useEffect(() => {
     if (!user && pathname !== '/login') {
-      router.push('/login');
+      // router.push('/login');
     }
   }, [user, pathname, router]);
 
@@ -66,16 +66,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   const logout = () => {
-    setUser(null);
-    sessionStorage.removeItem('user');
-    router.push('/login');
+    // setUser(null);
+    // sessionStorage.removeItem('user');
+    // router.push('/login');
   };
 
   const switchRole = (role: UserRole) => {
-    if (mockUsers[role]) {
-        login(role, mockUsers[role].pass);
-        router.push('/dashboard');
-    }
+    // if (mockUsers[role]) {
+    //     login(role, mockUsers[role].pass);
+    //     router.push('/dashboard');
+    // }
   };
 
   const value = { user, login, logout, switchRole };

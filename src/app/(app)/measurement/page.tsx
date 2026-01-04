@@ -20,7 +20,7 @@ export default function MeasurementPage() {
 
     useEffect(() => {
         if (!isAdmin && !isLeadership) {
-            router.push('/dashboard');
+            // router.push('/dashboard');
         }
     }, [isAdmin, isLeadership, router]);
 

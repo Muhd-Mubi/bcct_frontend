@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   const handleLogin = () => {
     if (login(username, password)) {
-      router.push('/dashboard');
+      // router.push('/dashboard');
     } else {
       toast({
         title: 'Invalid Credentials',

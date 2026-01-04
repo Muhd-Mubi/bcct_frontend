@@ -19,7 +19,7 @@ export default function JobOrdersPage() {
 
   useEffect(() => {
     if (role === 'technical') {
-      router.push('/dashboard');
+      // router.push('/dashboard');
     }
   }, [role, router]);
 

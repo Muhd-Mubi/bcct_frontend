@@ -1,8 +1,9 @@
-import type {Metadata} from 'next';
+import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from '@/context/auth-context';
+import Providers from '@/app/providers'
 import { Inter, Space_Grotesk, PT_Sans, Roboto_Mono, Rubik } from 'next/font/google';
 import { cn } from '@/lib/utils';
 
@@ -28,8 +29,8 @@ const robotoMono = Roboto_Mono({
 });
 
 const rubik = Rubik({
-    subsets: ['latin'],
-    variable: '--font-rubik',
+  subsets: ['latin'],
+  variable: '--font-rubik',
 });
 
 
@@ -53,7 +54,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            {children}
+            <Providers>{children}</Providers>
             <Toaster />
           </AuthProvider>
         </ThemeProvider>

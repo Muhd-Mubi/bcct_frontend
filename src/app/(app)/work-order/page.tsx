@@ -24,13 +24,13 @@ import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-s
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
 
-const priorityOrder: Record<WorkOrderPriority, number> = {
-  High: 1,
-  Medium: 2,
-  Low: 3,
-};
+// const priorityOrder: Record<WorkOrderPriority, number> = {
+//   High: 1,
+//   Medium: 2,
+//   Low: 3,
+// };
 
-const dateSortOrder = (a: WorkOrder, b: WorkOrder) => new Date(b.date).getTime() - new Date(a.date).getTime();
+const dateSortOrder = (a: WorkOrder, b: WorkOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
 
 export default function WorkOrdersPage() {
   const {
@@ -132,21 +132,44 @@ export default function WorkOrdersPage() {
     setCompleteOpen(false);
   };
 
-  const filteredAndSortedWorkOrders = useMemo(() => {
-    return workOrders
-      .filter((o) => o.jobId.toLowerCase().includes(searchTerm.toLowerCase()))
-      .filter((o) => statusFilter.length === 0 || statusFilter.includes(o.status))
-      .filter((o) => priorityFilter.length === 0 || priorityFilter.includes(o.priority))
-      .sort((a, b) => {
-        const priorityComparison = priorityOrder[a.priority] - priorityOrder[b.priority];
-        if (priorityComparison !== 0) {
-          return priorityComparison;
-        }
-        return dateSortOrder(a, b);
-      });
-  }, [workOrders, searchTerm, statusFilter, priorityFilter]);
+  // const filteredAndSortedWorkOrders = useMemo(() => {
+  //   return workOrders
+  //     .filter((o) => o.jobId.toLowerCase().includes(searchTerm.toLowerCase()))
+  //     .filter((o) => statusFilter.length === 0 || statusFilter.includes(o.status))
+  //     .filter((o) => priorityFilter.length === 0 || priorityFilter.includes(o.priority))
+  //     .sort((a, b) => {
+  //       const priorityComparison = priorityOrder[a.priority] - priorityOrder[b.priority];
+  //       if (priorityComparison !== 0) {
+  //         return priorityComparison;
+  //       }
+  //       return dateSortOrder(a, b);
+  //     });
+  // }, [workOrders, searchTerm, statusFilter, priorityFilter]);
 
   const canCreate = isLeadership || isAdmin;
+
+      const data = [
+        {
+            "_id": "6958a529a2752cdf4bf1a7ff",
+            "job": "2",
+            "description": "testing new logic",
+            "priority": "medium",
+            "tasks": [
+                {
+                    "name": "performa forms",
+                    "quantity": 20
+                },
+                {
+                    "name": "G1 forms",
+                    "quantity": 120
+                }
+            ],
+            "status": "reverted",
+            "deliveryDate": null,
+            "createdAt": "2026-01-03T05:12:09.400Z",
+            "__v": 1
+        }
+    ]
 
   return (
     <div className="space-y-6">
@@ -221,7 +244,7 @@ export default function WorkOrdersPage() {
         </CardHeader>
         <CardContent>
           <WorkOrdersTable
-            workOrders={filteredAndSortedWorkOrders}
+            workOrders={data}
             onStatusChange={handleStatusChangeClick}
             onView={handleViewClick}
             onEdit={handleEdit}

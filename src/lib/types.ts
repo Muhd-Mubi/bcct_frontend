@@ -69,7 +69,7 @@ export type Measurement = {
 };
 
 export type WorkOrderStatus = 'Pending' | 'In Progress' | 'Completed';
-export type WorkOrderPriority = 'High' | 'Medium' | 'Low';
+export type WorkOrderPriority = 'High' | 'Medium' | 'Low' | 'low'| 'medium'  | 'high';
 
 export type MaterialsUsed = {
   materialId: string;
@@ -94,14 +94,16 @@ id?: string;
 }
 
 export type WorkOrder = {
-  id: string;
-  jobId: string;
-  items: JobItem[];
-  description?: string;
-  priority: WorkOrderPriority;
+  _id: string;
+  job: string;
+  tasks: JobItem[];
+  description: string;
+  priority: WorkOrderPriority ;
   status: WorkOrderStatus;
-  date: string;
+  createdAt: string | Date;
+  deliveryDate : Date | null
   materialsUsed?: MaterialsUsed[];
+  __v : number
 };
 
 export type StockLedgerEntry = {

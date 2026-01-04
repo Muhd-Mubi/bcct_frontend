@@ -46,7 +46,7 @@ export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementT
             <TableRow key={measurement._id || index}>
               <TableCell className="font-medium">{measurement.name}</TableCell>
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
-              <TableCell className="text-center">{usage[measurement.name] || 0}</TableCell>
+              <TableCell className="text-center">{measurement.numberOfMaterials}</TableCell>
               <TableCell className="text-right">
                   {canPerformActions ? (
                     <DropdownMenu>

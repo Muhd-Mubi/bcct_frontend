@@ -64,6 +64,7 @@ export type Measurement = {
   _id: string;
   name: string;
   sheetsPerUnit: number;
+  numberOfMaterials : number;
 };
 
 export type WorkOrderStatus = 'Pending' | 'In Progress' | 'Completed';

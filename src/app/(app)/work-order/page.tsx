@@ -90,8 +90,9 @@ export default function WorkOrdersPage() {
   };
 
   const handleSaveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
-    saveWorkOrder(orderData);
-    setCreateOpen(false);
+    // saveWorkOrder(orderData);
+    // setCreateOpen(false);
+    console.log({orderData})
   };
 
   const handleStatusChangeClick = (orderId: string, newStatus: WorkOrderStatus) => {

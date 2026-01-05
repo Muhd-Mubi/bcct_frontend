@@ -19,6 +19,16 @@ export function useCreateWorkOrder() {
     });
 }
 
+export function useEditWorkOrderStatus() {
+    return useMutation({
+        mutationFn: ({ data, id }) =>
+            apiClient(`/work-order/update-work-order-status/${id}`, {
+                method: 'PUT',
+                body: data,
+            }),
+    });
+}
+
 // export function useEditJob() {
 //     return useMutation({
 //         mutationFn: ({ id, data }) =>

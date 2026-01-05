@@ -28,9 +28,9 @@ import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 
 // const priorityOrder: Record<WorkOrderPriority, number> = {
-//   High: 1,
-//   Medium: 2,
-//   Low: 3,
+//   high: 1,
+//   medium: 2,
+//   low: 3,
 // };
 
 const dateSortOrder = (a: WorkOrder, b: WorkOrder) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
@@ -239,28 +239,28 @@ export default function WorkOrdersPage() {
                 <DropdownMenuLabel>Priority</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuCheckboxItem
-                  checked={priorityFilter.includes('High')}
+                  checked={priorityFilter.includes('high')}
                   onCheckedChange={() => {
-                    setPriorityFilter(prev => prev.includes('High') ? prev.filter(s => s !== 'High') : [...prev, 'High'])
+                    setPriorityFilter(prev => prev.includes('high') ? prev.filter(s => s !== 'high') : [...prev, 'high'])
                   }}
                 >
-                  High
+                  high
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
-                  checked={priorityFilter.includes('Medium')}
+                  checked={priorityFilter.includes('medium')}
                   onCheckedChange={() => {
-                    setPriorityFilter(prev => prev.includes('Medium') ? prev.filter(s => s !== 'Medium') : [...prev, 'Medium'])
+                    setPriorityFilter(prev => prev.includes('medium') ? prev.filter(s => s !== 'medium') : [...prev, 'medium'])
                   }}
                 >
-                  Medium
+                  medium
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuCheckboxItem
-                  checked={priorityFilter.includes('Low')}
+                  checked={priorityFilter.includes('low')}
                   onCheckedChange={() => {
-                    setPriorityFilter(prev => prev.includes('Low') ? prev.filter(s => s !== 'Low') : [...prev, 'Low'])
+                    setPriorityFilter(prev => prev.includes('low') ? prev.filter(s => s !== 'low') : [...prev, 'low'])
                   }}
                 >
-                  Low
+                  low
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
             </DropdownMenu>

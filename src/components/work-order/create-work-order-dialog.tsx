@@ -180,8 +180,8 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
                             >
                               {field.value
                                 ? jobOrders.find(
-                                    (job) => job.id === field.value
-                                  )?.id
+                                    (job) => job.job_id === field.value
+                                  )?.job_id
                                 : "Select Job Order ID"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -195,14 +195,14 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
                               <CommandGroup>
                                 {jobOrders.map((job) => (
                                   <CommandItem
-                                    value={job.id}
-                                    key={job.id}
+                                    value={job.job_id}
+                                    key={job.job_id}
                                     onSelect={() => {
-                                      form.setValue("jobId", job.id);
+                                      form.setValue("jobId", job.job_id);
                                       setPopoverOpen(false);
                                     }}
                                   >
-                                    {job.id}
+                                    {job.job_id}
                                   </CommandItem>
                                 ))}
                               </CommandGroup>

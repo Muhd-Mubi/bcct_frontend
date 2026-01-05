@@ -24,6 +24,7 @@ import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-s
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
 import { useGetWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 
 // const priorityOrder: Record<WorkOrderPriority, number> = {
 //   High: 1,
@@ -62,6 +63,7 @@ export default function WorkOrdersPage() {
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
+  const { data: jobData, isLoading: isLoadingJob, error: errorJob, refetch: refetchJob } = useGetJobs(currentPage);
 
 
   const handleCreateNew = () => {
@@ -242,7 +244,7 @@ export default function WorkOrdersPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {canCreate && (
+            {true && (
               <Button size="sm" onClick={handleCreateNew}>
                 <PlusCircle />
                 Create New Work Order
@@ -266,7 +268,7 @@ export default function WorkOrdersPage() {
         isOpen={isCreateOpen}
         onOpenChange={setCreateOpen}
         onSave={handleSaveWorkOrder}
-        jobOrders={jobOrders}
+        jobOrders={jobData?.jobs || []}
         workOrder={selectedWorkOrder}
       />
 

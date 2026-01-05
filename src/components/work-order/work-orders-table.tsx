@@ -122,7 +122,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               </DropdownMenuItem>
             )}
 
-            {canDelete && (
+            {true && (
               <DropdownMenuItem
                 onClick={() => onDelete(order._id)}
                 className="text-destructive focus:text-destructive"

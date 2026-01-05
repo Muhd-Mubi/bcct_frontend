@@ -39,11 +39,11 @@ export function useEditWorkOrderStatus() {
 //     });
 // }
 
-// export function useDeleteJob() {
-//   return useMutation({
-//     mutationFn: ({ id }) =>
-//       apiClient(`/job/delete-job/${id}`, {
-//         method: 'DELETE',
-//       }),
-//   });
-// }
+export function useDeleteWorkOrder() {
+  return useMutation({
+    mutationFn: ({ id }) =>
+      apiClient(`/work-order/delete-work-order/${id}`, {
+        method: 'DELETE',
+      }),
+  });
+}

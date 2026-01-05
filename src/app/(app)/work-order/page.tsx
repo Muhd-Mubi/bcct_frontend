@@ -23,7 +23,7 @@ import { UserRoleContext } from '@/lib/types';
 import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder } from '@/api/react-query/queries/workOrder'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 
@@ -42,7 +42,6 @@ export default function WorkOrdersPage() {
     jobOrders,
     saveWorkOrder,
     markWorkOrderAsComplete,
-    deleteWorkOrder,
     updateWorkOrderStatus,
     revertWorkOrderCompletion,
   } = useData();
@@ -72,6 +71,10 @@ export default function WorkOrdersPage() {
     mutate: editWorkOrderStatus,
     isPending: editingWorkOrderStatus,
   } = useEditWorkOrderStatus();
+  const {
+    mutate: deleteWorkOrder,
+    isPending: deletingWorkOrder,
+  } = useDeleteWorkOrder();
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
@@ -90,11 +93,27 @@ export default function WorkOrdersPage() {
 
   const handleConfirmDelete = () => {
     if (workOrderToDelete) {
-      deleteWorkOrder(workOrderToDelete);
+      const deleteData = {
+        id: workOrderToDelete
+      }
+      deleteWorkOrder(deleteData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeDeleteWorkOrderModal()
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
     }
+
+  };
+
+  const closeDeleteWorkOrderModal = () => {
     setDeleteOpen(false);
     setWorkOrderToDelete(null);
-  };
+  }
 
   const handleSaveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
     const newData = {
@@ -124,9 +143,9 @@ export default function WorkOrdersPage() {
 
   const handleConfirmStatusChange = () => {
     const updatedStatus = {
-      id : statusChange?.id,
+      id: statusChange?.id,
       data: {
-        "status" : statusChange?.status
+        "status": statusChange?.status
       }
     }
     editWorkOrderStatus(updatedStatus, {
@@ -141,7 +160,7 @@ export default function WorkOrdersPage() {
     })
   };
 
-  const closeEditStatusModal=()=>{
+  const closeEditStatusModal = () => {
     setStatusChange(null);
     setStatusConfirmOpen(false);
   }
@@ -214,7 +233,7 @@ export default function WorkOrdersPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingWorkOrder || editingWorkOrderStatus
+  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder
 
   return (
     <div className="space-y-6">
@@ -311,6 +330,8 @@ export default function WorkOrdersPage() {
         isOpen={isDeleteOpen}
         onOpenChange={setDeleteOpen}
         onConfirm={handleConfirmDelete}
+        onCLose={closeDeleteWorkOrderModal}
+        disableButtons={disableButtons}
       />
 
       <ChangeStatusConfirmationDialog

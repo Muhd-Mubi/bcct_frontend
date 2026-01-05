@@ -18,15 +18,18 @@ interface DeleteWorkOrderDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  disableButtons?: boolean
 }
 
 export function DeleteWorkOrderDialog({
   isOpen,
   onOpenChange,
   onConfirm,
+  onCLose,
+  disableButtons = false
 }: DeleteWorkOrderDialogProps) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -35,10 +38,11 @@ export function DeleteWorkOrderDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={disableButtons} onClick={onCLose}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className={cn(buttonVariants({ variant: 'destructive' }))}
+            disabled={disableButtons}
           >
             Yes, delete work order
           </AlertDialogAction>

@@ -226,8 +226,8 @@ export default function JobOrdersPage() {
           <JobOrdersTable
             jobOrders={data?.jobs || []}
             workOrderCounts={jobWorkOrderCounts}
-            currentPage={currentPage}
-            totalPages={totalPages}
+            currentPage={data?.page}
+            totalPages={data?.totalPages}
             onPageChange={setCurrentPage}
             onEdit={handleEdit}
             onDelete={handleDelete}

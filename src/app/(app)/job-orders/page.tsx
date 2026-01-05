@@ -76,20 +76,19 @@ export default function JobOrdersPage() {
 
   const handleConfirmDelete = () => {
     if (jobToDelete) {
-      console.log({ jobToDelete })
-      // const deleteData = {
-      //   id : jobToDelete?.job_id
-      // }
-      // deleteJob(deleteData, {
-      //   onSuccess: (data) => {
-      //     toast.success(data.message);
-      //     refetch()
-      //     closeCreateEditModal()
-      //   },
-      //   onError: (error) => {
-      //     toast.error(error.message);
-      //   },
-      // })
+      const deleteData = {
+        id : jobToDelete
+      }
+      deleteJob(deleteData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          // refetch()
+          closeCreateEditModal()
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
     }
     closeDeletModal()
   };

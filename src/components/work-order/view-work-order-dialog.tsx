@@ -40,14 +40,14 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
         <DialogHeader>
           <DialogTitle className="font-headline">Work Order Details</DialogTitle>
           <DialogDescription>
-            Complete information for Job Order ID: {workOrder.jobId}
+            Complete information for Job Order ID: {workOrder?.job}
           </DialogDescription>
         </DialogHeader>
         <ScrollArea className="max-h-[60vh] pr-4">
           <div className="space-y-4 py-4 text-sm">
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Date Created:</span>
-              <span className="font-medium">{format(parseISO(workOrder.date), 'PPP')}</span>
+              <span className="font-medium">{format(parseISO(workOrder?.createdAt), 'PPP')}</span>
             </div>
             <div className="flex justify-between items-center">
               <span className="text-muted-foreground">Priority:</span>
@@ -60,7 +60,7 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
             <div className="space-y-2">
               <h4 className="font-medium text-muted-foreground">Included Items</h4>
               <ul className="list-disc list-inside space-y-1 rounded-md border p-3 bg-muted/50">
-                {workOrder.items && workOrder.items.map((item, index) => (
+                {workOrder.tasks && workOrder.tasks.map((item, index) => (
                   <li key={index}>{item.name} (Quantity: {item.quantity})</li>
                 ))}
               </ul>
@@ -71,7 +71,7 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
                 {workOrder.description || 'No description provided.'}
               </p>
             </div>
-            {workOrder.materialsUsed && workOrder.materialsUsed.length > 0 && (
+            {/* {workOrder.materialsUsed && workOrder.materialsUsed.length > 0 && (
               <div className="space-y-2">
                   <h4 className="font-medium text-muted-foreground">Materials Used</h4>
                   <ul className="list-disc list-inside space-y-1 rounded-md border p-3 bg-muted/50">
@@ -80,7 +80,7 @@ export function ViewWorkOrderDialog({ isOpen, onOpenChange, workOrder }: ViewWor
                     ))}
                   </ul>
               </div>
-            )}
+            )} */}
           </div>
         </ScrollArea>
         <DialogFooter className="pt-4">

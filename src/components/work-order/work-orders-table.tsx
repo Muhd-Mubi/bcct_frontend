@@ -67,9 +67,9 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
   const totalPages = Math.ceil(workOrders.length / itemsPerPage);
 
   const handleRowClick = (e: React.MouseEvent, order: WorkOrder) => {
-    if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]') || (e.target as HTMLElement).tagName === 'A') {
-      return;
-    }
+    // if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]') || (e.target as HTMLElement).tagName === 'A') {
+    //   return;
+    // }
     onView(order);
   };
 

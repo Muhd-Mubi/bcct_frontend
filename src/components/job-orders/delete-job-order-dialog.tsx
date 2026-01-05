@@ -18,12 +18,14 @@ interface DeleteJobOrderDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onConfirm: () => void;
+  disableButton?: boolean
 }
 
 export function DeleteJobOrderDialog({
   isOpen,
   onOpenChange,
   onConfirm,
+  disableButton = false
 }: DeleteJobOrderDialogProps) {
   return (
     <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
@@ -35,9 +37,10 @@ export function DeleteJobOrderDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogCancel disabled={disableButton}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
+            disabled={disableButton}
             className={cn(buttonVariants({ variant: 'destructive' }))}
           >
             Yes, delete job order

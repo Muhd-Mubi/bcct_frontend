@@ -11,7 +11,7 @@ import { JobOrdersTable } from '@/components/job-orders/job-orders-table';
 import { CreateJobOrderDialog } from '@/components/job-orders/create-job-order-dialog';
 import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-dialog';
 import { useRouter } from 'next/navigation';
-import { useCreateJob, useEditJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
+import { useDeleteJob, useCreateJob, useEditJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
 import { toast } from 'react-toastify';
 
 export default function JobOrdersPage() {
@@ -42,6 +42,10 @@ export default function JobOrdersPage() {
     mutate: editJob,
     isPending: updatingJob,
   } = useEditJob();
+  const {
+    mutate: deleteJob,
+    isPending: deletingJob,
+  } = useDeleteJob();
 
   const jobWorkOrderCounts = useMemo(() => {
     const counts: { [jobId: string]: { total: number; open: number } } = {};
@@ -72,10 +76,22 @@ export default function JobOrdersPage() {
 
   const handleConfirmDelete = () => {
     if (jobToDelete) {
-      deleteJobOrder(jobToDelete);
+      console.log({jobToDelete})
+      // const deleteData = {
+      //   id : jobToDelete?.job_id
+      // }
+      // deleteJob(deleteData, {
+      //   onSuccess: (data) => {
+      //     toast.success(data.message);
+      //     refetch()
+      //     closeCreateEditModal()
+      //   },
+      //   onError: (error) => {
+      //     toast.error(error.message);
+      //   },
+      // })
     }
-    setDeleteOpen(false);
-    setJobToDelete(null);
+    closeDeletModal()
   };
 
   const handleSaveJobOrder = (jobData: Job | Omit<Job, 'date'>) => {
@@ -116,6 +132,11 @@ export default function JobOrdersPage() {
   const closeCreateEditModal = () => {
     setSelectedJob(undefined);
     setCreateOpen(false);
+  }
+
+  const closeDeletModal = () => {
+    setDeleteOpen(false);
+    setJobToDelete(null);
   }
 
   const filteredJobOrders = useMemo(() => {
@@ -180,6 +201,8 @@ export default function JobOrdersPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
+  const disableButton = creatingJob || updatingJob || deletingJob
+
   return (
     <div className="space-y-6">
       <Card>
@@ -216,6 +239,7 @@ export default function JobOrdersPage() {
         closeModal={closeCreateEditModal}
         onSave={handleSaveJobOrder}
         job={selectedJob}
+        disableButton={disableButton}
       />
 
       <DeleteJobOrderDialog

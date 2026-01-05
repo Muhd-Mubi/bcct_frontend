@@ -45,9 +45,10 @@ interface CreateJobOrderDialogProps {
   closeModal: () => void;
   onSave: (data: FormValues) => void;
   job?: Job;
+  disableButton?: boolean
 }
 
-export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job }: CreateJobOrderDialogProps) {
+export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job, disableButton = false }: CreateJobOrderDialogProps) {
   const isEditing = !!job;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -146,7 +147,7 @@ export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job }: Create
                         variant="destructive"
                         size="icon"
                         onClick={() => remove(index)}
-                        disabled={fields.length === 1}
+                        disabled={(fields.length === 1) || disableButton}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -154,17 +155,17 @@ export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job }: Create
                   ))}
                 </div>
               
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ name: '', quantity: 1 })}>
+                <Button disabled={disableButton} type="button" variant="outline" size="sm" onClick={() => append({ name: '', quantity: 1 })}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add Another Item
                 </Button>
               </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={closeModal}>
+              <Button disabled={disableButton} type="button" variant="outline" onClick={closeModal}>
                 Cancel
               </Button>
-              <Button type="submit">Save Job Order</Button>
+              <Button disabled={disableButton} type="submit">Save Job Order</Button>
             </DialogFooter>
           </form>
         </Form>

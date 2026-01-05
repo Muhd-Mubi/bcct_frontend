@@ -29,11 +29,11 @@ export function useEditJob() {
     });
 }
 
-// export function useDeleteMaterial() {
-//   return useMutation({
-//     mutationFn: ({ id }) =>
-//       apiClient(`/material/delete-material/${id}`, {
-//         method: 'DELETE',
-//       }),
-//   });
-// }
+export function useDeleteJob() {
+  return useMutation({
+    mutationFn: ({ id }) =>
+      apiClient(`/job/delete-job/${id}`, {
+        method: 'DELETE',
+      }),
+  });
+}

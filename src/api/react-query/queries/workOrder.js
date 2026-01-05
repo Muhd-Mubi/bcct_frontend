@@ -29,15 +29,15 @@ export function useEditWorkOrderStatus() {
     });
 }
 
-// export function useEditJob() {
-//     return useMutation({
-//         mutationFn: ({ id, data }) =>
-//             apiClient(`/job/update-job/${id}`, {
-//                 method: 'PUT',
-//                 body: data,
-//             }),
-//     });
-// }
+export function useEditWorkOrder() {
+    return useMutation({
+        mutationFn: ({ id, data }) =>
+            apiClient(`/work-order/edit-work-order/${id}`, {
+                method: 'PUT',
+                body: data,
+            }),
+    });
+}
 
 export function useDeleteWorkOrder() {
   return useMutation({

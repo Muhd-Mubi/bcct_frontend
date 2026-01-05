@@ -23,7 +23,7 @@ import { UserRoleContext } from '@/lib/types';
 import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder, useEditWorkOrder } from '@/api/react-query/queries/workOrder'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 
@@ -72,6 +72,10 @@ export default function WorkOrdersPage() {
     isPending: editingWorkOrderStatus,
   } = useEditWorkOrderStatus();
   const {
+    mutate: editWorkOrder,
+    isPending: editingWorkOrder,
+  } = useEditWorkOrder();
+  const {
     mutate: deleteWorkOrder,
     isPending: deletingWorkOrder,
   } = useDeleteWorkOrder();
@@ -115,20 +119,38 @@ export default function WorkOrdersPage() {
     setWorkOrderToDelete(null);
   }
 
-  const handleSaveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
-    const newData = {
-      data: orderData
+  const handleSaveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'status' | 'date'>) => {
+    const isEdit = orderData?._id || ''
+    if (isEdit) {
+      const newData = {
+        id: orderData?._id,
+        data: orderData
+      }
+      editWorkOrder(newData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeCreateEditModal();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
+    } else {
+      const newData = {
+        data: orderData
+      }
+      createWorkOrder(newData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeCreateEditModal();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
     }
-    createWorkOrder(newData, {
-      onSuccess: (data) => {
-        toast.success(data.message);
-        refetch()
-        closeCreateEditModal();
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    })
   };
 
   const closeCreateEditModal = () => {
@@ -233,7 +255,7 @@ export default function WorkOrdersPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder
+  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder || editingWorkOrder
 
   return (
     <div className="space-y-6">

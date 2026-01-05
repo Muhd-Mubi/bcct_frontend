@@ -48,12 +48,12 @@ const jobItemSchema = z.object({
 });
 
 const formSchema = z.object({
-  id: z.string().optional(),
+  _id: z.string().optional(),
   job: z.any(),
   tasks: z.array(jobItemSchema).min(1, 'Please select at least one task for the work order.'),
   description: z.string().optional(),
   priority: z.enum(['high', 'medium', 'low']),
-  status: z.enum(['Pending', 'In Progress', 'Completed']).optional(),
+  status: z.enum(['pending', 'in progress', 'completed']).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -68,19 +68,19 @@ interface CreateWorkOrderDialogProps {
 
 export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder, disableButtons = false }: CreateWorkOrderDialogProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
-  const [searchId, setSearchId] = useState("")
+  const [searchId, setSearchId] = useState(workOrder?.job || "")
   const { workOrders } = useData();
   const isEditing = !!workOrder;
 
-  const { data: searchedJob, isLoading, isRefetching, error, refetch } = useGetJobById(searchId);
+  const { data: searchedJob, isLoading, isRefetching, error, refetch } = useGetJobById(isEditing ? workOrder?.job: searchId);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: { job: '', tasks: [], description: '', priority: 'medium' },
   });
 
-  const selectedJobId = form.watch('job');
-  const selectedJob = selectedJobId ? searchedJob?.job : '';
+  let selectedJobId = form.watch('job');
+  const selectedJob = selectedJobId && searchedJob ? searchedJob?.job : '';
 
   const remainingQuantities = useMemo(() => {
     if (!selectedJob) return {};
@@ -107,12 +107,15 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder,
     if (isOpen) {
       if (isEditing && workOrder) {
         form.reset({
+          _id: workOrder?._id,
           job: workOrder.job,
           tasks: workOrder.tasks,
           priority: workOrder.priority,
           description: workOrder.description,
           status: workOrder.status
         });
+        selectedJobId = workOrder?.job
+        refetch()
       } else {
         form.reset({ job: '', tasks: [], description: '', priority: 'medium' });
       }
@@ -163,10 +166,10 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder,
                 {isEditing && workOrder && (
                   <div className='flex justify-between items-center'>
                     <FormItem>
-                      <FormLabel>Status</FormLabel>
+                      <FormLabel className='mr-3'>Status : </FormLabel>
                       <Badge variant={
-                        workOrder.status === 'Completed' ? 'default' :
-                          workOrder.status === 'In Progress' ? 'secondary' : 'destructive'
+                        workOrder.status === 'completed' ? 'default' :
+                          workOrder.status === 'in progress' ? 'secondary' : 'destructive'
                       }>
                         {workOrder.status}
                       </Badge>

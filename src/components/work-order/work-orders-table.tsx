@@ -110,7 +110,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
           <DropdownMenuSeparator />
 
           <TooltipProvider>
-            {canEdit && (
+            {true && (
               <DropdownMenuItem onClick={() => onEdit(order)}>
                 Edit
               </DropdownMenuItem>

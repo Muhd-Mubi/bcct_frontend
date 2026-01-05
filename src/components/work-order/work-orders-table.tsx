@@ -39,15 +39,12 @@ interface WorkOrdersTableProps {
 }
 
 const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  Pending: 'destructive',
-  'In Progress': 'secondary',
-  Completed: 'default',
+  pending: 'destructive',
+  'in progress': 'secondary',
+  completed: 'default',
 };
 
 const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'destructive'> = {
-  High: 'destructive',
-  Medium: 'secondary',
-  Low: 'default',
   high: 'destructive',
   medium: 'secondary',
   low: 'default',
@@ -80,9 +77,9 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
       return null;
     }
     const canChangeStatus = isLeadership || isTechnical;
-    const canEdit = (isLeadership) || (isAdmin && order.status !== 'Completed');
-    const canDelete = (isLeadership) || (isAdmin && order.status !== 'Completed');
-    const canRevert = (isLeadership || isTechnical) && order.status === 'Completed';
+    const canEdit = (isLeadership) || (isAdmin && order.status !== 'completed');
+    const canDelete = (isLeadership) || (isAdmin && order.status !== 'completed');
+    const canRevert = (isLeadership || isTechnical) && order.status === 'completed';
 
     return (
       <DropdownMenu>
@@ -102,9 +99,9 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               <DropdownMenuSubTrigger>Change Status</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'Pending')} disabled={order.status === 'Pending'}>Pending</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'In Progress')} disabled={order.status === 'In Progress'}>In Progress</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'Completed')} disabled={order.status === 'Completed'}>Completed</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'pending')} disabled={order.status === 'pending'}>Pending</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'in progress')} disabled={order.status === 'in progress'}>In Progress</DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'completed')} disabled={order.status === 'completed'}>Completed</DropdownMenuItem>
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>

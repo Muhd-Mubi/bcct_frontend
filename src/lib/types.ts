@@ -68,7 +68,7 @@ export type Measurement = {
   numberOfMaterials : number;
 };
 
-export type WorkOrderStatus = 'Pending' | 'In Progress' | 'Completed';
+export type WorkOrderStatus = 'pending' | 'in progress' | 'completed';
 export type WorkOrderPriority = 'low'| 'medium'  | 'high';
 
 export type MaterialsUsed = {

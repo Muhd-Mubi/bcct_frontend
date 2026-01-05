@@ -23,7 +23,7 @@ import { UserRoleContext } from '@/lib/types';
 import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useCreateWorkOrder, useGetWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder } from '@/api/react-query/queries/workOrder'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 
@@ -68,6 +68,10 @@ export default function WorkOrdersPage() {
     mutate: createWorkOrder,
     isPending: creatingWorkOrder,
   } = useCreateWorkOrder();
+  const {
+    mutate: editWorkOrderStatus,
+    isPending: editingWorkOrderStatus,
+  } = useEditWorkOrderStatus();
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
@@ -119,18 +123,28 @@ export default function WorkOrdersPage() {
   };
 
   const handleConfirmStatusChange = () => {
-    if (statusChange) {
-      if (statusChange.status === 'Completed') {
-        const order = workOrders.find(wo => wo.id === statusChange.id);
-        setSelectedWorkOrder(order);
-        setCompleteOpen(true);
-      } else {
-        updateWorkOrderStatus(statusChange.id, statusChange.status);
+    const updatedStatus = {
+      id : statusChange?.id,
+      data: {
+        "status" : statusChange?.status
       }
     }
-    setStatusConfirmOpen(false);
-    setStatusChange(null);
+    editWorkOrderStatus(updatedStatus, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        refetch()
+        closeEditStatusModal();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
   };
+
+  const closeEditStatusModal=()=>{
+    setStatusChange(null);
+    setStatusConfirmOpen(false);
+  }
 
   const handleRevertClick = (orderId: string) => {
     setWorkOrderToRevert(orderId);
@@ -200,7 +214,7 @@ export default function WorkOrdersPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingWorkOrder
+  const disableButtons = creatingWorkOrder || editingWorkOrderStatus
 
   return (
     <div className="space-y-6">
@@ -224,7 +238,7 @@ export default function WorkOrdersPage() {
               <DropdownMenuContent className="w-56">
                 <DropdownMenuLabel>Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                {(['Pending', 'In Progress', 'Completed'] as WorkOrderStatus[]).map(status => (
+                {(['pending', 'in progress', 'completed'] as WorkOrderStatus[]).map(status => (
                   <DropdownMenuCheckboxItem
                     key={status}
                     checked={statusFilter.includes(status)}
@@ -302,8 +316,10 @@ export default function WorkOrdersPage() {
       <ChangeStatusConfirmationDialog
         isOpen={isStatusConfirmOpen}
         onOpenChange={setStatusConfirmOpen}
+        closeModal={closeEditStatusModal}
         onConfirm={handleConfirmStatusChange}
         status={statusChange?.status}
+        disableButtons={disableButtons}
       />
 
       <RevertConfirmationDialog

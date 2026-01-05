@@ -19,15 +19,15 @@ export function useCreateJob() {
     });
 }
 
-// export function useEditMaterial() {
-//     return useMutation({
-//         mutationFn: ({ id, data }) =>
-//             apiClient(`/material/update-material/${id}`, {
-//                 method: 'PUT',
-//                 body: data,
-//             }),
-//     });
-// }
+export function useEditJob() {
+    return useMutation({
+        mutationFn: ({ id, data }) =>
+            apiClient(`/job/update-job/${id}`, {
+                method: 'PUT',
+                body: data,
+            }),
+    });
+}
 
 // export function useDeleteMaterial() {
 //   return useMutation({

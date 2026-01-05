@@ -35,6 +35,7 @@ const formSchema = z.object({
   job_id: z.string().min(1, 'Job Order ID is required.'),
   department: z.string().min(1, 'Department is required.'),
   tasks: z.array(jobItemSchema).min(1, 'At least one item is required.'),
+  _id: z.string().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -50,7 +51,7 @@ export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job }: Create
   const isEditing = !!job;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { job_id: '', department: '', tasks: [{ name: '', quantity: 1 }] },
+    defaultValues: { _id: '', job_id: '', department: '', tasks: [{ name: '', quantity: 1 }] },
   });
 
   const { fields, append, remove } = useFieldArray({
@@ -63,7 +64,7 @@ export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job }: Create
       if (isEditing && job) {
         form.reset(job);
       } else {
-        form.reset({ job_id: "", department: '', tasks: [{ name: '', quantity: 1 }] });
+        form.reset({ _id: "", job_id: "", department: '', tasks: [{ name: '', quantity: 1 }] });
       }
     }
   }, [isOpen, form, isEditing, job]);

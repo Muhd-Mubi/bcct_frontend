@@ -11,7 +11,7 @@ import { JobOrdersTable } from '@/components/job-orders/job-orders-table';
 import { CreateJobOrderDialog } from '@/components/job-orders/create-job-order-dialog';
 import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-dialog';
 import { useRouter } from 'next/navigation';
-import { useCreateJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
+import { useCreateJob, useEditJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
 import { toast } from 'react-toastify';
 
 export default function JobOrdersPage() {
@@ -38,6 +38,10 @@ export default function JobOrdersPage() {
     mutate: createJob,
     isPending: creatingJob,
   } = useCreateJob();
+  const {
+    mutate: editJob,
+    isPending: updatingJob,
+  } = useEditJob();
 
   const jobWorkOrderCounts = useMemo(() => {
     const counts: { [jobId: string]: { total: number; open: number } } = {};
@@ -75,20 +79,38 @@ export default function JobOrdersPage() {
   };
 
   const handleSaveJobOrder = (jobData: Job | Omit<Job, 'date'>) => {
-    const newData = {
-      data: jobData
+    const isEdit = !!jobData?._id
+
+    if (isEdit) {
+      const updatedData = {
+        id: jobData?.job_id,
+        data: jobData
+      }
+      editJob(updatedData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeCreateEditModal()
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
+    } else {
+      const newData = {
+        data: jobData
+      }
+      createJob(newData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeCreateEditModal();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
     }
-    createJob(newData, {
-      onSuccess: (data) => {
-        toast.success(data.message);
-        refetch()
-        closeCreateEditModal();
-      },
-      onError: (error) => {
-        toast.error(error.message);
-      },
-    })
-    closeCreateEditModal()
   };
 
   const closeCreateEditModal = () => {

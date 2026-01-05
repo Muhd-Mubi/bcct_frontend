@@ -33,7 +33,7 @@ export default function JobOrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
 
-  // const { data, isLoading, error, refetch } = useGetJobs(currentPage);
+  const { data, isLoading, error, refetch } = useGetJobs(currentPage);
   const {
     mutate: createJob,
     isPending: creatingJob,
@@ -82,7 +82,7 @@ export default function JobOrdersPage() {
       deleteJob(deleteData, {
         onSuccess: (data) => {
           toast.success(data.message);
-          // refetch()
+          refetch()
           closeCreateEditModal()
         },
         onError: (error) => {
@@ -104,7 +104,7 @@ export default function JobOrdersPage() {
       editJob(updatedData, {
         onSuccess: (data) => {
           toast.success(data.message);
-          // refetch()
+          refetch()
           closeCreateEditModal()
         },
         onError: (error) => {
@@ -118,7 +118,7 @@ export default function JobOrdersPage() {
       createJob(newData, {
         onSuccess: (data) => {
           toast.success(data.message);
-          // refetch()
+          refetch()
           closeCreateEditModal();
         },
         onError: (error) => {
@@ -151,56 +151,56 @@ export default function JobOrdersPage() {
 
   const totalPages = Math.ceil(filteredJobOrders.length / jobsPerPage);
 
-  const data = {
-    jobs: [
-      {
-        "_id": "69589e5c332b4a3df524cdd3",
-        "job_id": "2",
-        "department": "Pharmacy",
-        "tasks": [
-          {
-            "name": "G1 Form",
-            "quantity": 200
-          },
-          {
-            "name": "G2 Form",
-            "quantity": 500
-          }
-        ],
-        "createdAt": "2026-01-03T04:43:08.046Z",
-        "__v": 0,
-        "numberOfWorkOrders": 1,
-        "id": "69589e5c332b4a3df524cdd3"
-      },
-      {
-        "_id": "69589977550f68c9157647a0",
-        "job_id": "1",
-        "department": "Chemistry",
-        "tasks": [
-          {
-            "name": "Repeaters Form",
-            "quantity": 50
-          },
-          {
-            "name": "G1 Form",
-            "quantity": 220
-          }
-        ],
-        "createdAt": "2026-01-03T04:22:15.167Z",
-        "__v": 0,
-        "numberOfWorkOrders": 0,
-        "id": "69589977550f68c9157647a0"
-      }
-    ]
-  }
+  // const data = {
+  //   jobs: [
+  //     {
+  //       "_id": "69589e5c332b4a3df524cdd3",
+  //       "job_id": "2",
+  //       "department": "Pharmacy",
+  //       "tasks": [
+  //         {
+  //           "name": "G1 Form",
+  //           "quantity": 200
+  //         },
+  //         {
+  //           "name": "G2 Form",
+  //           "quantity": 500
+  //         }
+  //       ],
+  //       "createdAt": "2026-01-03T04:43:08.046Z",
+  //       "__v": 0,
+  //       "numberOfWorkOrders": 1,
+  //       "id": "69589e5c332b4a3df524cdd3"
+  //     },
+  //     {
+  //       "_id": "69589977550f68c9157647a0",
+  //       "job_id": "1",
+  //       "department": "Chemistry",
+  //       "tasks": [
+  //         {
+  //           "name": "Repeaters Form",
+  //           "quantity": 50
+  //         },
+  //         {
+  //           "name": "G1 Form",
+  //           "quantity": 220
+  //         }
+  //       ],
+  //       "createdAt": "2026-01-03T04:22:15.167Z",
+  //       "__v": 0,
+  //       "numberOfWorkOrders": 0,
+  //       "id": "69589977550f68c9157647a0"
+  //     }
+  //   ]
+  // }
 
 
   // if (role === 'technical') {
   //   return null;
   // }
 
-  // if (isLoading) return <p>Loading...</p>;
-  // if (error) return <p>{error.message}</p>;
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error.message}</p>;
 
   const disableButton = creatingJob || updatingJob || deletingJob
 

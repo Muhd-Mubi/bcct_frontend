@@ -67,7 +67,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                 <div className="w-full">
                   <DropdownMenuItem
                     className="text-destructive focus:text-destructive w-full"
-                    onClick={() => onDelete(job._id)}
+                    onClick={() => onDelete(job?.job_id)}
                     disabled={!canModify}
                   >
                     Delete

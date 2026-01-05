@@ -9,6 +9,15 @@ export function useGetJobs(page) {
     });
 }
 
+export function useGetJobById(id) {
+    return useQuery({
+        queryKey: ['job', id],
+        queryFn: () => apiClient(`/job/get-job-id/${id}`),
+        enabled: false,
+    });
+}
+
+
 export function useCreateJob() {
     return useMutation({
         mutationFn: ({ data }) =>
@@ -30,10 +39,10 @@ export function useEditJob() {
 }
 
 export function useDeleteJob() {
-  return useMutation({
-    mutationFn: ({ id }) =>
-      apiClient(`/job/delete-job/${id}`, {
-        method: 'DELETE',
-      }),
-  });
+    return useMutation({
+        mutationFn: ({ id }) =>
+            apiClient(`/job/delete-job/${id}`, {
+                method: 'DELETE',
+            }),
+    });
 }

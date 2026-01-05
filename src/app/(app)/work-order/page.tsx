@@ -63,8 +63,6 @@ export default function WorkOrdersPage() {
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
-  const { data: jobData, isLoading: isLoadingJob, error: errorJob, refetch: refetchJob } = useGetJobs(currentPage);
-
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
@@ -269,7 +267,6 @@ export default function WorkOrdersPage() {
         isOpen={isCreateOpen}
         onOpenChange={setCreateOpen}
         onSave={handleSaveWorkOrder}
-        jobOrders={jobData?.jobs || []}
         workOrder={selectedWorkOrder}
       />
 

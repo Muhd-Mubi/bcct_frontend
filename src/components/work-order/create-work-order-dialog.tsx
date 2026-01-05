@@ -39,6 +39,8 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useData } from '@/context/data-context';
 import { Input } from '../ui/input';
 import { Badge } from '../ui/badge';
+import { useGetJobById } from '@/api/react-query/queries/jobOrder';
+import { toast } from 'react-toastify';
 
 const jobItemSchema = z.object({
   name: z.string(),
@@ -47,10 +49,10 @@ const jobItemSchema = z.object({
 
 const formSchema = z.object({
   id: z.string().optional(),
-  job: z.string().min(1, 'Please select a Job Order ID.'),
+  job: z.any(),
   items: z.array(jobItemSchema).min(1, 'Please select at least one item for the work order.'),
   description: z.string().optional(),
-  priority: z.enum(['High', 'Medium', 'Low']),
+  priority: z.enum(['high', 'medium', 'low']),
   status: z.enum(['Pending', 'In Progress', 'Completed']).optional(),
 });
 
@@ -60,29 +62,31 @@ interface CreateWorkOrderDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (data: FormValues) => void;
-  jobOrders: Job[];
   workOrder?: WorkOrder;
 }
 
-export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders, workOrder }: CreateWorkOrderDialogProps) {
+export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder }: CreateWorkOrderDialogProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
+  const [searchId, setSearchId] = useState("")
   const { workOrders } = useData();
   const isEditing = !!workOrder;
 
+  const { data: searchedJob, isLoading, isRefetching, error, refetch } = useGetJobById(searchId);
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { job: '', items: [], description: '', priority: 'Medium' },
+    defaultValues: { job: '', items: [], description: '', priority: 'medium' },
   });
 
   const selectedJobId = form.watch('job');
-  const selectedJob = useMemo(() => jobOrders.find(j => j.id === selectedJobId), [selectedJobId, jobOrders]);
+  const selectedJob = selectedJobId ? searchedJob?.job : '';
 
   const remainingQuantities = useMemo(() => {
     if (!selectedJob) return {};
 
     const quantities: { [itemName: string]: number } = {};
 
-    for (const item of selectedJob.items) {
+    for (const item of selectedJob.tasks) {
       quantities[item.name] = item.quantity;
     }
 
@@ -102,15 +106,14 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
     if (isOpen) {
       if (isEditing && workOrder) {
         form.reset({
-          id: workOrder.id,
           job: workOrder.job,
-          items: workOrder.items,
+          tasks: workOrder.tasks,
           priority: workOrder.priority,
           description: workOrder.description,
           status: workOrder.status
         });
       } else {
-        form.reset({ job: '', items: [], description: '', priority: 'Medium' });
+        form.reset({ job: '', items: [], description: '', priority: 'medium' });
       }
     }
   }, [isOpen, form, isEditing, workOrder]);
@@ -119,7 +122,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
     if (!isEditing) {
       form.setValue('items', []);
     }
-  }, [selectedJobId, form, isEditing]);
+  }, [form, isEditing]);
 
   const handleItemToggle = (item: JobItem, checked: boolean) => {
     const currentItems = form.getValues('items');
@@ -135,6 +138,14 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
     onSave(data);
   }
 
+  const handleJobSearch = () => {
+    if (!searchId) {
+      toast.error("Id is required")
+      return
+    };
+    refetch()
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl">
@@ -146,7 +157,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <ScrollArea className="max-h-[60vh] pr-4">
+            <ScrollArea className="max-h-[60vh] overflow-y-auto pr-4">
               <div className="space-y-4 py-4">
                 {isEditing && workOrder && (
                   <div className='flex justify-between items-center'>
@@ -180,9 +191,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
                               )}
                             >
                               {field.value
-                                ? jobOrders.find(
-                                  (job) => job.job_id === field.value
-                                )?.job_id
+                                ? field.value
                                 : "Select Job Order ID"}
                               <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
                             </Button>
@@ -190,26 +199,26 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
                         </PopoverTrigger>
                         <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
                           <Command>
-                            <CommandInput placeholder="Search Job Order ID..." />
+                            <CommandInput value={searchId} onValueChange={e => setSearchId(e)} placeholder="Search Job Order ID..." />
                             <CommandList>
                               <CommandEmpty>No job order found.</CommandEmpty>
                               <CommandGroup>
-                                {jobOrders.map((job) => (
+                                {searchedJob && (
                                   <CommandItem
-                                    value={job.job_id}
-                                    key={job.job_id}
+                                    value={searchedJob.job.job_id}
+                                    key={searchedJob.job.job_id}
                                     onSelect={() => {
-                                      form.setValue("job", job.job_id);
+                                      form.setValue("job", searchedJob.job.job_id);
                                       setPopoverOpen(false);
                                     }}
                                   >
-                                    {job.job_id}
+                                    {searchedJob.job.job_id}
                                   </CommandItem>
-                                ))}
+                                )}
                               </CommandGroup>
                             </CommandList>
                           </Command>
-                          <Button className='ml-4 my-4'>Find</Button>
+                          <Button onClick={handleJobSearch} className='ml-4 my-4'>Find</Button>
                         </PopoverContent>
                       </Popover>
                       <FormMessage />
@@ -228,7 +237,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
                           <p className="text-sm text-muted-foreground">Select the items to include in this work order.</p>
                         </div>
                         <ScrollArea className="h-40 rounded-md border p-4">
-                          {selectedJob.items.map((item, index) => {
+                          {selectedJob?.tasks?.map((item, index) => {
                             const remaining = remainingQuantities[item.name] ?? 0;
                             const currentItem = workOrder?.items.find(i => i.name === item.name);
                             const alreadyInOrder = currentItem ? currentItem.quantity : 0;
@@ -268,7 +277,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, jobOrders,
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          {(['High', 'Medium', 'Low'] as WorkOrderPriority[]).map(p => (
+                          {(['high', 'medium', 'low'] as WorkOrderPriority[]).map(p => (
                             <SelectItem key={p} value={p}>{p}</SelectItem>
                           ))}
                         </SelectContent>

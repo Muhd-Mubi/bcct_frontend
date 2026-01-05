@@ -23,6 +23,7 @@ import { UserRoleContext } from '@/lib/types';
 import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
+import { useGetWorkOrder } from '@/api/react-query/queries/workOrder'
 
 // const priorityOrder: Record<WorkOrderPriority, number> = {
 //   High: 1,
@@ -57,13 +58,17 @@ export default function WorkOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriority[]>([]);
   const { isAdmin, isLeadership } = useContext(UserRoleContext);
+  const [currentPage, setCurrentPage] = useState(1);
+
+
+  const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
 
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
     setCreateOpen(true);
   };
-  
+
   const handleEdit = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
     setCreateOpen(true);
@@ -105,7 +110,7 @@ export default function WorkOrdersPage() {
     setStatusConfirmOpen(false);
     setStatusChange(null);
   };
-  
+
   const handleRevertClick = (orderId: string) => {
     setWorkOrderToRevert(orderId);
     setRevertConfirmOpen(true);
@@ -148,28 +153,31 @@ export default function WorkOrdersPage() {
 
   const canCreate = isLeadership || isAdmin;
 
-      const data = [
-        {
-            "_id": "6958a529a2752cdf4bf1a7ff",
-            "job": "2",
-            "description": "testing new logic",
-            "priority": "medium",
-            "tasks": [
-                {
-                    "name": "performa forms",
-                    "quantity": 20
-                },
-                {
-                    "name": "G1 forms",
-                    "quantity": 120
-                }
-            ],
-            "status": "reverted",
-            "deliveryDate": null,
-            "createdAt": "2026-01-03T05:12:09.400Z",
-            "__v": 1
-        }
-    ]
+  // const data = [
+  //   {
+  //     "_id": "6958a529a2752cdf4bf1a7ff",
+  //     "job": "2",
+  //     "description": "testing new logic",
+  //     "priority": "medium",
+  //     "tasks": [
+  //       {
+  //         "name": "performa forms",
+  //         "quantity": 20
+  //       },
+  //       {
+  //         "name": "G1 forms",
+  //         "quantity": 120
+  //       }
+  //     ],
+  //     "status": "reverted",
+  //     "deliveryDate": null,
+  //     "createdAt": "2026-01-03T05:12:09.400Z",
+  //     "__v": 1
+  //   }
+  // ]
+
+  if (isLoading) return <p>Loading...</p>;
+  if (error) return <p>{error.message}</p>;
 
   return (
     <div className="space-y-6">
@@ -194,20 +202,20 @@ export default function WorkOrdersPage() {
                 <DropdownMenuLabel>Status</DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 {(['Pending', 'In Progress', 'Completed'] as WorkOrderStatus[]).map(status => (
-                    <DropdownMenuCheckboxItem
-                        key={status}
-                        checked={statusFilter.includes(status)}
-                        onCheckedChange={() => {
-                            setStatusFilter(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status])
-                        }}
-                    >
-                        {status}
-                    </DropdownMenuCheckboxItem>
+                  <DropdownMenuCheckboxItem
+                    key={status}
+                    checked={statusFilter.includes(status)}
+                    onCheckedChange={() => {
+                      setStatusFilter(prev => prev.includes(status) ? prev.filter(s => s !== status) : [...prev, status])
+                    }}
+                  >
+                    {status}
+                  </DropdownMenuCheckboxItem>
                 ))}
-                
+
                 <DropdownMenuLabel>Priority</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                 <DropdownMenuCheckboxItem
+                <DropdownMenuCheckboxItem
                   checked={priorityFilter.includes('High')}
                   onCheckedChange={() => {
                     setPriorityFilter(prev => prev.includes('High') ? prev.filter(s => s !== 'High') : [...prev, 'High'])
@@ -215,7 +223,7 @@ export default function WorkOrdersPage() {
                 >
                   High
                 </DropdownMenuCheckboxItem>
-                 <DropdownMenuCheckboxItem
+                <DropdownMenuCheckboxItem
                   checked={priorityFilter.includes('Medium')}
                   onCheckedChange={() => {
                     setPriorityFilter(prev => prev.includes('Medium') ? prev.filter(s => s !== 'Medium') : [...prev, 'Medium'])
@@ -244,7 +252,7 @@ export default function WorkOrdersPage() {
         </CardHeader>
         <CardContent>
           <WorkOrdersTable
-            workOrders={data || []}
+            workOrders={data?.workOrders || []}
             onStatusChange={handleStatusChangeClick}
             onView={handleViewClick}
             onEdit={handleEdit}
@@ -261,7 +269,7 @@ export default function WorkOrdersPage() {
         jobOrders={jobOrders}
         workOrder={selectedWorkOrder}
       />
-      
+
       <DeleteWorkOrderDialog
         isOpen={isDeleteOpen}
         onOpenChange={setDeleteOpen}
@@ -274,7 +282,7 @@ export default function WorkOrdersPage() {
         onConfirm={handleConfirmStatusChange}
         status={statusChange?.status}
       />
-      
+
       <RevertConfirmationDialog
         isOpen={isRevertConfirmOpen}
         onOpenChange={setRevertConfirmOpen}
@@ -291,14 +299,14 @@ export default function WorkOrdersPage() {
           onConfirm={handleConfirmComplete}
         />
       )}
-       
-       {selectedWorkOrder && (
+
+      {selectedWorkOrder && (
         <ViewWorkOrderDialog
           isOpen={isViewOpen}
           onOpenChange={setViewOpen}
           workOrder={selectedWorkOrder}
         />
-       )}
+      )}
     </div>
   );
 }

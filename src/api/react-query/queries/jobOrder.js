@@ -9,15 +9,15 @@ export function useGetJobs(page) {
     });
 }
 
-// export function useCreateMaterial() {
-//     return useMutation({
-//         mutationFn: ({ data }) =>
-//             apiClient(`/material/create-material`, {
-//                 method: 'POST',
-//                 body: data,
-//             }),
-//     });
-// }
+export function useCreateJob() {
+    return useMutation({
+        mutationFn: ({ data }) =>
+            apiClient(`/job/create-job`, {
+                method: 'POST',
+                body: data,
+            }),
+    });
+}
 
 // export function useEditMaterial() {
 //     return useMutation({

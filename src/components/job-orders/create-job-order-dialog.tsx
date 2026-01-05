@@ -32,30 +32,30 @@ const jobItemSchema = z.object({
 });
 
 const formSchema = z.object({
-  id: z.string().min(1, 'Job Order ID is required.'),
+  job_id: z.string().min(1, 'Job Order ID is required.'),
   department: z.string().min(1, 'Department is required.'),
-  items: z.array(jobItemSchema).min(1, 'At least one item is required.'),
+  tasks: z.array(jobItemSchema).min(1, 'At least one item is required.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
 interface CreateJobOrderDialogProps {
   isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
+  closeModal: () => void;
   onSave: (data: FormValues) => void;
   job?: Job;
 }
 
-export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: CreateJobOrderDialogProps) {
+export function CreateJobOrderDialog({ isOpen, closeModal, onSave, job }: CreateJobOrderDialogProps) {
   const isEditing = !!job;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { id: '', department: '', items: [{ name: '', quantity: 1 }] },
+    defaultValues: { job_id: '', department: '', tasks: [{ name: '', quantity: 1 }] },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: 'items',
+    name: 'tasks',
   });
 
   useEffect(() => {
@@ -63,13 +63,13 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
       if (isEditing && job) {
         form.reset(job);
       } else {
-        form.reset({ id: `job-${Date.now()}`, department: '', items: [{ name: '', quantity: 1 }] });
+        form.reset({ job_id: "", department: '', tasks: [{ name: '', quantity: 1 }] });
       }
     }
   }, [isOpen, form, isEditing, job]);
 
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-headline">{isEditing ? 'Edit Job Order' : 'Create New Job Order'}</DialogTitle>
@@ -79,11 +79,11 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSave)}>
-            <ScrollArea className="max-h-[60vh] pr-4">
+            <ScrollArea className="max-h-[60vh] pr-4 overflow-y-auto pb-4">
               <div className="space-y-4">
                 <FormField
                   control={form.control}
-                  name="id"
+                  name="job_id"
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Job Order ID</FormLabel>
@@ -115,7 +115,7 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
                       <div className="grid grid-cols-2 gap-2 flex-grow">
                         <FormField
                           control={form.control}
-                          name={`items.${index}.name`}
+                          name={`tasks.${index}.name`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-xs">Item Name</FormLabel>
@@ -128,7 +128,7 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
                         />
                         <FormField
                           control={form.control}
-                          name={`items.${index}.quantity`}
+                          name={`tasks.${index}.quantity`}
                           render={({ field }) => (
                             <FormItem>
                               <FormLabel className="text-xs">Quantity</FormLabel>
@@ -160,7 +160,7 @@ export function CreateJobOrderDialog({ isOpen, onOpenChange, onSave, job }: Crea
               </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={closeModal}>
                 Cancel
               </Button>
               <Button type="submit">Save Job Order</Button>

@@ -11,7 +11,8 @@ import { JobOrdersTable } from '@/components/job-orders/job-orders-table';
 import { CreateJobOrderDialog } from '@/components/job-orders/create-job-order-dialog';
 import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-dialog';
 import { useRouter } from 'next/navigation';
-import { useGetJobs } from '@/api/react-query/queries/jobOrder'
+import { useCreateJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
+import { toast } from 'react-toastify';
 
 export default function JobOrdersPage() {
   const { jobOrders, workOrders, saveJobOrder, deleteJobOrder } = useData();
@@ -32,7 +33,11 @@ export default function JobOrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
 
-  const { data, isLoading, error } = useGetJobs(currentPage);
+  const { data, isLoading, error, refetch } = useGetJobs(currentPage);
+  const {
+    mutate: createJob,
+    isPending: creatingJob,
+  } = useCreateJob();
 
   const jobWorkOrderCounts = useMemo(() => {
     const counts: { [jobId: string]: { total: number; open: number } } = {};
@@ -70,9 +75,26 @@ export default function JobOrdersPage() {
   };
 
   const handleSaveJobOrder = (jobData: Job | Omit<Job, 'date'>) => {
-    saveJobOrder(jobData);
-    setCreateOpen(false);
+    const newData = {
+      data: jobData
+    }
+    createJob(newData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        refetch()
+        closeCreateEditModal();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
+    closeCreateEditModal()
   };
+
+  const closeCreateEditModal = () => {
+    setSelectedJob(undefined);
+    setCreateOpen(false);
+  }
 
   const filteredJobOrders = useMemo(() => {
     return (jobOrders || []).filter(
@@ -135,7 +157,6 @@ export default function JobOrdersPage() {
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
-  console.log({data})
 
   return (
     <div className="space-y-6">
@@ -170,7 +191,7 @@ export default function JobOrdersPage() {
 
       <CreateJobOrderDialog
         isOpen={isCreateOpen}
-        onOpenChange={setCreateOpen}
+        closeModal={closeCreateEditModal}
         onSave={handleSaveJobOrder}
         job={selectedJob}
       />

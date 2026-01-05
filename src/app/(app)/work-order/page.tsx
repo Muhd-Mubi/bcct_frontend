@@ -23,8 +23,9 @@ import { UserRoleContext } from '@/lib/types';
 import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useGetWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useCreateWorkOrder, useGetWorkOrder } from '@/api/react-query/queries/workOrder'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
+import { toast } from 'react-toastify';
 
 // const priorityOrder: Record<WorkOrderPriority, number> = {
 //   High: 1,
@@ -63,6 +64,10 @@ export default function WorkOrdersPage() {
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
+  const {
+    mutate: createWorkOrder,
+    isPending: creatingWorkOrder,
+  } = useCreateWorkOrder();
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
@@ -88,10 +93,25 @@ export default function WorkOrdersPage() {
   };
 
   const handleSaveWorkOrder = (orderData: WorkOrder | Omit<WorkOrder, 'id' | 'status' | 'date'>) => {
-    // saveWorkOrder(orderData);
-    // setCreateOpen(false);
-    console.log({orderData})
+    const newData = {
+      data: orderData
+    }
+    createWorkOrder(newData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        refetch()
+        closeCreateEditModal();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
   };
+
+  const closeCreateEditModal = () => {
+    setSelectedWorkOrder(undefined);
+    setCreateOpen(false);
+  }
 
   const handleStatusChangeClick = (orderId: string, newStatus: WorkOrderStatus) => {
     setStatusChange({ id: orderId, status: newStatus });
@@ -179,6 +199,8 @@ export default function WorkOrdersPage() {
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
+
+  const disableButtons = creatingWorkOrder
 
   return (
     <div className="space-y-6">
@@ -268,6 +290,7 @@ export default function WorkOrdersPage() {
         onOpenChange={setCreateOpen}
         onSave={handleSaveWorkOrder}
         workOrder={selectedWorkOrder}
+        disableButtons={disableButtons}
       />
 
       <DeleteWorkOrderDialog

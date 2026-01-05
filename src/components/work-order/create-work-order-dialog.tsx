@@ -50,7 +50,7 @@ const jobItemSchema = z.object({
 const formSchema = z.object({
   id: z.string().optional(),
   job: z.any(),
-  items: z.array(jobItemSchema).min(1, 'Please select at least one item for the work order.'),
+  tasks: z.array(jobItemSchema).min(1, 'Please select at least one task for the work order.'),
   description: z.string().optional(),
   priority: z.enum(['high', 'medium', 'low']),
   status: z.enum(['Pending', 'In Progress', 'Completed']).optional(),
@@ -63,9 +63,10 @@ interface CreateWorkOrderDialogProps {
   onOpenChange: (open: boolean) => void;
   onSave: (data: FormValues) => void;
   workOrder?: WorkOrder;
+  disableButtons?: boolean
 }
 
-export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder }: CreateWorkOrderDialogProps) {
+export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder, disableButtons = false }: CreateWorkOrderDialogProps) {
   const [popoverOpen, setPopoverOpen] = useState(false);
   const [searchId, setSearchId] = useState("")
   const { workOrders } = useData();
@@ -75,7 +76,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { job: '', items: [], description: '', priority: 'medium' },
+    defaultValues: { job: '', tasks: [], description: '', priority: 'medium' },
   });
 
   const selectedJobId = form.watch('job');
@@ -92,7 +93,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
 
     const relatedWorkOrders = workOrders.filter(wo => wo.jobId === selectedJob.id && wo.id !== workOrder?.id);
     for (const wo of relatedWorkOrders) {
-      for (const item of wo.items) {
+      for (const item of wo.tasks) {
         if (quantities[item.name] !== undefined) {
           quantities[item.name] -= item.quantity;
         }
@@ -113,23 +114,23 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
           status: workOrder.status
         });
       } else {
-        form.reset({ job: '', items: [], description: '', priority: 'medium' });
+        form.reset({ job: '', tasks: [], description: '', priority: 'medium' });
       }
     }
   }, [isOpen, form, isEditing, workOrder]);
 
   useEffect(() => {
     if (!isEditing) {
-      form.setValue('items', []);
+      form.setValue('tasks', []);
     }
   }, [form, isEditing]);
 
   const handleItemToggle = (item: JobItem, checked: boolean) => {
-    const currentItems = form.getValues('items');
+    const currentItems = form.getValues('tasks');
     if (checked) {
-      form.setValue('items', [...currentItems, item]);
+      form.setValue('tasks', [...currentItems, item]);
     } else {
-      form.setValue('items', currentItems.filter(i => i.name !== item.name));
+      form.setValue('tasks', currentItems.filter(i => i.name !== item.name));
     }
   };
 
@@ -184,7 +185,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
                             <Button
                               variant="outline"
                               role="combobox"
-                              disabled={isEditing}
+                              disabled={isEditing || disableButtons}
                               className={cn(
                                 "w-full justify-between",
                                 !field.value && "text-muted-foreground"
@@ -229,7 +230,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
                 {selectedJob && (
                   <FormField
                     control={form.control}
-                    name="items"
+                    name="tasks"
                     render={() => (
                       <FormItem>
                         <div className="mb-4">
@@ -238,21 +239,16 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
                         </div>
                         <ScrollArea className="h-40 rounded-md border p-4">
                           {selectedJob?.tasks?.map((item, index) => {
-                            const remaining = remainingQuantities[item.name] ?? 0;
-                            const currentItem = workOrder?.items.find(i => i.name === item.name);
-                            const alreadyInOrder = currentItem ? currentItem.quantity : 0;
-                            const available = remaining + (isEditing ? alreadyInOrder : 0);
-                            const isFulfilled = available <= 0 && !form.getValues('items').some(i => i.name === item.name);
                             return (
                               <div key={index} className="flex items-center space-x-2 mb-2">
                                 <Checkbox
                                   id={`item-${index}`}
                                   onCheckedChange={(checked) => handleItemToggle(item, checked as boolean)}
-                                  checked={form.getValues('items').some(i => i.name === item.name)}
-                                  disabled={isFulfilled}
+                                  checked={form.getValues('tasks').some(i => i.name === item.name)}
+                                  disabled={disableButtons}
                                 />
-                                <label htmlFor={`item-${index}`} className={cn("text-sm font-medium leading-none", isFulfilled ? "text-muted-foreground line-through" : "")}>
-                                  {item.name} (Required: {item.quantity}, Remaining: {available})
+                                <label htmlFor={`item-${index}`} className={cn("text-sm font-medium leading-none")}>
+                                  {item.name} (Required: {item.quantity})
                                 </label>
                               </div>
                             )
@@ -270,7 +266,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Priority</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select disabled={disableButtons} onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
                             <SelectValue placeholder="Select priority" />
@@ -306,10 +302,10 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder 
               </div>
             </ScrollArea>
             <DialogFooter className="pt-6">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button disabled={disableButtons} type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Save Work Order</Button>
+              <Button disabled={disableButtons} type="submit">Save Work Order</Button>
             </DialogFooter>
           </form>
         </Form>

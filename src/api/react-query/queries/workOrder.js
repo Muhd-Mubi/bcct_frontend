@@ -9,15 +9,15 @@ export function useGetWorkOrder(page) {
     });
 }
 
-// export function useCreateJob() {
-//     return useMutation({
-//         mutationFn: ({ data }) =>
-//             apiClient(`/job/create-job`, {
-//                 method: 'POST',
-//                 body: data,
-//             }),
-//     });
-// }
+export function useCreateWorkOrder() {
+    return useMutation({
+        mutationFn: ({ data }) =>
+            apiClient(`/work-order/create-work-order`, {
+                method: 'POST',
+                body: data,
+            }),
+    });
+}
 
 // export function useEditJob() {
 //     return useMutation({

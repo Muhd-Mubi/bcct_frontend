@@ -69,7 +69,7 @@ export type Measurement = {
 };
 
 export type WorkOrderStatus = 'Pending' | 'In Progress' | 'Completed';
-export type WorkOrderPriority = 'High' | 'Medium' | 'Low' | 'low'| 'medium'  | 'high';
+export type WorkOrderPriority = 'low'| 'medium'  | 'high';
 
 export type MaterialsUsed = {
   materialId: string;

@@ -64,6 +64,7 @@ export function MaterialFormDialog({
   measurementsList,
   loadingMeasurements = false
 }: MaterialFormDialogProps) {
+  const isEditing = !!material;
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -157,28 +158,26 @@ export function MaterialFormDialog({
                 )}
                 <div className="grid grid-cols-2 gap-4">
                   <FormField
-                    disabled={true}
                     control={form.control}
                     name="unitQuantity"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Unit Quantity</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input disabled={isEditing} type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
-                    disabled={true}
                     control={form.control}
                     name="extraSheets"
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Extra Sheets</FormLabel>
                         <FormControl>
-                          <Input type="number" {...field} />
+                          <Input disabled={isEditing} type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

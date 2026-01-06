@@ -17,11 +17,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { User, Users, LogOut, UserCog } from 'lucide-react';
 import { UserRole, UserRoleContext } from '@/lib/types';
-// import { useAuth } from '@/context/auth-context';
+import { useAuth } from '@/context/AuthContext'
 
 export function UserNav() {
   const { role } = useContext(UserRoleContext);
-  // const { user, logout, switchRole } = useAuth();
+  const { logout } = useAuth();
   
   const roles: UserRole[] = ['leadership', 'admin', 'technical'];
 
@@ -73,8 +73,7 @@ export function UserNav() {
           </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
-        {/* <DropdownMenuItem onSelect={logout}> */}
+        <DropdownMenuItem onSelect={logout}>
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
         </DropdownMenuItem>

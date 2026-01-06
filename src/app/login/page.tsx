@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-// import { useAuth } from '@/context/auth-context';
+import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import {
@@ -22,7 +22,7 @@ import { useUserLogin } from '@/api/react-query/queries/auth'
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  // const { login } = useAuth();
+  const { setUserValues } = useAuth();
   const router = useRouter();
 
   const {
@@ -31,7 +31,6 @@ export default function LoginPage() {
   } = useUserLogin();
 
   const handleLogin = () => {
-    console.log({ username, password })
     const loginData = {
       data: {
         name: username,
@@ -43,8 +42,9 @@ export default function LoginPage() {
         toast.success(data.message);
 
         const token = data?.token
-        const userType = data?.userType
+        const userType = data?.user?.userType
         saveLoginData(token, userType)
+        setUserValues(userType)
 
         router.push("/dashboard")
       },

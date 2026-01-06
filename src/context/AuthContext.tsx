@@ -10,7 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [userType, setUserType] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isSuperadmin, setIsSuperadmin] = useState(false)
-    const [admin, setIsAdmin] = useState(false)
+    const [isAdmin, setIsAdmin] = useState(false)
     const [isUser, setIsUser] = useState(false)
     const router = useRouter();
 
@@ -47,10 +47,8 @@ export const AuthProvider = ({ children }) => {
         setIsUser(userType === 'user')
     }
 
-    console.log({ isSuperadmin, admin, isUser })
-
     return (
-        <AuthContext.Provider value={{ isLoggedIn, userType, logout, loading }}>
+        <AuthContext.Provider value={{ isLoggedIn, setUserValues, userType, logout, loading, isSuperadmin, isAdmin, isUser }}>
             {children}
         </AuthContext.Provider>
     );

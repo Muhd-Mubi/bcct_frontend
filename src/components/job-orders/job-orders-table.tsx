@@ -25,6 +25,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from '@/components/ui/tooltip';
+import { useAuth } from '@/context/AuthContext';
 
 interface JobOrdersTableProps {
   jobOrders: Job[];
@@ -37,7 +38,8 @@ interface JobOrdersTableProps {
 }
 
 export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalPages, onPageChange, onEdit, onDelete }: JobOrdersTableProps) {
-  
+  const { isAdmin } = useAuth()
+
   const renderActions = (job: Job) => {
     const openWorkOrderCount = workOrderCounts[job._id]?.open || 0;
     const canModify = openWorkOrderCount === 0;
@@ -93,7 +95,7 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
               <TableHead>Date Created</TableHead>
               <TableHead>Tasks</TableHead>
               <TableHead className="text-center">No. of Work Orders</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
+              {isAdmin && <TableHead className="text-right">Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -106,14 +108,14 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
                   <div className="flex flex-col gap-1 text-xs">
                     {job.tasks.map((item, index) => (
                       <span className='flex gap-[2px]' key={index}>
-                       <div className='text-[#F97316]'>{item.name}</div>
-                       <div className='text-[#9cafa9]'> (x{item.quantity})</div>
+                        <div className='text-[#F97316]'>{item.name}</div>
+                        <div className='text-[#9cafa9]'> (x{item.quantity})</div>
                       </span>
                     ))}
                   </div>
                 </TableCell>
                 <TableCell className="text-center">{job.numberOfWorkOrders}</TableCell>
-                <TableCell className="text-right">{renderActions(job)}</TableCell>
+                {isAdmin && <TableCell className="text-right">{renderActions(job)}</TableCell>}
               </TableRow>
             ))}
           </TableBody>

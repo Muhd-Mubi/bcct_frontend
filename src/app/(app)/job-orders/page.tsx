@@ -13,10 +13,12 @@ import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-d
 import { useRouter } from 'next/navigation';
 import { useDeleteJob, useCreateJob, useEditJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
 import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 
 export default function JobOrdersPage() {
   const { jobOrders, workOrders, saveJobOrder, deleteJobOrder } = useData();
-  const { role } = useContext(UserRoleContext);
+  const { isAdmin, role } = useAuth()
+  // const { role } = useContext(UserRoleContext);
   const router = useRouter();
 
   useEffect(() => {
@@ -77,7 +79,7 @@ export default function JobOrdersPage() {
   const handleConfirmDelete = () => {
     if (jobToDelete) {
       const deleteData = {
-        id : jobToDelete
+        id: jobToDelete
       }
       deleteJob(deleteData, {
         onSuccess: (data) => {
@@ -216,10 +218,10 @@ export default function JobOrdersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
-            <Button size="sm" onClick={handleCreateNew}>
+            {isAdmin && <Button size="sm" onClick={handleCreateNew}>
               <PlusCircle />
               Create New Job Order
-            </Button>
+            </Button>}
           </div>
         </CardHeader>
         <CardContent>

@@ -20,21 +20,23 @@ import {
 } from 'lucide-react';
 import { useContext } from 'react';
 import { UserRoleContext } from '@/lib/types';
+import { useAuth } from '@/context/AuthContext';
+
 
 export function MainNav() {
   const pathname = usePathname();
-  const { role } = useContext(UserRoleContext);
+  const { role } = useAuth();
 
   const allNavItems = [
-    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['leadership', 'admin', 'technical'] },
-    { href: '/job-orders', label: 'Job Orders', icon: Briefcase, roles: ['leadership', 'admin'] },
-    { href: '/work-order', label: 'Work Orders', icon: FileCheck, roles: ['leadership', 'admin', 'technical'] },
-    { href: '/materials', label: 'Inventory', icon: Package, roles: ['leadership', 'admin', 'technical'] },
-    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus, roles: ['leadership', 'admin', 'technical'] },
-    { href: '/stock-register', label: 'Stock Register', icon: BookCopy, roles: ['leadership', 'admin', 'technical'] },
-    { href: '/measurement', label: 'Measurement', icon: Ruler, roles: ['leadership', 'admin'] },
-    { href: '/work-order-viewer', label: 'Work Order Viewer', icon: FileSearch, roles: ['leadership', 'admin', 'technical'] },
-    { href: '/settings', label: 'Settings', icon: Settings, roles: ['leadership', 'admin', 'technical'] },
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['superAdmin', 'admin', 'user'] },
+    { href: '/job-orders', label: 'Job Orders', icon: Briefcase, roles: ['superAdmin', 'admin'] },
+    { href: '/work-order', label: 'Work Orders', icon: FileCheck, roles: ['superAdmin', 'admin', 'user'] },
+    { href: '/materials', label: 'Inventory', icon: Package, roles: ['superAdmin','admin', 'user'] },
+    { href: '/onboarding', label: 'Onboarding', icon: PackagePlus, roles: ['superAdmin', 'user'] },
+    { href: '/stock-register', label: 'Stock Register', icon: BookCopy, roles: ['superAdmin', 'user'] },
+    { href: '/measurement', label: 'Measurement', icon: Ruler, roles: ['superAdmin', 'user'] },
+    // { href: '/work-order-viewer', label: 'Work Order Viewer', icon: FileSearch, roles: ['leadership', 'admin', 'technical'] },
+    // { href: '/settings', label: 'Settings', icon: Settings, roles: ['leadership', 'admin', 'technical'] },
   ];
 
   const navItems = allNavItems.filter(item => item.roles.includes(role));

@@ -12,6 +12,7 @@ export const AuthProvider = ({ children }) => {
     const [isSuperadmin, setIsSuperadmin] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
     const [isUser, setIsUser] = useState(false)
+    const [role, setRole] = useState('')
     const router = useRouter();
 
     const checkAuthStatus = async () => {
@@ -47,8 +48,12 @@ export const AuthProvider = ({ children }) => {
         setIsUser(userType === 'user')
     }
 
+    useEffect(()=>{
+        setRole(isSuperadmin ? 'superAdmin' : isAdmin ? 'admin' : 'user')
+    }, [isSuperadmin, isAdmin, isUser])
+
     return (
-        <AuthContext.Provider value={{ isLoggedIn, setUserValues, userType, logout, loading, isSuperadmin, isAdmin, isUser }}>
+        <AuthContext.Provider value={{ isLoggedIn, setUserValues, userType, logout, loading, isSuperadmin, isAdmin, isUser, role }}>
             {children}
         </AuthContext.Provider>
     );

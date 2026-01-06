@@ -17,11 +17,11 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { User, Users, LogOut, UserCog } from 'lucide-react';
 import { UserRole, UserRoleContext } from '@/lib/types';
-import { useAuth } from '@/context/auth-context';
+// import { useAuth } from '@/context/auth-context';
 
 export function UserNav() {
   const { role } = useContext(UserRoleContext);
-  const { user, logout, switchRole } = useAuth();
+  // const { user, logout, switchRole } = useAuth();
   
   const roles: UserRole[] = ['leadership', 'admin', 'technical'];
 
@@ -30,17 +30,19 @@ export function UserNav() {
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-9 w-9">
-            <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.email}`} alt={`@${role}`} />
-            <AvatarFallback>{user?.name?.charAt(0) || 'U'}</AvatarFallback>
+            {/* <AvatarImage src={`https://i.pravatar.cc/150?u=${user?.email}`} alt={`@${role}`} /> */}
+            <AvatarFallback></AvatarFallback>
           </Avatar>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className="w-56" align="end" forceMount>
         <DropdownMenuLabel className="font-normal">
           <div className="flex flex-col space-y-1">
-            <p className="text-sm font-medium leading-none">{user?.name}</p>
+            <p className="text-sm font-medium leading-none">
+              {/* {user?.name} */}
+              </p>
             <p className="text-xs leading-none text-muted-foreground">
-              {user?.email}
+              {/* {user?.email} */}
             </p>
             <p className="text-xs leading-none text-muted-foreground capitalize pt-1">
               Role: {role}
@@ -61,7 +63,7 @@ export function UserNav() {
             <DropdownMenuPortal>
               <DropdownMenuSubContent>
                 {roles.map((r) => (
-                  <DropdownMenuItem key={r} onSelect={() => switchRole(r)} disabled={r === role}>
+                  <DropdownMenuItem key={r} disabled={r === role}>
                     <UserCog className="mr-2 h-4 w-4" />
                     <span className="capitalize">{r}</span>
                   </DropdownMenuItem>
@@ -71,7 +73,8 @@ export function UserNav() {
           </DropdownMenuSub>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={logout}>
+        <DropdownMenuItem>
+        {/* <DropdownMenuItem onSelect={logout}> */}
             <LogOut className="mr-2 h-4 w-4" />
             <span>Log out</span>
         </DropdownMenuItem>

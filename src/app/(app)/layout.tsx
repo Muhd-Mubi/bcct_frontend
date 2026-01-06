@@ -12,14 +12,14 @@ import { AppHeader } from '@/components/app-header';
 import { Package2 } from 'lucide-react';
 import { UserRoleContext, UserRole } from '@/lib/types';
 import { DataProvider } from '@/context/data-context';
-import { useAuth } from '@/context/auth-context';
+// import { useAuth } from '@/context/auth-context';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
-  const { user } = useAuth();
+  // const { user } = useAuth();
   
   // Default to a non-privileged role if user is not available
-  const userRole = user?.role || 'technical'; 
-  const isAdmin = userRole === 'leadership' || userRole === 'admin';
+  const userRole = 'technical'; 
+  const isAdmin = true;
 
   return (
     <DataProvider>

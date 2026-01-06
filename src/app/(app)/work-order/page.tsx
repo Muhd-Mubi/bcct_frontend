@@ -26,6 +26,7 @@ import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirm
 import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder, useEditWorkOrder } from '@/api/react-query/queries/workOrder'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
+import { useGeMaterials } from '@/api/react-query/queries/material';
 
 // const priorityOrder: Record<WorkOrderPriority, number> = {
 //   high: 1,
@@ -63,6 +64,7 @@ export default function WorkOrdersPage() {
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
+  const { data : materialsData, isLoading: isLoadingMaterials, error: errorMaterials } = useGeMaterials();
   const {
     mutate: createWorkOrder,
     isPending: creatingWorkOrder,
@@ -163,7 +165,16 @@ export default function WorkOrdersPage() {
     setStatusConfirmOpen(true);
   };
 
+  const completeWordOrder=()=>{
+    // setSelectedWorkOrder()
+    setCompleteOpen(true)
+  }
+
   const handleConfirmStatusChange = () => {
+    const isCompleting = statusChange?.status == 'completed'
+    if (isCompleting) {
+      return completeWordOrder()
+    }
     const updatedStatus = {
       id: statusChange?.id,
       data: {
@@ -209,8 +220,9 @@ export default function WorkOrdersPage() {
     orderId: string,
     materialsUsed: { materialId: string; quantity: number }[]
   ) => {
-    markWorkOrderAsComplete(orderId, materialsUsed);
-    setCompleteOpen(false);
+    console.log({orderId, materialsUsed})
+    // markWorkOrderAsComplete(orderId, materialsUsed);
+    // setCompleteOpen(false);
   };
 
   // const filteredAndSortedWorkOrders = useMemo(() => {
@@ -372,12 +384,12 @@ export default function WorkOrdersPage() {
         description="This will revert the work order to 'In Progress' and add the used materials back to the inventory."
       />
 
-      {selectedWorkOrder && (
+      {(statusChange?.status == 'completed' && isCompleteOpen) && (
         <CompleteWorkOrderDialog
           isOpen={isCompleteOpen}
           onOpenChange={setCompleteOpen}
-          workOrder={selectedWorkOrder}
-          materials={materials}
+          workOrderId={statusChange?.id}
+          materials={materialsData?.materials}
           onConfirm={handleConfirmComplete}
         />
       )}

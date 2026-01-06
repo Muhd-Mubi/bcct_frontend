@@ -29,7 +29,8 @@ import { ScrollArea } from '../ui/scroll-area';
 
 const materialUsedSchema = z.object({
   materialId: z.string().min(1, 'Please select a material.'),
-  quantity: z.coerce.number().min(1, 'Quantity must be at least 1.'),
+  unitQuantity: z.coerce.number().min(0, 'Invalid quantity value'),
+  extraSheets: z.coerce.number().min(0, 'Invalid quantity value'),
 });
 
 const formSchema = z.object({
@@ -41,7 +42,7 @@ type FormValues = z.infer<typeof formSchema>;
 interface CompleteWorkOrderDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
-  workOrder: WorkOrder;
+  workOrderId: string;
   materials: Material[];
   onConfirm: (orderId: string, materialsUsed: z.infer<typeof materialUsedSchema>[]) => void;
 }
@@ -49,14 +50,14 @@ interface CompleteWorkOrderDialogProps {
 export function CompleteWorkOrderDialog({
   isOpen,
   onOpenChange,
-  workOrder,
+  workOrderId,
   materials,
   onConfirm,
 }: CompleteWorkOrderDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      materialsUsed: [{ materialId: '', quantity: 1 }],
+      materialsUsed: [{ materialId: '', unitQuantity: 0, extraSheets: 0 }],
     },
   });
 
@@ -67,19 +68,19 @@ export function CompleteWorkOrderDialog({
 
   useEffect(() => {
     if (isOpen) {
-      form.reset({ materialsUsed: [{ materialId: '', quantity: 1 }] });
+      form.reset({ materialsUsed: [{ materialId: '', unitQuantity: 0, extraSheets: 0 }] });
     }
   }, [isOpen, form]);
 
   const onSubmit = (values: FormValues) => {
-    onConfirm(workOrder.id, values.materialsUsed);
+    onConfirm(workOrderId, values.materialsUsed);
   };
-  
+
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-headline">Complete Work Order: {workOrder.jobId}</DialogTitle>
+          <DialogTitle className="font-headline">Complete Work Order: {workOrderId}</DialogTitle>
           <DialogDescription>
             Record the paper types and quantities used to complete this work order.
           </DialogDescription>
@@ -98,26 +99,40 @@ export function CompleteWorkOrderDialog({
                           <FormItem>
                             <FormLabel>Paper Type</FormLabel>
                             <Select onValueChange={field.onChange} defaultValue={field.value}>
-                                  <FormControl>
-                                    <SelectTrigger>
-                                      <SelectValue placeholder="Select paper" />
-                                    </SelectTrigger>
-                                  </FormControl>
-                                  <SelectContent>
-                                    {materials.map((m) => (
-                                      <SelectItem key={m._id} value={m._id}>
-                                        {m.name}
-                                      </SelectItem>
-                                    ))}
-                                  </SelectContent>
-                              </Select>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Select paper" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {materials.map((m) => (
+                                  <SelectItem key={m._id} value={m._id}>
+                                    {m.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <div></div>
+                      <FormField
+                        control={form.control}
+                        name={`materialsUsed.${index}.unitQuantity`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Quantity Used</FormLabel>
+                            <FormControl>
+                              <Input type="number" {...field} />
+                            </FormControl>
                             <FormMessage />
                           </FormItem>
                         )}
                       />
                       <FormField
                         control={form.control}
-                        name={`materialsUsed.${index}.quantity`}
+                        name={`materialsUsed.${index}.extraSheets`}
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Quantity Used</FormLabel>
@@ -140,16 +155,16 @@ export function CompleteWorkOrderDialog({
                     </Button>
                   </div>
                 ))}
-              
-              
-              <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', quantity: 1 })} className="mt-4">
-                <PlusCircle className="mr-2 h-4 w-4" />
-                Add Another Paper Type
-              </Button>
+
+
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 0, extraSheets: 0 })} className="mt-4">
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Another Paper Type
+                </Button>
               </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
-               <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
               <Button type="submit">Confirm Completion</Button>

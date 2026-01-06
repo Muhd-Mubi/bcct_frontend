@@ -18,6 +18,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { MoreHorizontal } from 'lucide-react';
 import { Measurement, UserRoleContext } from '@/lib/types';
+import { useAuth } from '@/context/AuthContext';
 
 interface MeasurementTableProps {
   data: Measurement[];
@@ -27,8 +28,10 @@ interface MeasurementTableProps {
 }
 
 export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementTableProps) {
-    const { isAdmin, isLeadership } = useContext(UserRoleContext);
-    const canPerformActions = isAdmin || isLeadership;
+  const { isAdmin, isLeadership } = useContext(UserRoleContext);
+  const canPerformActions = isAdmin || isLeadership;
+  const { isUser } = useAuth();
+
 
   return (
     <div className="rounded-md border">
@@ -38,7 +41,7 @@ export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementT
             <TableHead>Name</TableHead>
             <TableHead className="text-right">Sheets Per Unit</TableHead>
             <TableHead className="text-center">No. of Materials</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
+            {isUser && <TableHead className="text-right">Actions</TableHead>}
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -47,31 +50,31 @@ export function MeasurementTable({ data, usage, onEdit, onDelete }: MeasurementT
               <TableCell className="font-medium">{measurement.name}</TableCell>
               <TableCell className="text-right">{measurement.sheetsPerUnit}</TableCell>
               <TableCell className="text-center">{measurement.numberOfMaterials}</TableCell>
-              <TableCell className="text-right">
-                  {true ? (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <span className="sr-only">Open menu</span>
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => onEdit(measurement)}>
-                          Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem
-                          className="text-destructive focus:text-destructive"
-                          onClick={() => onDelete(measurement._id)}
-                        >
-                          Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  ) : (
-                    <span className="text-xs text-muted-foreground">No actions</span>
-                  )}
-                </TableCell>
+              {isUser && <TableCell className="text-right">
+                {true ? (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => onEdit(measurement)}>
+                        Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem
+                        className="text-destructive focus:text-destructive"
+                        onClick={() => onDelete(measurement._id)}
+                      >
+                        Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                ) : (
+                  <span className="text-xs text-muted-foreground">No actions</span>
+                )}
+              </TableCell>}
             </TableRow>
           ))}
         </TableBody>

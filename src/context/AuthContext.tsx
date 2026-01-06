@@ -11,8 +11,8 @@ export const AuthProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const [isSuperadmin, setIsSuperadmin] = useState(false)
     const [isAdmin, setIsAdmin] = useState(false)
-    const [isUser, setIsUser] = useState(false)
-    const [role, setRole] = useState('')
+    const [isUser, setIsUser] = useState(true)
+    const [role, setRole] = useState('user')
     const router = useRouter();
 
     const checkAuthStatus = async () => {

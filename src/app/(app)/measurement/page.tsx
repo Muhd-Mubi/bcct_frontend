@@ -13,12 +13,14 @@ import { DeleteConfirmationDialog } from '@/components/materials/delete-confirma
 import { useRouter } from 'next/navigation';
 import { useGetMeasurements, useCreateMeasurement, useEditMeasurement, useDeleteMeasurement } from '@/api/react-query/queries/measurement'
 import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 
 
 export default function MeasurementPage() {
     const { measurements, materials, saveMeasurement, updateMeasurement } = useData();
     const { isAdmin, isLeadership } = useContext(UserRoleContext);
     const router = useRouter();
+    const { isUser } = useAuth();
 
     useEffect(() => {
         if (!isAdmin && !isLeadership) {
@@ -183,7 +185,7 @@ export default function MeasurementPage() {
                             Add Measurement
                         </Button>
                     )} */}
-                    {true && (
+                    {isUser && (
                         <Button size="sm" onClick={handleAdd}>
                             <PlusCircle />
                             Add Measurement

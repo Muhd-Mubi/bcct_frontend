@@ -76,6 +76,10 @@ export function CompleteWorkOrderDialog({
     onConfirm(workOrderId, values.materialsUsed);
   };
 
+  const selectedMaterialIds = form.watch('materialsUsed')?.map(
+    (item) => item.materialId
+  );
+
   return (
     <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-lg">
@@ -87,7 +91,7 @@ export function CompleteWorkOrderDialog({
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)}>
-            <ScrollArea className="max-h-[60vh] pr-4">
+            <ScrollArea className="max-h-[60vh] overflow-y-auto pr-4">
               <div className="space-y-4 py-4">
                 {fields.map((field, index) => (
                   <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
@@ -105,11 +109,21 @@ export function CompleteWorkOrderDialog({
                                 </SelectTrigger>
                               </FormControl>
                               <SelectContent>
-                                {materials.map((m) => (
-                                  <SelectItem key={m._id} value={m._id}>
-                                    {m.name}
-                                  </SelectItem>
-                                ))}
+                                {materials.map((m) => {
+                                  const isSelected =
+                                    selectedMaterialIds.includes(m._id) &&
+                                    m._id !== form.getValues(`materialsUsed.${index}.materialId`);
+
+                                  return (
+                                    <SelectItem
+                                      key={m._id}
+                                      value={m._id}
+                                      disabled={isSelected}
+                                    >
+                                      {m.name}
+                                    </SelectItem>
+                                  );
+                                })}
                               </SelectContent>
                             </Select>
                             <FormMessage />

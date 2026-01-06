@@ -28,6 +28,7 @@ import { useCompleteWorkOrder } from '@/api/react-query/queries/inventoryTransec
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 import { useGeMaterials } from '@/api/react-query/queries/material';
+import { useAuth } from '@/context/AuthContext';
 
 // const priorityOrder: Record<WorkOrderPriority, number> = {
 //   high: 1,
@@ -60,8 +61,9 @@ export default function WorkOrdersPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState<WorkOrderStatus[]>([]);
   const [priorityFilter, setPriorityFilter] = useState<WorkOrderPriority[]>([]);
-  const { isAdmin, isLeadership } = useContext(UserRoleContext);
+  const { isLeadership } = useContext(UserRoleContext);
   const [currentPage, setCurrentPage] = useState(1);
+  const { isAdmin } = useAuth()
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
@@ -263,7 +265,6 @@ export default function WorkOrdersPage() {
   //     });
   // }, [workOrders, searchTerm, statusFilter, priorityFilter]);
 
-  const canCreate = isLeadership || isAdmin;
 
   // const data = [
   //   {
@@ -356,7 +357,7 @@ export default function WorkOrdersPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {true && (
+            {isAdmin && (
               <Button size="sm" onClick={handleCreateNew}>
                 <PlusCircle />
                 Create New Work Order

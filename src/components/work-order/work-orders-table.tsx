@@ -28,6 +28,7 @@ import { WorkOrder, WorkOrderStatus, UserRoleContext, WorkOrderPriority } from '
 import { format, parseISO } from 'date-fns';
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '../ui/tooltip';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
 
 interface WorkOrdersTableProps {
   workOrders: WorkOrder[];
@@ -51,10 +52,11 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
 }
 
 export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
-  const { isLeadership, isAdmin, isTechnical } = useContext(UserRoleContext);
+  const { isLeadership, isTechnical } = useContext(UserRoleContext);
   const pathname = usePathname();
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
+  const { isAdmin, isUser } = useAuth()
 
   const paginatedWorkOrders = workOrders.slice(
     (currentPage - 1) * itemsPerPage,
@@ -76,10 +78,10 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
     if (isDashboard) {
       return null;
     }
-    const canChangeStatus = isLeadership || isTechnical;
-    const canEdit = (isLeadership) || (isAdmin && order.status !== 'completed');
-    const canDelete = (isLeadership) || (isAdmin && order.status !== 'completed');
-    const canRevert = (isLeadership || isTechnical) && order.status === 'completed';
+    const canChangeStatus = isUser;
+    const canEdit = isAdmin && (order.status === 'pending')
+    const canDelete = isAdmin && (order.status !== 'pending');
+    const canRevert = false;
 
     return (
       <DropdownMenu>
@@ -90,9 +92,9 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
-          <DropdownMenuItem onClick={() => onView(order)}>
+          {/* <DropdownMenuItem onClick={() => onView(order)}>
             View Details
-          </DropdownMenuItem>
+          </DropdownMenuItem> */}
 
           {canChangeStatus && (
             <DropdownMenuSub>
@@ -107,10 +109,10 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
             </DropdownMenuSub>
           )}
 
-          <DropdownMenuSeparator />
+          {/* <DropdownMenuSeparator /> */}
 
           <TooltipProvider>
-            {true && (
+            {canEdit && (
               <DropdownMenuItem onClick={() => onEdit(order)}>
                 Edit
               </DropdownMenuItem>
@@ -122,7 +124,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               </DropdownMenuItem>
             )}
 
-            {true && (
+            {canDelete && (
               <DropdownMenuItem
                 onClick={() => onDelete(order._id)}
                 className="text-destructive focus:text-destructive"

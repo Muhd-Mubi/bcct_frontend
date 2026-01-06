@@ -170,15 +170,14 @@ export default function WorkOrdersPage() {
     setStatusConfirmOpen(true);
   };
 
-  const completeWordOrder = () => {
-    // setSelectedWorkOrder()
+  const handleCompleteWordOrder = () => {
     setCompleteOpen(true)
   }
 
   const handleConfirmStatusChange = () => {
     const isCompleting = statusChange?.status == 'completed'
     if (isCompleting) {
-      return completeWordOrder()
+      return handleCompleteWordOrder()
     }
     const updatedStatus = {
       id: statusChange?.id,
@@ -225,10 +224,30 @@ export default function WorkOrdersPage() {
     orderId: string,
     materialsUsed: { materialId: string; quantity: number }[]
   ) => {
-    console.log({ orderId, materialsUsed })
+    const completeData = {
+      id: orderId,
+      data: {
+        materials: materialsUsed
+      }
+    }
+    completeWorkOrder(completeData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        refetch()
+        closeCompletWorkOrderModal()
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
     // markWorkOrderAsComplete(orderId, materialsUsed);
     // setCompleteOpen(false);
   };
+
+  const closeCompletWorkOrderModal = () => {
+    setCompleteOpen(false)
+    setStatusChange(null)
+  }
 
   // const filteredAndSortedWorkOrders = useMemo(() => {
   //   return workOrders

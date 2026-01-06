@@ -151,7 +151,7 @@ export function CompleteWorkOrderDialog({
                         name={`materialsUsed.${index}.extraSheets`}
                         render={({ field }) => (
                           <FormItem>
-                            <FormLabel>Quantity Used</FormLabel>
+                            <FormLabel>Extra Sheets</FormLabel>
                             <FormControl>
                               <Input disabled={disabled} type="number" {...field} />
                             </FormControl>

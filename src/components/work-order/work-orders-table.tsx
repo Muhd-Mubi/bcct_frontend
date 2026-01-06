@@ -80,7 +80,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
     }
     const canChangeStatus = isUser;
     const canEdit = isAdmin && (order.status === 'pending')
-    const canDelete = isAdmin && (order.status !== 'pending');
+    const canDelete = isAdmin && (order.status === 'pending');
     const canRevert = false;
 
     return (

@@ -272,7 +272,7 @@ export default function WorkOrdersPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder || editingWorkOrder
+  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder || editingWorkOrder || completingWorkJob
 
   return (
     <div className="space-y-6">
@@ -396,6 +396,7 @@ export default function WorkOrdersPage() {
           workOrderId={statusChange?.id}
           materials={materialsData?.materials}
           onConfirm={handleConfirmComplete}
+          disabled={disableButtons}
         />
       )}
 

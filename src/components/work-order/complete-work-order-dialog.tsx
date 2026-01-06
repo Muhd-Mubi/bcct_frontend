@@ -45,6 +45,7 @@ interface CompleteWorkOrderDialogProps {
   workOrderId: string;
   materials: Material[];
   onConfirm: (orderId: string, materialsUsed: z.infer<typeof materialUsedSchema>[]) => void;
+  disabled?: boolean
 }
 
 export function CompleteWorkOrderDialog({
@@ -53,6 +54,7 @@ export function CompleteWorkOrderDialog({
   workOrderId,
   materials,
   onConfirm,
+  disabled = false
 }: CompleteWorkOrderDialogProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -102,7 +104,7 @@ export function CompleteWorkOrderDialog({
                         render={({ field }) => (
                           <FormItem>
                             <FormLabel>Paper Type</FormLabel>
-                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <Select disabled={disabled} onValueChange={field.onChange} defaultValue={field.value}>
                               <FormControl>
                                 <SelectTrigger>
                                   <SelectValue placeholder="Select paper" />
@@ -138,7 +140,7 @@ export function CompleteWorkOrderDialog({
                           <FormItem>
                             <FormLabel>Quantity Used</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input disabled={disabled} type="number" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -151,7 +153,7 @@ export function CompleteWorkOrderDialog({
                           <FormItem>
                             <FormLabel>Quantity Used</FormLabel>
                             <FormControl>
-                              <Input type="number" {...field} />
+                              <Input disabled={disabled} type="number" {...field} />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
@@ -163,7 +165,7 @@ export function CompleteWorkOrderDialog({
                       variant="destructive"
                       size="icon"
                       onClick={() => remove(index)}
-                      disabled={fields.length === 1}
+                      disabled={(fields.length === 1) || disabled}
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -171,17 +173,17 @@ export function CompleteWorkOrderDialog({
                 ))}
 
 
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 0, extraSheets: 0 })} className="mt-4">
+                <Button type="button" disabled={disabled} variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 0, extraSheets: 0 })} className="mt-4">
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add Another Paper Type
                 </Button>
               </div>
             </ScrollArea>
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
+              <Button type="button" disabled={disabled} variant="outline" onClick={() => onOpenChange(false)}>
                 Cancel
               </Button>
-              <Button type="submit">Confirm Completion</Button>
+              <Button type="submit" disabled={disabled}>Confirm Completion</Button>
             </DialogFooter>
           </form>
         </Form>

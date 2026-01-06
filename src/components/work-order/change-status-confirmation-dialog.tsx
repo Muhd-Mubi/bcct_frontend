@@ -45,7 +45,7 @@ export function ChangeStatusConfirmationDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={closeModal}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={closeModal} disabled={disableButtons}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className={cn(isDestructive && buttonVariants({ variant: "destructive" }))}

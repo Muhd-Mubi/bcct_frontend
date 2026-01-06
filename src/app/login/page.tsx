@@ -14,32 +14,57 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Package2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
+import { useUserLogin } from '@/api/react-query/queries/auth'
 
 export default function LoginPage() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const { login } = useAuth();
   const router = useRouter();
-  const { toast } = useToast();
+
+  const {
+    mutate: loginUser,
+    isPending: loggingUser,
+  } = useUserLogin();
 
   const handleLogin = () => {
-    if (login(username, password)) {
-      // router.push('/dashboard');
-    } else {
-      toast({
-        title: 'Invalid Credentials',
-        description: 'Please check your username and password.',
-        variant: 'destructive',
-      });
+    console.log({ username, password })
+    const loginData = {
+      data: {
+        name: username,
+        password: password
+      }
     }
+    loginUser(loginData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+
+        const token = data?.token
+        const userType = data?.userType
+        saveLoginData(data?.token, data?.userType)
+
+        router.push("/dashboard")
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
   };
+
+  const saveLoginData = (token: string, userType: string) => {
+    localStorage.setItem("token", token)
+    localStorage.setItem("userType", userType)
+    localStorage.setItem("isLoggedIn", "1")
+  }
+
+  const disableButton = loggingUser
 
   return (
     <div className="relative h-screen w-full font-body">
-       <Image
+      <Image
         src="https://picsum.photos/seed/3/1920/1080"
         alt="Inventory management system background"
         fill
@@ -47,14 +72,14 @@ export default function LoginPage() {
         data-ai-hint="warehouse logistics"
       />
       <div className="absolute inset-0 bg-black/60" />
-      
+
       <div className="absolute top-8 left-8 text-white">
-          <div className="flex items-center gap-4">
-              <Package2 className="size-8 text-primary" />
-              <h1 className="text-2xl font-bold font-headline drop-shadow-md">
-                  BCCT INVENTORY
-              </h1>
-          </div>
+        <div className="flex items-center gap-4">
+          <Package2 className="size-8 text-primary" />
+          <h1 className="text-2xl font-bold font-headline drop-shadow-md">
+            BCCT INVENTORY
+          </h1>
+        </div>
       </div>
 
       <div className="relative z-10 flex h-full items-center justify-center">
@@ -75,28 +100,30 @@ export default function LoginPage() {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="admin"
                   required
+                  disabled={disableButton}
                 />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
-                  <Link
+                  {/* <Link
                     href="#"
                     className="ml-auto inline-block text-sm text-primary hover:underline"
                   >
                     Forgot password?
-                  </Link>
+                  </Link> */}
                 </div>
-                <Input 
-                  id="password" 
-                  type="password" 
+                <Input
+                  id="password"
+                  type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="password"
-                  required 
-                 />
+                  required
+                  disabled={disableButton}
+                />
               </div>
-              <Button type="submit" className="w-full mt-2" onClick={handleLogin}>
+              <Button type="submit" disabled={disableButton} className="w-full mt-2" onClick={handleLogin}>
                 Sign In
               </Button>
             </div>

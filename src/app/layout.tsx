@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
-import { AuthProvider } from '@/context/auth-context';
+import { AuthProvider } from '@/context/AuthContext';
 import Providers from '@/app/providers'
 import { Inter, Space_Grotesk, PT_Sans, Roboto_Mono, Rubik } from 'next/font/google';
 import { cn } from '@/lib/utils';

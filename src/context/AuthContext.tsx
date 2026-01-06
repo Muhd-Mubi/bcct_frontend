@@ -1,12 +1,17 @@
-import { useRouter } from "next/router";
+'use client'
+
+import { useRouter } from "next/navigation";
 import { createContext, useState, useContext, useEffect } from "react";
 
 const AuthContext = createContext(null);
 
 export const AuthProvider = ({ children }) => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
-    const [userType, setUser] = useState(null);
+    const [userType, setUserType] = useState(null);
     const [loading, setLoading] = useState(true);
+    const [isSuperadmin, setIsSuperadmin] = useState(false)
+    const [admin, setIsAdmin] = useState(false)
+    const [isUser, setIsUser] = useState(false)
     const router = useRouter();
 
     const checkAuthStatus = async () => {
@@ -15,8 +20,9 @@ export const AuthProvider = ({ children }) => {
         const isLoggedIn = localStorage.getItem("isLoggedIn");
 
         if (userType && token && parseInt(isLoggedIn)) {
-            setUser(userType)
+            setUserType(userType)
             setIsLoggedIn(true)
+            setUserValues(userType)
         }
         else {
             logout()
@@ -32,8 +38,16 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem("token");
         localStorage.removeItem("userType");
         localStorage.setItem("isLoggedIn", "0")
-        router.push("/dashboard")
+        router.push("/login")
     };
+
+    const setUserValues = (userType) => {
+        setIsSuperadmin(userType === 'superAdmin')
+        setIsAdmin(userType === 'admin')
+        setIsUser(userType === 'user')
+    }
+
+    console.log({ isSuperadmin, admin, isUser })
 
     return (
         <AuthContext.Provider value={{ isLoggedIn, userType, logout, loading }}>
@@ -42,4 +56,10 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+};

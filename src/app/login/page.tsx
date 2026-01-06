@@ -44,7 +44,7 @@ export default function LoginPage() {
 
         const token = data?.token
         const userType = data?.userType
-        saveLoginData(data?.token, data?.userType)
+        saveLoginData(token, userType)
 
         router.push("/dashboard")
       },

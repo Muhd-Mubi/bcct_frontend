@@ -24,6 +24,7 @@ import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-s
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
 import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder, useEditWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useCompleteWorkOrder } from '@/api/react-query/queries/inventoryTransections'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 import { useGeMaterials } from '@/api/react-query/queries/material';
@@ -64,7 +65,7 @@ export default function WorkOrdersPage() {
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
-  const { data : materialsData, isLoading: isLoadingMaterials, error: errorMaterials } = useGeMaterials();
+  const { data: materialsData, isLoading: isLoadingMaterials, error: errorMaterials } = useGeMaterials();
   const {
     mutate: createWorkOrder,
     isPending: creatingWorkOrder,
@@ -81,6 +82,10 @@ export default function WorkOrdersPage() {
     mutate: deleteWorkOrder,
     isPending: deletingWorkOrder,
   } = useDeleteWorkOrder();
+  const {
+    mutate: completeWorkOrder,
+    isPending: completingWorkJob,
+  } = useCompleteWorkOrder();
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
@@ -165,7 +170,7 @@ export default function WorkOrdersPage() {
     setStatusConfirmOpen(true);
   };
 
-  const completeWordOrder=()=>{
+  const completeWordOrder = () => {
     // setSelectedWorkOrder()
     setCompleteOpen(true)
   }
@@ -220,7 +225,7 @@ export default function WorkOrdersPage() {
     orderId: string,
     materialsUsed: { materialId: string; quantity: number }[]
   ) => {
-    console.log({orderId, materialsUsed})
+    console.log({ orderId, materialsUsed })
     // markWorkOrderAsComplete(orderId, materialsUsed);
     // setCompleteOpen(false);
   };

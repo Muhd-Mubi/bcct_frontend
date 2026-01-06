@@ -20,6 +20,7 @@ import { Input } from '@/components/ui/input';
 import { MoreHorizontal, ArrowUpDown } from 'lucide-react';
 import { Material } from '@/lib/types';
 import { UserRoleContext } from '@/lib/types';
+import { useAuth } from '@/context/AuthContext';
 
 type SortKey = keyof Material | '';
 
@@ -34,7 +35,8 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const { isLeadership, isAdmin, isTechnical } = useContext(UserRoleContext);
-  
+  const { isUser } = useAuth()
+
   const canEdit = isLeadership || isTechnical;
   const canDelete = isLeadership || isAdmin;
 
@@ -99,7 +101,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
               <SortableHeader sortKeyName="measurement">Measurement Unit</SortableHeader>
               <SortableHeader sortKeyName="unitQuantity">Unit Quantity</SortableHeader>
               <SortableHeader sortKeyName="extraSheets">Extra Sheets</SortableHeader>
-              <TableHead>Actions</TableHead>
+              {isUser && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -109,7 +111,7 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                 <TableCell>{material.measurement}</TableCell>
                 <TableCell>{material.unitQuantity}</TableCell>
                 <TableCell>{material.extraSheets}</TableCell>
-                <TableCell>
+                {isUser && <TableCell>
                   {(canEdit || canDelete) ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>
@@ -120,24 +122,24 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                       </DropdownMenuTrigger>
                       <DropdownMenuContent align="end">
                         {canEdit && (
-                            <DropdownMenuItem onClick={() => onEdit(material)}>
-                              Edit
-                            </DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => onEdit(material)}>
+                            Edit
+                          </DropdownMenuItem>
                         )}
                         {true && (
-                            <DropdownMenuItem
-                              className="text-destructive focus:text-destructive"
-                              onClick={() => onDelete(material._id)}
-                            >
-                              Delete
-                            </DropdownMenuItem>
+                          <DropdownMenuItem
+                            className="text-destructive focus:text-destructive"
+                            onClick={() => onDelete(material._id)}
+                          >
+                            Delete
+                          </DropdownMenuItem>
                         )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   ) : (
                     <span className="text-xs text-muted-foreground">No actions</span>
                   )}
-                </TableCell>
+                </TableCell>}
               </TableRow>
             ))}
           </TableBody>

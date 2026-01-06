@@ -13,6 +13,7 @@ import { DeleteConfirmationDialog } from '@/components/materials/delete-confirma
 import { useGetMeasurements } from '@/api/react-query/queries/measurement'
 import { useGeMaterials, useCreateMaterial, useEditMaterial, useDeleteMaterial } from '@/api/react-query/queries/material'
 import { toast } from 'react-toastify';
+import { useAuth } from '@/context/AuthContext';
 
 export default function MaterialsPage() {
   // const { materials, saveMaterial, deleteMaterial } = useData();
@@ -21,6 +22,7 @@ export default function MaterialsPage() {
   const [selectedMaterial, setSelectedMaterial] = useState<Material | undefined>(undefined);
   const [materialToDelete, setMaterialToDelete] = useState<string | null>(null);
   const { isLeadership, isTechnical } = useContext(UserRoleContext);
+  const { isUser } = useAuth()
 
   const { data: measurementData, isLoading: isLoadingMeasurement, error: isErrorMeasurement } = useGetMeasurements();
   const { data, isLoading, error, refetch } = useGeMaterials();
@@ -147,7 +149,7 @@ export default function MaterialsPage() {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <CardTitle className="font-headline">Inventory</CardTitle>
-          {canAdd && (
+          {isUser && (
             <Button size="sm" onClick={handleAdd}>
               <PlusCircle />
               Add Material

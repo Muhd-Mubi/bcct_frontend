@@ -13,4 +13,13 @@ export function useCompleteWorkOrder() {
     });
 }
 
+export function useRevertWorkOrder() {
+    return useMutation({
+        mutationFn: ({ id }) =>
+            apiClient(`/inventory-transection/work-order-revert/${id}`, {
+                method: 'POST',
+            }),
+    });
+}
+
 

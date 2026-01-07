@@ -24,7 +24,7 @@ import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-s
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
 import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder, useEditWorkOrder } from '@/api/react-query/queries/workOrder'
-import { useCompleteWorkOrder } from '@/api/react-query/queries/inventoryTransections'
+import { useCompleteWorkOrder, useRevertWorkOrder } from '@/api/react-query/queries/inventoryTransections'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
 import { useGeMaterials } from '@/api/react-query/queries/material';
@@ -88,6 +88,10 @@ export default function WorkOrdersPage() {
     mutate: completeWorkOrder,
     isPending: completingWorkJob,
   } = useCompleteWorkOrder();
+  const {
+    mutate: revertWorkOrder,
+    isPending: revertingWorkJob,
+  } = useRevertWorkOrder();
 
   const handleCreateNew = () => {
     setSelectedWorkOrder(undefined);
@@ -292,7 +296,7 @@ export default function WorkOrdersPage() {
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
-  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder || editingWorkOrder || completingWorkJob
+  const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder || editingWorkOrder || completingWorkJob || revertingWorkJob
 
   return (
     <div className="space-y-6">

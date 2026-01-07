@@ -78,7 +78,8 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
     if (isDashboard) {
       return null;
     }
-    const canChangeStatus = isUser;
+    const canChangeStatus = isUser || isAdmin;
+    const canUserUpdateStatus = isUser && (order.status !== 'completed')
     const canEdit = isAdmin && (order.status === 'pending')
     const canDelete = isAdmin && (order.status === 'pending');
     const canRevert = false;
@@ -101,9 +102,17 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               <DropdownMenuSubTrigger>Change Status</DropdownMenuSubTrigger>
               <DropdownMenuPortal>
                 <DropdownMenuSubContent>
-                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'pending')} disabled={order.status === 'pending'}>Pending</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'in progress')} disabled={order.status === 'in progress'}>In Progress</DropdownMenuItem>
-                  <DropdownMenuItem onClick={() => onStatusChange(order._id, 'completed')} disabled={order.status === 'completed'}>Completed</DropdownMenuItem>
+                  {canUserUpdateStatus && <>
+                    <DropdownMenuItem onClick={() => onStatusChange(order._id, 'pending')} disabled={order.status === 'pending'}>
+                      Pending
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => onStatusChange(order._id, 'in progress')} disabled={order.status === 'in progress'}>
+                      In Progress
+                    </DropdownMenuItem>
+                  </>}
+                  {isAdmin && <DropdownMenuItem onClick={() => onStatusChange(order._id, 'completed')} disabled={order.status === 'completed'}>
+                    Completed
+                  </DropdownMenuItem>}
                 </DropdownMenuSubContent>
               </DropdownMenuPortal>
             </DropdownMenuSub>

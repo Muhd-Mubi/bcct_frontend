@@ -252,6 +252,7 @@ export default function WorkOrdersPage() {
 
   const closeCompletWorkOrderModal = () => {
     setCompleteOpen(false)
+    setStatusConfirmOpen(false);
     setStatusChange(null)
   }
 

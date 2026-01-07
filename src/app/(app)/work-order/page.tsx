@@ -214,10 +214,27 @@ export default function WorkOrdersPage() {
   }
 
   const handleConfirmRevert = () => {
-    // closeRevertWOrkOrderModal()
+    if (workOrderToRevert) {
+      const revertData = {
+        id : workOrderToRevert
+      }
+      revertWorkOrder(revertData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeRevertWOrkOrderModal()
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
+    }
+    else {
+      closeRevertWOrkOrderModal()
+    }
   };
 
-  const closeRevertWOrkOrderModal=()=>{
+  const closeRevertWOrkOrderModal = () => {
     setWorkOrderToRevert(null);
     setRevertConfirmOpen(false);
   }
@@ -414,6 +431,7 @@ export default function WorkOrdersPage() {
         onCLose={closeRevertWOrkOrderModal}
         onConfirm={handleConfirmRevert}
         description="This will revert the work order to 'In Progress' and add the used materials back to the inventory."
+        disableButtons={disableButtons}
       />
 
       {(statusChange?.status == 'completed' && isCompleteOpen) && (

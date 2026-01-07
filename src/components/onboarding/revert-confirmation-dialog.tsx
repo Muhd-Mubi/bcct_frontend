@@ -20,6 +20,7 @@ interface RevertConfirmationDialogProps {
   onConfirm: () => void;
   onCLose: () => void
   description?: string;
+  disableButtons?: boolean
 }
 
 export function RevertConfirmationDialog({
@@ -27,10 +28,11 @@ export function RevertConfirmationDialog({
   onOpenChange,
   onConfirm,
   onCLose,
-  description = "This action will revert the stock additions from this onboarding event and cannot be undone."
+  description = "This action will revert the stock additions from this onboarding event and cannot be undone.",
+  disableButtons
 }: RevertConfirmationDialogProps) {
   return (
-    <AlertDialog open={isOpen} onOpenChange={onOpenChange}>
+    <AlertDialog open={isOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
@@ -39,10 +41,11 @@ export function RevertConfirmationDialog({
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel onClick={onCLose}>Cancel</AlertDialogCancel>
+          <AlertDialogCancel onClick={onCLose} disabled={disableButtons}>Cancel</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             className={cn(buttonVariants({ variant: "destructive" }))}
+            disabled={disableButtons}
           >
             Confirm Revert
           </AlertDialogAction>

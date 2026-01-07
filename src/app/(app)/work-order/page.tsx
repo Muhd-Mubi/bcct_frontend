@@ -214,12 +214,13 @@ export default function WorkOrdersPage() {
   }
 
   const handleConfirmRevert = () => {
-    if (workOrderToRevert) {
-      revertWorkOrderCompletion(workOrderToRevert);
-    }
-    setRevertConfirmOpen(false);
-    setWorkOrderToRevert(null);
+    // closeRevertWOrkOrderModal()
   };
+
+  const closeRevertWOrkOrderModal=()=>{
+    setWorkOrderToRevert(null);
+    setRevertConfirmOpen(false);
+  }
 
   const handleViewClick = (order: WorkOrder) => {
     setSelectedWorkOrder(order);
@@ -410,6 +411,7 @@ export default function WorkOrdersPage() {
       <RevertConfirmationDialog
         isOpen={isRevertConfirmOpen}
         onOpenChange={setRevertConfirmOpen}
+        onCLose={closeRevertWOrkOrderModal}
         onConfirm={handleConfirmRevert}
         description="This will revert the work order to 'In Progress' and add the used materials back to the inventory."
       />

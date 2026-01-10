@@ -74,7 +74,7 @@ export function OnboardingFormDialog({
     name: "papers",
   });
 
-  const paperTypes = materialsData?.materials?.map(m => m.name) || [];
+  const paperTypes = materialsData?.materials || [];
 
   useEffect(() => {
     if (isOpen) {
@@ -83,6 +83,10 @@ export function OnboardingFormDialog({
   }, [form, isOpen]);
 
   if (errorLoadingMaterials) return <span>Error Loading Paper types</span>
+
+  const selectedMaterialIds = form.watch('papers')?.map(
+    (item) => item?.paperType
+  );
 
   return (
     <Dialog open={isOpen}>
@@ -132,9 +136,16 @@ export function OnboardingFormDialog({
                                     </SelectTrigger>
                                   </FormControl>
                                   <SelectContent>
-                                    {paperTypes.map(type => (
-                                      <SelectItem key={type} value={type}>{type}</SelectItem>
-                                    ))}
+                                    {paperTypes.map(type => {
+                                      const isSelected = selectedMaterialIds.includes(type?._id)
+                                      return (
+                                        <SelectItem
+                                          disabled={isSelected}
+                                          key={type?._id}
+                                          value={type?._id}>
+                                          {type?.name}</SelectItem>
+                                      )
+                                    })}
                                   </SelectContent>
                                 </Select>
                                 <FormMessage />

@@ -17,14 +17,17 @@ import { Badge } from '@/components/ui/badge';
 interface OnboardingTableProps {
   data: PaperOnboarding[];
   onRevertClick: (id: string) => void;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
-export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
+export function OnboardingTable({ data, onRevertClick, currentPage, totalPages, onPageChange }: OnboardingTableProps) {
   const { isTechnical, isLeadership } = useContext(UserRoleContext);
   const canRevert = isTechnical || isLeadership;
 
-  const calculateTotalPrice = (papers: PaperOnboarding['papers']) => {
-    return papers.reduce((total, paper) => total + paper.amount, 0);
+  const calculateTotalPrice = ({ unitQuantity, pricePerUnit = 1 }: { unitQuantity: number, pricePerUnit: number }) => {
+    return unitQuantity * pricePerUnit
   };
 
   return (
@@ -41,44 +44,78 @@ export function OnboardingTable({ data, onRevertClick }: OnboardingTableProps) {
         </TableHeader>
         <TableBody>
           {data.map((item) => (
-            <TableRow key={item.id} className={item.isReverted ? 'bg-muted/50 text-muted-foreground' : ''}>
+            <TableRow key={item?._id} className={item?.isReversal ? 'bg-muted/50 text-muted-foreground' : ''}>
               <TableCell className="font-medium">
-                {format(parseISO(item.date), 'PPP')}
+                {format(parseISO(item?.createdAt), 'PPP')}
               </TableCell>
               <TableCell>{item.supplier}</TableCell>
               <TableCell>
-                 <div className="flex flex-col gap-1 text-xs">
-                    {item.papers.map((p, index) => {
-                      const unitPrice = p.unitQuantity > 0 ? p.amount / p.unitQuantity : 0;
-                      return (
-                        <span key={index}>{p.paperType} (Units: {p.unitQuantity}, Amount: Rs {unitPrice.toFixed(2)} / Unit)</span>
-                      )
-                    })}
-                  </div>
+                <div className="flex flex-col gap-1 text-xs">
+                  {item?.items?.map((p, index) => {
+                    return (
+                      <p key={index} className='text-[#9cafa9]'>
+                        <span className='text-[#F97316]'>{p?.materialId?.name} </span>
+                        (Units:
+                        <span className='text-primary'> {p?.unitQuantity} </span>
+                        , Amount:
+                        <span className='text-primary'> Rs {p?.pricePerUnit?.toFixed(2)} / Unit</span>
+                        )
+                      </p>
+                    )
+                  })}
+                </div>
               </TableCell>
               <TableCell>
-                {item.isReverted ? (
-                    <Badge variant="destructive">Reverted</Badge>
-                ) : (
-                    `Rs ${calculateTotalPrice(item.papers).toFixed(2)}`
-                )}
+                <div className="flex flex-col gap-1 text-xs">
+                  {item?.items?.map((p, index) => {
+                    return (
+                      <p key={index}>
+                        <span className='text-[#F97316]'>
+                          Rs {calculateTotalPrice({ unitQuantity: p?.unitQuantity, pricePerUnit: p?.pricePerUnit })}
+                        </span>
+                      </p>
+                    )
+                  })}
+                </div>
               </TableCell>
               <TableCell>
                 {canRevert && (
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => onRevertClick(item.id)}
-                      disabled={item.isReverted}
-                    >
-                      Revert
-                    </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => onRevertClick(item.id)}
+                    disabled={item.isReverted}
+                  >
+                    Revert
+                  </Button>
                 )}
               </TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
+      <div className="flex items-center justify-end space-x-2 py-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage - 1)}
+          disabled={currentPage === 1}
+        >
+          Previous
+        </Button>
+        <span className="text-sm">
+          Page {currentPage} of {totalPages}
+        </span>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onPageChange(currentPage + 1)}
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </Button>
+      </div>
     </div>
+
   );
 }

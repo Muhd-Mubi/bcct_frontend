@@ -33,6 +33,13 @@ export function useRevertWorkOrder() {
     });
 }
 
+export function useGetOnboaring(page) {
+    return useQuery({
+        queryKey: ['inventory-transection', page],
+        queryFn: () => apiClient(`/inventory-transection/get-onboarding/${page}`),
+    });
+}
+
 export function useCompleteOnboarding() {
     return useMutation({
         mutationFn: ({ data }) =>

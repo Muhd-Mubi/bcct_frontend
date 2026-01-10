@@ -10,7 +10,7 @@ import { OnboardingFormDialog } from '@/components/onboarding/onboarding-form-di
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/data-context';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useCompleteOnboarding } from '@/api/react-query/queries/inventoryTransections';
+import { useGetOnboaring, useCompleteOnboarding } from '@/api/react-query/queries/inventoryTransections';
 import { toast } from 'react-toastify';
 
 
@@ -22,7 +22,12 @@ export default function OnboardingPage() {
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedOnloadingId, setSelectedOnloadingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [currentPage, setCurrentPage] = useState(1);
 
+  const { data: onboardingData,
+    isLoading: isloadingOnboarding,
+    error: errorFetchingOnboarding,
+    refetch } = useGetOnboaring(currentPage);
   const {
     mutate: createOnboarding,
     isPending: creatingOnboarding,
@@ -41,6 +46,7 @@ export default function OnboardingPage() {
     createOnboarding(newData, {
       onSuccess: (data) => {
         toast.success(data.message);
+        refetch()
         closeOnloading();
       },
       onError: (error) => {
@@ -73,6 +79,9 @@ export default function OnboardingPage() {
     );
   }, [onloadings, searchTerm]);
 
+  if (isloadingOnboarding) return <p>Loading...</p>;
+  if (errorFetchingOnboarding) return <p>{errorFetchingOnboarding.message}</p>;
+
   const disableButtons = creatingOnboarding
 
   return (
@@ -96,7 +105,13 @@ export default function OnboardingPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <OnboardingTable data={filteredData} onRevertClick={handleRevertClick} />
+          <OnboardingTable
+            data={onboardingData?.onboardings || []}
+            onRevertClick={handleRevertClick}
+            currentPage={onboardingData?.page}
+            totalPages={onboardingData?.totalPages}
+            onPageChange={setCurrentPage}
+          />
         </CardContent>
       </Card>
 

@@ -50,15 +50,15 @@ export const UserRoleContext = React.createContext<UserRoleContextType>({
 });
 
 export type PaperOnboarding = {
-  id: string;
-  date: string;
+  _id: string;
+  createdAt: string;
   supplier: string;
-  papers: {
+  items: {
     paperType: string;
     unitQuantity: number;
-    amount: number;
+    pricePerUnit: number;
   }[],
-  isReverted?: boolean;
+  isReversal?: boolean;
 };
 
 export type Measurement = {

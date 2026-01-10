@@ -32,6 +32,7 @@ import {
 import { useData } from '@/context/data-context';
 import { PlusCircle, Trash2 } from 'lucide-react';
 import { ScrollArea } from '../ui/scroll-area';
+import { useGeMaterials } from '@/api/react-query/queries/material';
 
 const paperItemSchema = z.object({
   paperType: z.string().min(1, 'Please select a paper type.'),
@@ -58,6 +59,8 @@ export function OnboardingFormDialog({
   onSave,
 }: OnboardingFormDialogProps) {
   const { materials } = useData();
+  const { data: materialsData, isLoading: isLoadingMaterials, error: errorLoadingMaterials } = useGeMaterials();
+
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -71,7 +74,7 @@ export function OnboardingFormDialog({
     name: "papers",
   });
 
-  const paperTypes = materials.map(m => m.name);
+  const paperTypes = materialsData?.materials?.map(m => m.name) || [];
 
   useEffect(() => {
     if (isOpen) {
@@ -79,8 +82,10 @@ export function OnboardingFormDialog({
     }
   }, [form, isOpen]);
 
+  if (errorLoadingMaterials) return <span>Error Loading Paper types</span>
+
   return (
-    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+    <Dialog open={isOpen}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
           <DialogTitle className="font-headline">Add New Paper Purchase</DialogTitle>
@@ -105,12 +110,15 @@ export function OnboardingFormDialog({
                     </FormItem>
                   )}
                 />
-                
+
                 <div className="space-y-2">
                   <FormLabel>Papers Received</FormLabel>
-                  {fields.map((field, index) => (
-                    <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
+                  {isLoadingMaterials ?
+                    <span>Loading Papers</span>
+                    :
+                    fields.map((field, index) => (
+                      <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
                           <FormField
                             control={form.control}
                             name={`papers.${index}.paperType`}
@@ -159,8 +167,8 @@ export function OnboardingFormDialog({
                               </FormItem>
                             )}
                           />
-                      </div>
-                      <Button
+                        </div>
+                        <Button
                           type="button"
                           variant="destructive"
                           size="icon"
@@ -169,13 +177,76 @@ export function OnboardingFormDialog({
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
+                      </div>
+                    ))}
+                  {/* {fields.map((field, index) => (
+                    <div key={field.id} className="flex items-end gap-2 p-2 border rounded-md">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
+                        <FormField
+                          control={form.control}
+                          name={`papers.${index}.paperType`}
+                          render={({ field }) => (
+                            <FormItem className="col-span-3">
+                              <FormLabel>Paper Type</FormLabel>
+                              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                <FormControl>
+                                  <SelectTrigger>
+                                    <SelectValue placeholder="Select paper type" />
+                                  </SelectTrigger>
+                                </FormControl>
+                                <SelectContent>
+                                  {paperTypes.map(type => (
+                                    <SelectItem key={type} value={type}>{type}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`papers.${index}.unitQuantity`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Unit Quantity</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                        <FormField
+                          control={form.control}
+                          name={`papers.${index}.amount`}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Amount (Rs)</FormLabel>
+                              <FormControl>
+                                <Input type="number" {...field} placeholder="Cost in Rs" />
+                              </FormControl>
+                              <FormMessage />
+                            </FormItem>
+                          )}
+                        />
+                      </div>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => remove(index)}
+                        disabled={fields.length === 1}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </div>
-                  ))}
+                  ))} */}
                 </div>
 
                 <Button type="button" variant="outline" size="sm" onClick={() => append({ paperType: '', unitQuantity: 1, amount: 0 })}>
-                    <PlusCircle className="mr-2 h-4 w-4"/>
-                    Add Another Paper Type
+                  <PlusCircle className="mr-2 h-4 w-4" />
+                  Add Another Paper Type
                 </Button>
               </div>
             </ScrollArea>

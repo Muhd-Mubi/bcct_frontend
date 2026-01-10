@@ -10,7 +10,7 @@ import { OnboardingFormDialog } from '@/components/onboarding/onboarding-form-di
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/data-context';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useGetOnboaring, useCompleteOnboarding } from '@/api/react-query/queries/inventoryTransections';
+import { useGetOnboaring, useCompleteOnboarding, useRevertOnboarding } from '@/api/react-query/queries/inventoryTransections';
 import { toast } from 'react-toastify';
 
 
@@ -32,6 +32,10 @@ export default function OnboardingPage() {
     mutate: createOnboarding,
     isPending: creatingOnboarding,
   } = useCompleteOnboarding();
+  const {
+    mutate: revertOnboarding,
+    isPending: revertingOnboarding,
+  } = useRevertOnboarding();
 
   const canPerformActions = isLeadership || isTechnical;
 
@@ -66,23 +70,22 @@ export default function OnboardingPage() {
 
   const handleConfirmRevert = () => {
     if (selectedOnloadingId) {
-      revertOnloading(selectedOnloadingId);
+      console.log({selectedOnloadingId});
     }
-    setConfirmOpen(false);
-    setSelectedOnloadingId(null);
+    else {
+      closeRevertModal()
+    }
   };
 
-
-  const filteredData = useMemo(() => {
-    return onloadings.filter((o) =>
-      o.supplier.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-  }, [onloadings, searchTerm]);
+  const closeRevertModal = () => {
+    setSelectedOnloadingId(null);
+    setConfirmOpen(false)
+  }
 
   if (isloadingOnboarding) return <p>Loading...</p>;
   if (errorFetchingOnboarding) return <p>{errorFetchingOnboarding.message}</p>;
 
-  const disableButtons = creatingOnboarding
+  const disableButtons = creatingOnboarding || revertingOnboarding
 
   return (
     <div className="space-y-6">
@@ -126,6 +129,8 @@ export default function OnboardingPage() {
         isOpen={isConfirmOpen}
         onOpenChange={setConfirmOpen}
         onConfirm={handleConfirmRevert}
+        onCLose={closeRevertModal}
+        disableButtons={disableButtons}
       />
     </div>
   );

@@ -83,8 +83,8 @@ export function OnboardingTable({ data, onRevertClick, currentPage, totalPages, 
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => onRevertClick(item.id)}
-                    disabled={item.isReverted}
+                    onClick={() => onRevertClick(item?._id)}
+                    disabled={item?.isReversal}
                   >
                     Revert
                   </Button>

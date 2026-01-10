@@ -10,6 +10,8 @@ import { OnboardingFormDialog } from '@/components/onboarding/onboarding-form-di
 import { Input } from '@/components/ui/input';
 import { useData } from '@/context/data-context';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
+import { useCompleteOnboarding } from '@/api/react-query/queries/inventoryTransections';
+import { toast } from 'react-toastify';
 
 
 export default function OnboardingPage() {
@@ -21,6 +23,11 @@ export default function OnboardingPage() {
   const [selectedOnloadingId, setSelectedOnloadingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  const {
+    mutate: createOnboarding,
+    isPending: creatingOnboarding,
+  } = useCompleteOnboarding();
+
   const canPerformActions = isLeadership || isTechnical;
 
   const handleAddOnloading = () => {
@@ -28,7 +35,18 @@ export default function OnboardingPage() {
   };
 
   const handleSaveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & { papers: { paperType: string, unitQuantity: number, amount: number }[] }) => {
-    console.log({onloadingData})
+    const newData = {
+      data: onloadingData
+    }
+    createOnboarding(newData, {
+      onSuccess: (data) => {
+        toast.success(data.message);
+        closeOnloading();
+      },
+      onError: (error) => {
+        toast.error(error.message);
+      },
+    })
   };
 
   const closeOnloading = () => {
@@ -54,6 +72,8 @@ export default function OnboardingPage() {
       o.supplier.toLowerCase().includes(searchTerm.toLowerCase())
     );
   }, [onloadings, searchTerm]);
+
+  const disableButtons = creatingOnboarding
 
   return (
     <div className="space-y-6">
@@ -84,6 +104,7 @@ export default function OnboardingPage() {
         isOpen={isFormOpen}
         onOpenChange={setFormOpen}
         onSave={handleSaveOnloading}
+        disableButtons={disableButtons}
       />
 
       <RevertConfirmationDialog

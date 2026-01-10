@@ -14,7 +14,6 @@ export function useGetInventoryTransections({ page, body }) {
     });
 }
 
-
 export function useCompleteWorkOrder() {
     return useMutation({
         mutationFn: ({ id, data }) =>
@@ -30,6 +29,16 @@ export function useRevertWorkOrder() {
         mutationFn: ({ id }) =>
             apiClient(`/inventory-transection/work-order-revert/${id}`, {
                 method: 'POST',
+            }),
+    });
+}
+
+export function useCompleteOnboarding() {
+    return useMutation({
+        mutationFn: ({ data }) =>
+            apiClient(`/inventory-transection/onboarding-complete`, {
+                method: 'POST',
+                body: data,
             }),
     });
 }

@@ -51,12 +51,14 @@ interface OnboardingFormDialogProps {
   isOpen: boolean;
   onOpenChange: (open: boolean) => void;
   onSave: (data: FormValues) => void;
+  disableButtons?: boolean
 }
 
 export function OnboardingFormDialog({
   isOpen,
   onOpenChange,
   onSave,
+  disableButtons = false
 }: OnboardingFormDialogProps) {
   const { materials } = useData();
   const { data: materialsData, isLoading: isLoadingMaterials, error: errorLoadingMaterials } = useGeMaterials();
@@ -184,7 +186,7 @@ export function OnboardingFormDialog({
                           variant="destructive"
                           size="icon"
                           onClick={() => remove(index)}
-                          disabled={fields.length === 1}
+                          disabled={(fields.length === 1) || disableButtons}
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
@@ -255,7 +257,7 @@ export function OnboardingFormDialog({
                   ))} */}
                 </div>
 
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 1, pricePerUnit: 0 })}>
+                <Button disabled={disableButtons} type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 1, pricePerUnit: 0 })}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add Another Paper Type
                 </Button>
@@ -263,8 +265,8 @@ export function OnboardingFormDialog({
             </ScrollArea>
 
             <DialogFooter className="pt-4">
-              <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-              <Button type="submit">Save Purchase</Button>
+              <Button disabled={disableButtons} type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
+              <Button disabled={disableButtons} type="submit">Save Purchase</Button>
             </DialogFooter>
           </form>
         </Form>

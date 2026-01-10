@@ -115,7 +115,7 @@ export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTa
                 return (
                   <TableRow key={entry._id}>
                     <TableCell>
-                      <div className="font-medium">{entry?.sourceId?.job}</div>
+                      <div className="font-medium">{entry?.sourceId?.job || "Onboarding"}</div>
                       {/* {entry.workOrderId && <div className="text-xs text-muted-foreground">{entry.workOrderId}</div>} */}
                     </TableCell>
                     <TableCell>

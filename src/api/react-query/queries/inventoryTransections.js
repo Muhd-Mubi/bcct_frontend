@@ -50,4 +50,13 @@ export function useCompleteOnboarding() {
     });
 }
 
+export function useRevertOnboarding() {
+    return useMutation({
+        mutationFn: ({ id }) =>
+            apiClient(`/inventory-transection/onboarding-revert/${id}`, {
+                method: 'POST',
+            }),
+    });
+}
+
 

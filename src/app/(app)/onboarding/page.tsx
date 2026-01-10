@@ -70,7 +70,19 @@ export default function OnboardingPage() {
 
   const handleConfirmRevert = () => {
     if (selectedOnloadingId) {
-      console.log({selectedOnloadingId});
+      const newData = {
+        id: selectedOnloadingId
+      }
+      revertOnboarding(newData, {
+        onSuccess: (data) => {
+          toast.success(data.message);
+          refetch()
+          closeRevertModal();
+        },
+        onError: (error) => {
+          toast.error(error.message);
+        },
+      })
     }
     else {
       closeRevertModal()

@@ -172,7 +172,7 @@ export function OnboardingFormDialog({
                             name={`items.${index}.pricePerUnit`}
                             render={({ field }) => (
                               <FormItem>
-                                <FormLabel>Amount (Rs)</FormLabel>
+                                <FormLabel>Price Per Unit (Rs)</FormLabel>
                                 <FormControl>
                                   <Input type="number" {...field} placeholder="Cost in Rs" />
                                 </FormControl>

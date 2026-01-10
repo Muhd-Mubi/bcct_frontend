@@ -138,7 +138,7 @@ export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTa
                       {entry?.pricePerUnit ? entry.pricePerUnit * entry?.unitQuantity : '-'}
                     </TableCell>
                     <TableCell>{renderStock(stockBefore)}</TableCell>
-                  <TableCell>{renderStock(stockAfter)}</TableCell>
+                  <TableCell className='text-[#F97316]'>{renderStock(stockAfter)}</TableCell>
                     <TableCell>{format(parseISO(entry.createdAt), 'PP')}</TableCell>
                   </TableRow>
                 )

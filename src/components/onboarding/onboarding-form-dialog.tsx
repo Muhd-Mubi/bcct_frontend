@@ -35,14 +35,14 @@ import { ScrollArea } from '../ui/scroll-area';
 import { useGeMaterials } from '@/api/react-query/queries/material';
 
 const paperItemSchema = z.object({
-  paperType: z.string().min(1, 'Please select a paper type.'),
+  materialId: z.string().min(1, 'Please select a paper type.'),
   unitQuantity: z.coerce.number().min(1, 'Unit quantity must be at least 1.'),
-  amount: z.coerce.number().min(0, 'Amount must be a positive number.'),
+  pricePerUnit: z.coerce.number().min(0, 'Amount must be a positive number.'),
 });
 
 const formSchema = z.object({
   supplier: z.string().min(2, 'Supplier name must be at least 2 characters.'),
-  papers: z.array(paperItemSchema).min(1, 'At least one paper type must be added.'),
+  items: z.array(paperItemSchema).min(1, 'At least one paper type must be added.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -65,27 +65,27 @@ export function OnboardingFormDialog({
     resolver: zodResolver(formSchema),
     defaultValues: {
       supplier: '',
-      papers: [{ paperType: '', unitQuantity: 1, amount: 0 }],
+      items: [{ materialId: '', unitQuantity: 1, pricePerUnit: 0 }],
     },
   });
 
   const { fields, append, remove } = useFieldArray({
     control: form.control,
-    name: "papers",
+    name: "items",
   });
 
   const paperTypes = materialsData?.materials || [];
 
   useEffect(() => {
     if (isOpen) {
-      form.reset({ supplier: '', papers: [{ paperType: '', unitQuantity: 1, amount: 0 }] });
+      form.reset({ supplier: '', items: [{ materialId: '', unitQuantity: 1, pricePerUnit: 0 }] });
     }
   }, [form, isOpen]);
 
   if (errorLoadingMaterials) return <span>Error Loading Paper types</span>
 
-  const selectedMaterialIds = form.watch('papers')?.map(
-    (item) => item?.paperType
+  const selectedMaterialIds = form.watch('items')?.map(
+    (item) => item?.materialId
   );
 
   return (
@@ -125,7 +125,7 @@ export function OnboardingFormDialog({
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2 flex-grow">
                           <FormField
                             control={form.control}
-                            name={`papers.${index}.paperType`}
+                            name={`items.${index}.materialId`}
                             render={({ field }) => (
                               <FormItem className="col-span-3">
                                 <FormLabel>Paper Type</FormLabel>
@@ -154,7 +154,7 @@ export function OnboardingFormDialog({
                           />
                           <FormField
                             control={form.control}
-                            name={`papers.${index}.unitQuantity`}
+                            name={`items.${index}.unitQuantity`}
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Unit Quantity</FormLabel>
@@ -167,7 +167,7 @@ export function OnboardingFormDialog({
                           />
                           <FormField
                             control={form.control}
-                            name={`papers.${index}.amount`}
+                            name={`items.${index}.pricePerUnit`}
                             render={({ field }) => (
                               <FormItem>
                                 <FormLabel>Amount (Rs)</FormLabel>
@@ -255,7 +255,7 @@ export function OnboardingFormDialog({
                   ))} */}
                 </div>
 
-                <Button type="button" variant="outline" size="sm" onClick={() => append({ paperType: '', unitQuantity: 1, amount: 0 })}>
+                <Button type="button" variant="outline" size="sm" onClick={() => append({ materialId: '', unitQuantity: 1, pricePerUnit: 0 })}>
                   <PlusCircle className="mr-2 h-4 w-4" />
                   Add Another Paper Type
                 </Button>

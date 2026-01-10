@@ -20,18 +20,21 @@ export default function OnboardingPage() {
   const [isConfirmOpen, setConfirmOpen] = useState(false);
   const [selectedOnloadingId, setSelectedOnloadingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   const canPerformActions = isLeadership || isTechnical;
 
   const handleAddOnloading = () => {
     setFormOpen(true);
   };
 
-  const handleSaveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & {papers: {paperType: string, unitQuantity: number, amount: number }[]}) => {
-    saveOnloading(onloadingData);
-    setFormOpen(false);
+  const handleSaveOnloading = (onloadingData: Omit<PaperOnboarding, 'id' | 'date' | 'isReverted' | 'paperType'> & { papers: { paperType: string, unitQuantity: number, amount: number }[] }) => {
+    console.log({onloadingData})
   };
-  
+
+  const closeOnloading = () => {
+    setFormOpen(false);
+  }
+
   const handleRevertClick = (onloadingId: string) => {
     setSelectedOnloadingId(onloadingId);
     setConfirmOpen(true);
@@ -73,7 +76,7 @@ export default function OnboardingPage() {
           </div>
         </CardHeader>
         <CardContent>
-          <OnboardingTable data={filteredData} onRevertClick={handleRevertClick}/>
+          <OnboardingTable data={filteredData} onRevertClick={handleRevertClick} />
         </CardContent>
       </Card>
 

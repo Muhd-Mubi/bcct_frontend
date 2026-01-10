@@ -50,7 +50,6 @@ export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTa
     });
 
   const itemsPerPage = 10;
-  const totalPages = Math.ceil(data.length / itemsPerPage);
   // const paginatedData = data.slice(
   //   (currentPage - 1) * itemsPerPage,
   //   currentPage * itemsPerPage
@@ -60,6 +59,8 @@ export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTa
   if (errorFetchingInventoryTransection) return <p>{errorFetchingInventoryTransection.message}</p>;
 
   const transections = inventoryTransectionData?.transactions
+  const totalPages = inventoryTransectionData?.totalPages || 0
+
 
 
 

@@ -16,7 +16,6 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { isSuperadmin, isAdmin, isUser  } = useAuth();
-  console.log({isSuperadmin, isAdmin, isUser })
   
   // Default to a non-privileged role if user is not available
   const userRole = 'technical'; 

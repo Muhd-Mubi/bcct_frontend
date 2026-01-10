@@ -14,9 +14,11 @@ import { cn } from '@/lib/utils';
 import { format, parseISO } from 'date-fns';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { useGetInventoryTransections } from '@/api/react-query/queries/inventoryTransections';
 
 interface StockRegisterTableProps {
   data: StockLedgerEntry[];
+  selectedMaterialId: string
 }
 
 const typeVariant: Record<StockLedgerEntry['type'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -34,19 +36,42 @@ const typeLabel: Record<StockLedgerEntry['type'], string> = {
 };
 
 
-export function StockRegisterTable({ data }: StockRegisterTableProps) {
+export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
+
+  const { data: inventoryTransectionData,
+    isLoading: isLoaingInventoryTransection,
+    error: errorFetchingInventoryTransection,
+    refetch } = useGetInventoryTransections({
+      page: currentPage,
+      body: {
+        "materialId": selectedMaterialId
+      }
+    });
+
   const itemsPerPage = 10;
   const totalPages = Math.ceil(data.length / itemsPerPage);
-  const paginatedData = data.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
+  // const paginatedData = data.slice(
+  //   (currentPage - 1) * itemsPerPage,
+  //   currentPage * itemsPerPage
+  // );
+
+  if (isLoaingInventoryTransection) return <p>Loading...</p>;
+  if (errorFetchingInventoryTransection) return <p>{errorFetchingInventoryTransection.message}</p>;
+
+  const transections = inventoryTransectionData?.transactions
+
 
 
   const renderStock = (stock: { units: number, extraSheets: number }) => (
     <>{`${stock.units} units, ${stock.extraSheets} sheets`}</>
   );
+
+  const sheetToUnitConverter = ({ sheetsPerUnit = 1, totalSheets = 1 }) => {
+    const unitQuantity = Math.floor(totalSheets / sheetsPerUnit);
+    const extraSheets = totalSheets - (unitQuantity * sheetsPerUnit)
+    return { unitQuantity, extraSheets };
+  }
 
   return (
     <div className='space-y-4'>
@@ -54,7 +79,7 @@ export function StockRegisterTable({ data }: StockRegisterTableProps) {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Job/Work ID</TableHead>
+              <TableHead>Source ID</TableHead>
               <TableHead>Type</TableHead>
               <TableHead>Unit Quantity</TableHead>
               <TableHead>Extra Sheets</TableHead>
@@ -66,37 +91,57 @@ export function StockRegisterTable({ data }: StockRegisterTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedData.length > 0 ? (
-              paginatedData.map((entry) => (
-                <TableRow key={entry.id}>
-                  <TableCell>
-                    <div className="font-medium">{entry.jobId}</div>
-                    {entry.workOrderId && <div className="text-xs text-muted-foreground">{entry.workOrderId}</div>}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={typeVariant[entry.type]}>{typeLabel[entry.type]}</Badge>
-                  </TableCell>
-                  <TableCell>
-                      <span className={cn(entry.unitQuantity > 0 ? 'text-green-600' : 'text-red-600')}>
-                          {entry.unitQuantity > 0 ? '+' : ''}{entry.unitQuantity}
+            {transections?.length > 0 ? (
+              transections?.map((entry) => {
+                const sheetsPerUnit = entry?.materialId?.measurementId?.sheetsPerUnit
+                const totalSheetsBefore = entry?.stockBefore
+                const totaolSheetsAfter = entry?.stockAfter
+                const {
+                  unitQuantity: unitQuantityBefore,
+                  extraSheets: extraSheetsBefore } = sheetToUnitConverter({ sheetsPerUnit, totalSheets: totalSheetsBefore })
+                const stockBefore = {
+                  units : unitQuantityBefore,
+                  extraSheets : extraSheetsBefore
+                }
+                const {
+                  unitQuantity: unitQuantityAfter,
+                  extraSheets: extraSheetsAfter } = sheetToUnitConverter({ sheetsPerUnit, totalSheets: totaolSheetsAfter })
+                const stockAfter = {
+                  units : unitQuantityAfter,
+                  extraSheets : extraSheetsAfter
+                }
+
+                return (
+                  <TableRow key={entry._id}>
+                    <TableCell>
+                      <div className="font-medium">{entry?.sourceId?.job}</div>
+                      {/* {entry.workOrderId && <div className="text-xs text-muted-foreground">{entry.workOrderId}</div>} */}
+                    </TableCell>
+                    <TableCell>
+                      <Badge variant={typeVariant[entry.sourceType]}>{typeLabel[entry.sourceType]}</Badge>
+                    </TableCell>
+                    <TableCell>
+                      <span className={cn(entry.type == 'IN' ? 'text-green-600' : 'text-red-600')}>
+                        {entry.type == 'IN' ? '+' : '-'}{entry.unitQuantity}
                       </span>
-                  </TableCell>
-                  <TableCell>
-                      <span className={cn(entry.extraSheets > 0 ? 'text-green-600' : 'text-red-600')}>
-                          {entry.extraSheets > 0 ? '+' : ''}{entry.extraSheets}
+                    </TableCell>
+                    <TableCell>
+                      <span className={cn(entry.type == 'IN' ? 'text-green-600' : 'text-red-600')}>
+                        {entry.type == 'IN' ? '+' : '-'}{entry.extraSheets}
                       </span>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    {entry.unitPrice > 0 ? entry.unitPrice.toFixed(2) : 'N/A'}
-                  </TableCell>
-                   <TableCell className={cn("text-right", entry.totalPrice > 0 ? 'text-green-600' : 'text-red-600')}>
-                    {entry.totalPrice !== 0 ? entry.totalPrice.toFixed(2) : 'N/A'}
-                  </TableCell>
-                  <TableCell>{renderStock(entry.stockBefore)}</TableCell>
-                  <TableCell>{renderStock(entry.stockAfter)}</TableCell>
-                  <TableCell>{format(parseISO(entry.date), 'PP')}</TableCell>
-                </TableRow>
-              ))
+                    </TableCell>
+                    <TableCell className="text-right">
+                      {entry?.pricePerUnit > 0 ? entry?.pricePerUnit : '-'}
+                    </TableCell>
+                    <TableCell className={cn("text-right", entry.totalPrice > 0 ? 'text-green-600' : 'text-red-600')}>
+                      {entry?.pricePerUnit ? entry.pricePerUnit * entry?.unitQuantity : '-'}
+                    </TableCell>
+                    <TableCell>{renderStock(stockBefore)}</TableCell>
+                  <TableCell>{renderStock(stockAfter)}</TableCell>
+                    <TableCell>{format(parseISO(entry.createdAt), 'PP')}</TableCell>
+                  </TableRow>
+                )
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={9} className="h-24 text-center">
@@ -107,7 +152,7 @@ export function StockRegisterTable({ data }: StockRegisterTableProps) {
           </TableBody>
         </Table>
       </div>
-       <div className="flex items-center justify-end space-x-2 py-4">
+      <div className="flex items-center justify-end space-x-2 py-4">
         <Button
           variant="outline"
           size="sm"

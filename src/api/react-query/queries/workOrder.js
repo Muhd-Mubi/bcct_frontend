@@ -40,10 +40,17 @@ export function useEditWorkOrder() {
 }
 
 export function useDeleteWorkOrder() {
-  return useMutation({
-    mutationFn: ({ id }) =>
-      apiClient(`/work-order/delete-work-order/${id}`, {
-        method: 'DELETE',
-      }),
-  });
+    return useMutation({
+        mutationFn: ({ id }) =>
+            apiClient(`/work-order/delete-work-order/${id}`, {
+                method: 'DELETE',
+            }),
+    });
+}
+
+export function useGetWorkOrderCounts() {
+    return useQuery({
+        queryKey: ['workOrderCount'],
+        queryFn: () => apiClient(`/work-order/get-work-order-counts`),
+    });
 }

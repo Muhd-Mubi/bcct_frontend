@@ -78,12 +78,12 @@ export default function TechnicalDashboard() {
           <Card>
             <InventoryTable materials={materials} />
           </Card>
-          <InventoryCompositionChart materials={materials} />
-          <SensorGraphs />
+          {/* <InventoryCompositionChart materials={materials} /> */}
+          {/* <SensorGraphs /> */}
         </div>
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
           <AlertsPanel lowStockItems={lowStockItems} />
-          <ReorderSuggestions materials={materials} />
+          {/* <ReorderSuggestions materials={materials} /> */}
         </div>
       </div>
     </>

@@ -40,6 +40,7 @@ const formSchema = z.object({
   measurementId: z.string().optional(),
   unitQuantity: z.coerce.number().min(0, 'Unit quantity must be a positive number.'),
   extraSheets: z.coerce.number().min(0, 'Extra sheets must be a positive number.'),
+  thresholdUnits: z.coerce.number().min(1, 'Threshold quantity must be a positive number.'),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -73,6 +74,7 @@ export function MaterialFormDialog({
       measurementId: '',
       unitQuantity: 0,
       extraSheets: 0,
+      thresholdUnits: 1
     },
   });
 
@@ -90,7 +92,8 @@ export function MaterialFormDialog({
           name: '',
           measurementId: '',
           unitQuantity: 0,
-          extraSheets: 0
+          extraSheets: 0,
+          thresholdUnits: 1
         });
       }
     }
@@ -176,6 +179,19 @@ export function MaterialFormDialog({
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Extra Sheets</FormLabel>
+                        <FormControl>
+                          <Input disabled={isEditing} type="number" {...field} />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
+                    name="thresholdUnits"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Threshold Units</FormLabel>
                         <FormControl>
                           <Input disabled={isEditing} type="number" {...field} />
                         </FormControl>

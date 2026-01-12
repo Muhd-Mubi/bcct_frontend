@@ -10,9 +10,22 @@ import { Card } from '../ui/card';
 import { SensorGraphs } from './sensor-graphs';
 import { InventoryCompositionChart } from './inventory-composition-chart';
 import { AlertsPanel } from './alerts-panel';
+import { useGeMaterialsCount } from '@/api/react-query/queries/material';
+import { useGetJobsCount } from '@/api/react-query/queries/jobOrder';
+import { useGetWorkOrderCounts } from '@/api/react-query/queries/workOrder';
 
 export default function AdminDashboard() {
   const { materials, workOrders, jobOrders } = useData();
+
+  const { data: materialCountData,
+    isLoading: isloadingMaterialCount,
+    error: errorFetchingMaterialCount } = useGeMaterialsCount();
+  const { data: workOrderCountData,
+    isLoading: isLoadingWorkOrderCount,
+    error: errorFetchingWorkOrderCount } = useGetWorkOrderCounts();
+  const { data: jobCountData,
+    isLoading: isloadingJobCount,
+    error: errorFetchingJobCount } = useGetJobsCount();
 
   const lowStockItems = materials.filter(
     (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
@@ -23,23 +36,25 @@ export default function AdminDashboard() {
     (o) => o.status === 'Pending' || o.status === 'In Progress'
   ).length;
 
+  const workOrderCounts = workOrderCountData?.data
+
   return (
     <>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <MetricCard
           title="Total Materials"
-          value={materials.length}
+          value={isloadingMaterialCount ? "Loading" : errorFetchingMaterialCount ? "Error" : materialCountData?.count}
           icon={<Package className="size-6 text-muted-foreground" />}
         />
         <MetricCard
-          title="Total Stock (Sheets)"
-          value={totalStock.toLocaleString()}
+          title="Work Orders Completed"
+          value={isLoadingWorkOrderCount ? "Loading" : errorFetchingWorkOrderCount ? "Error" : workOrderCounts["completed"]}
           icon={<Box className="size-6 text-muted-foreground" />}
         />
         <Link href="/job-orders">
           <MetricCard
             title="Total Job Orders"
-            value={jobOrders.length}
+            value={isloadingJobCount ? "Loading" : errorFetchingJobCount ? "Error" : jobCountData?.count}
             icon={<Briefcase className="size-6 text-muted-foreground" />}
           />
         </Link>
@@ -56,8 +71,8 @@ export default function AdminDashboard() {
           <Card>
             <InventoryTable materials={materials} />
           </Card>
-          <InventoryCompositionChart materials={materials} />
-          <SensorGraphs />
+          {/* <InventoryCompositionChart materials={materials} /> */}
+          {/* <SensorGraphs /> */}
         </div>
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
           <AlertsPanel lowStockItems={lowStockItems} />

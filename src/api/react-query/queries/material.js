@@ -40,7 +40,7 @@ export function useDeleteMaterial() {
 
 export function useGeMaterialsCount() {
     return useQuery({
-        queryKey: ['materialCOunt'],
+        queryKey: ['materialCount'],
         queryFn: () => apiClient('/material/get-material-count'),
     });
 }

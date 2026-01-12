@@ -46,3 +46,10 @@ export function useDeleteJob() {
             }),
     });
 }
+
+export function useGetJobsCount() {
+    return useQuery({
+        queryKey: ['jobCount'],
+        queryFn: () => apiClient('/job/get-job-count'),
+    });
+}

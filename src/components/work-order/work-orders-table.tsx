@@ -164,7 +164,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
           </TableHeader>
           <TableBody>
             {paginatedWorkOrders.map((order, index) => (
-              <TableRow key={order._id} onClick={(e) => handleRowClick(e, order)} className="cursor-pointer">
+              <TableRow key={index} onClick={(e) => handleRowClick(e, order)} className="cursor-pointer">
                 <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
                 <TableCell className="font-medium">
                   <Link
@@ -176,7 +176,8 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
                     {order.job}
                   </Link>
                 </TableCell>
-                <TableCell>{format(parseISO(String(order.createdAt)), 'PP')}</TableCell>
+                <TableCell>dsa</TableCell>
+                {/* <TableCell>{format(parseISO(String(order.createdAt)), 'PP')}</TableCell> */}
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">
                     {order.tasks && order.tasks.map((item, index) => (

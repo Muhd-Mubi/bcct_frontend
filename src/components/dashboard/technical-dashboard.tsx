@@ -12,6 +12,7 @@ import { InventoryCompositionChart } from './inventory-composition-chart';
 import { ReorderSuggestions } from './reorder-suggestions';
 import { AlertsPanel } from './alerts-panel';
 import { useGetWorkOrderCounts } from '@/api/react-query/queries/workOrder';
+import { useGeMaterialsCount } from '@/api/react-query/queries/material';
 
 export default function TechnicalDashboard() {
   const { materials, workOrders } = useData();
@@ -19,6 +20,10 @@ export default function TechnicalDashboard() {
   const { data: workOrderCountData,
     isLoading: isLoadingWorkOrderCount,
     error: errorFetchingWorkOrderCount } = useGetWorkOrderCounts();
+
+  const { data: materialCountData,
+    isLoading: isloadingMaterialCount,
+    error: errorFetchingMaterialCount } = useGeMaterialsCount();
 
   const assignedWorkOrders = workOrders; // Assuming all are assigned for now
   const pendingCount = assignedWorkOrders.filter(
@@ -43,27 +48,27 @@ export default function TechnicalDashboard() {
         <Link href="/work-order?status=Pending">
           <MetricCard
             title="Pending Work Orders"
-            value={isLoadingWorkOrderCount ? "Loading" : workOrderCounts?.pending}
+            value={isLoadingWorkOrderCount ? "Loading" : errorFetchingWorkOrderCount ? "Error" : workOrderCounts?.pending}
             icon={<ClipboardList className="size-6 text-muted-foreground" />}
           />
         </Link>
         <Link href="/work-order?status=In Progress">
           <MetricCard
             title="In Progress"
-            value={isLoadingWorkOrderCount ? "Loading" : workOrderCounts["in progress"]}
+            value={isLoadingWorkOrderCount ? "Loading" : errorFetchingWorkOrderCount ? "Error" : workOrderCounts["in progress"]}
             icon={<CircleDot className="size-6 text-muted-foreground" />}
           />
         </Link>
         <Link href="/work-order?status=Completed">
           <MetricCard
-            title="Completed Today"
-            value={isLoadingWorkOrderCount ? "Loading" : workOrderCounts["completed"]}
+            title="Completed"
+            value={isLoadingWorkOrderCount ? "Loading" : errorFetchingWorkOrderCount ? "Error" : workOrderCounts["completed"]}
             icon={<CheckCircle2 className="size-6 text-muted-foreground" />}
           />
         </Link>
         <MetricCard
           title="Total Materials"
-          value={materials.length}
+          value={isloadingMaterialCount ? "Loading" : errorFetchingMaterialCount ? "Error" : materialCountData?.count}
           icon={<Package className="size-6 text-muted-foreground" />}
         />
       </div>

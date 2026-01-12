@@ -193,7 +193,7 @@ export function MaterialFormDialog({
                       <FormItem>
                         <FormLabel>Threshold Units</FormLabel>
                         <FormControl>
-                          <Input disabled={isEditing} type="number" {...field} />
+                          <Input type="number" {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>

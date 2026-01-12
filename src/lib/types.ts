@@ -28,6 +28,7 @@ export type Material = {
   maxStock?: number;
   reorderThreshold?: number;
   lastUpdated?: string;
+  thresholdUnits?: number
 };
 
 export type QualityStatus = 'Good' | 'Low' | 'Very Low';

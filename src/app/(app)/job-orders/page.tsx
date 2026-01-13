@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useContext, useEffect } from 'react';
-import { PlusCircle } from 'lucide-react';
+import { PlusCircle, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -218,6 +218,10 @@ export default function JobOrdersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
+            <Button size="sm" onClick={()=>{}}>
+              <Search />
+              Search
+            </Button>
             {isAdmin && <Button size="sm" onClick={handleCreateNew}>
               <PlusCircle />
               Create New Job Order

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useMemo, useContext } from 'react';
-import { PlusCircle, ListFilter } from 'lucide-react';
+import { PlusCircle, ListFilter, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -329,7 +329,11 @@ export default function WorkOrdersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
-            <DropdownMenu>
+            <Button size="sm" onClick={()=>{}}>
+              <Search />
+              Search
+            </Button>
+            {/* <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline">
                   <ListFilter className="mr-2 h-4 w-4" />
@@ -378,7 +382,7 @@ export default function WorkOrdersPage() {
                   low
                 </DropdownMenuCheckboxItem>
               </DropdownMenuContent>
-            </DropdownMenu>
+            </DropdownMenu> */}
 
             {isAdmin && (
               <Button size="sm" onClick={handleCreateNew}>

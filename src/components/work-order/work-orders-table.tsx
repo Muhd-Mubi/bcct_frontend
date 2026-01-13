@@ -149,6 +149,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
             <TableRow>
               <TableHead>No.</TableHead>
               <TableHead>Job Order ID</TableHead>
+              <TableHead>Work Order ID</TableHead>
               <TableHead>Date</TableHead>
               <TableHead>Tasks</TableHead>
               <TableHead>Priority</TableHead>
@@ -161,14 +162,20 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
               <TableRow key={index} onClick={(e) => handleRowClick(e, order)} className="cursor-pointer">
                 <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
                 <TableCell className="font-medium">
-                  <Link
-                    href={`/work-order-viewer?id=${order._id}`}
-                    target="_blank"
+                  <div
                     className="hover:underline text-primary"
                     onClick={(e) => e.stopPropagation()}
                   >
                     {order.job}
-                  </Link>
+                  </div>
+                </TableCell>
+                <TableCell className="font-medium">
+                  <div
+                    className="hover:underline text-primary"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {order?.work_id || ''}
+                  </div>
                 </TableCell>
                 <TableCell>{format(parseISO(String(order?.createdAt)), 'PP')}</TableCell>
                 {/* <TableCell>{format(parseISO(String(order.createdAt)), 'PP')}</TableCell> */}

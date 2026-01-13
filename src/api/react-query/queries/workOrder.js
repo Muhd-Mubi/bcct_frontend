@@ -9,6 +9,19 @@ export function useGetWorkOrder(page) {
     });
 }
 
+export function useGetWorkOrderById(work_id) {
+    return useQuery({
+        queryKey: ['workOrder', work_id],
+        queryFn: () => apiClient(`/work-order/get-work-order-details`, {
+            method: "POST",
+            body: {
+                work_id
+            }
+        }),
+        enabled: false,
+    });
+}
+
 export function useCreateWorkOrder() {
     return useMutation({
         mutationFn: ({ data }) =>

@@ -23,7 +23,7 @@ import { UserRoleContext } from '@/lib/types';
 import { ChangeStatusConfirmationDialog } from '@/components/work-order/change-status-confirmation-dialog';
 import { DeleteWorkOrderDialog } from '@/components/work-order/delete-work-order-dialog';
 import { RevertConfirmationDialog } from '@/components/onboarding/revert-confirmation-dialog';
-import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder, useEditWorkOrder } from '@/api/react-query/queries/workOrder'
+import { useDeleteWorkOrder, useCreateWorkOrder, useEditWorkOrderStatus, useGetWorkOrder, useEditWorkOrder, useGetWorkOrderById } from '@/api/react-query/queries/workOrder'
 import { useCompleteWorkOrder, useRevertWorkOrder } from '@/api/react-query/queries/inventoryTransections'
 import { useGetJobs } from '@/api/react-query/queries/jobOrder';
 import { toast } from 'react-toastify';
@@ -67,6 +67,7 @@ export default function WorkOrdersPage() {
 
 
   const { data, isLoading, error, refetch } = useGetWorkOrder(currentPage);
+  const { data: searchedWorkOrderData, isLoading: isLoadingSeatch, error: errorSearching, refetch: searchWorkOrder } = useGetWorkOrderById(searchTerm);
   const { data: materialsData, isLoading: isLoadingMaterials, error: errorMaterials } = useGeMaterials();
   const {
     mutate: createWorkOrder,
@@ -274,48 +275,16 @@ export default function WorkOrdersPage() {
     setStatusChange(null)
   }
 
-  // const filteredAndSortedWorkOrders = useMemo(() => {
-  //   return workOrders
-  //     .filter((o) => o.jobId.toLowerCase().includes(searchTerm.toLowerCase()))
-  //     .filter((o) => statusFilter.length === 0 || statusFilter.includes(o.status))
-  //     .filter((o) => priorityFilter.length === 0 || priorityFilter.includes(o.priority))
-  //     .sort((a, b) => {
-  //       const priorityComparison = priorityOrder[a.priority] - priorityOrder[b.priority];
-  //       if (priorityComparison !== 0) {
-  //         return priorityComparison;
-  //       }
-  //       return dateSortOrder(a, b);
-  //     });
-  // }, [workOrders, searchTerm, statusFilter, priorityFilter]);
-
-
-  // const data = [
-  //   {
-  //     "_id": "6958a529a2752cdf4bf1a7ff",
-  //     "job": "2",
-  //     "description": "testing new logic",
-  //     "priority": "medium",
-  //     "tasks": [
-  //       {
-  //         "name": "performa forms",
-  //         "quantity": 20
-  //       },
-  //       {
-  //         "name": "G1 forms",
-  //         "quantity": 120
-  //       }
-  //     ],
-  //     "status": "reverted",
-  //     "deliveryDate": null,
-  //     "createdAt": "2026-01-03T05:12:09.400Z",
-  //     "__v": 1
-  //   }
-  // ]
+  const handleSearch = () => {
+    searchWorkOrder()
+  }
 
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
   const disableButtons = creatingWorkOrder || editingWorkOrderStatus || deletingWorkOrder || editingWorkOrder || completingWorkJob || revertingWorkJob
+  const searchedWorkOrder = searchedWorkOrderData?.workOrder ? [searchedWorkOrderData?.workOrder] : []
+  const isSearched = searchedWorkOrder?.length && searchTerm
 
   return (
     <div className="space-y-6">
@@ -329,7 +298,7 @@ export default function WorkOrdersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
-            <Button size="sm" onClick={()=>{}}>
+            <Button size="sm" onClick={handleSearch}>
               <Search />
               Search
             </Button>
@@ -394,7 +363,7 @@ export default function WorkOrdersPage() {
         </CardHeader>
         <CardContent>
           <WorkOrdersTable
-            workOrders={data?.workOrders || []}
+            workOrders={isSearched ? searchedWorkOrder : data?.workOrders || []}
             onStatusChange={handleStatusChangeClick}
             onView={handleViewClick}
             onEdit={handleEdit}

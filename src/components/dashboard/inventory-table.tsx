@@ -45,7 +45,7 @@ const statusConfig: Record<
   },
 };
 
-export function InventoryTable({ materials }: { materials: Material[] }) {
+export function InventoryTable({ materials, isLoading = false, isError = false }: { materials: Material[], isLoading?: boolean, isError?: boolean }) {
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -54,53 +54,57 @@ export function InventoryTable({ materials }: { materials: Material[] }) {
 
   return (
     <div className="overflow-x-auto">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Material Name</TableHead>
-            <TableHead>Quantity</TableHead>
-            <TableHead className="text-right">Current Stock</TableHead>
-            <TableHead>Threshold</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {materials.map((material) => {
-            const totalSheets = material?.totalSheets
-            const sheetsPerUnit = material?.sheetsPerUnit
-            const thresholdUnits = material?.thresholdUnits
-            const thresholdSheets = thresholdUnits * sheetsPerUnit
-            const { unitQuantity, extraSheets } = sheetToUnitConverter({ totalSheets, sheetsPerUnit })
+      {isLoading ? "Loading" : isError ? "Error" : <>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Material Name</TableHead>
+              <TableHead>Quantity</TableHead>
+              <TableHead className="text-right">Current Stock</TableHead>
+              <TableHead>Threshold</TableHead>
+            </TableRow>
+          </TableHeader>
 
-            const stockPercentage = (material.currentStock / material.maxStock) * 100;
-            const quality = totalSheets > thresholdSheets ? "Good" : "low"
-            const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
-            const currentStock = `${unitQuantity} units, ${extraSheets} sheets`
+          <TableBody>
+            {materials.map((material) => {
+              const totalSheets = material?.totalSheets
+              const sheetsPerUnit = material?.sheetsPerUnit
+              const thresholdUnits = material?.thresholdUnits
+              const thresholdSheets = thresholdUnits * sheetsPerUnit
+              const { unitQuantity, extraSheets } = sheetToUnitConverter({ totalSheets, sheetsPerUnit })
 
-            return (
-              <TableRow key={material._id}>
-                <TableCell className="font-medium">{material.name}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={
-                      quality === 'Good'
-                        ? 'secondary'
-                        : quality === 'Low'
-                          ? 'outline'
-                          : 'destructive'
-                    }
-                  >
-                    {quality}
-                  </Badge>
-                </TableCell>
-                <TableCell className="text-right text-xs">{currentStock}</TableCell>
-                <TableCell className='text-xs'>
-                  {thresholdUnits + ' units'}
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-      </Table>
+              const stockPercentage = (material.currentStock / material.maxStock) * 100;
+              const quality = totalSheets > thresholdSheets ? "Good" : "low"
+              const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
+              const currentStock = `${unitQuantity} units, ${extraSheets} sheets`
+
+              return (
+                <TableRow key={material._id}>
+                  <TableCell className="font-medium">{material.name}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={
+                        quality === 'Good'
+                          ? 'secondary'
+                          : quality === 'Low'
+                            ? 'outline'
+                            : 'destructive'
+                      }
+                    >
+                      {quality}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right text-xs">{currentStock}</TableCell>
+                  <TableCell className='text-xs'>
+                    {thresholdUnits + ' units'}
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </>}
+
     </div>
   );
 }

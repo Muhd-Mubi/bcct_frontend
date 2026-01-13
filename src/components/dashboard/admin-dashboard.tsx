@@ -10,13 +10,11 @@ import { Card } from '../ui/card';
 import { SensorGraphs } from './sensor-graphs';
 import { InventoryCompositionChart } from './inventory-composition-chart';
 import { AlertsPanel } from './alerts-panel';
-import { useGeMaterialsCount } from '@/api/react-query/queries/material';
+import { useGeMaterialsCount, useGetDashboardMaterials, useGetLowStockMaterial } from '@/api/react-query/queries/material';
 import { useGetJobsCount } from '@/api/react-query/queries/jobOrder';
 import { useGetWorkOrderCounts } from '@/api/react-query/queries/workOrder';
 
 export default function AdminDashboard() {
-  const { materials, workOrders, jobOrders } = useData();
-
   const { data: materialCountData,
     isLoading: isloadingMaterialCount,
     error: errorFetchingMaterialCount } = useGeMaterialsCount();
@@ -26,17 +24,16 @@ export default function AdminDashboard() {
   const { data: jobCountData,
     isLoading: isloadingJobCount,
     error: errorFetchingJobCount } = useGetJobsCount();
-
-  const lowStockItems = materials.filter(
-    (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
-  );
-
-  const totalStock = materials.reduce((acc, m) => acc + m.currentStock, 0);
-  const pendingWorkOrders = workOrders.filter(
-    (o) => o.status === 'Pending' || o.status === 'In Progress'
-  ).length;
+  const { data: materialData,
+    isLoading: isloadingMaterials,
+    error: errorFetchingMaterials } = useGetDashboardMaterials();
+  const { data: lowStockData,
+    isLoading: isloadinglowStock,
+    error: errorFetchingLowStock } = useGetLowStockMaterial();
 
   const workOrderCounts = workOrderCountData?.data
+  const materials = materialData?.materials || []
+  const lowStocks = lowStockData?.data || []
 
   return (
     <>
@@ -60,22 +57,22 @@ export default function AdminDashboard() {
         </Link>
         <MetricCard
           title="Low Stock Alerts"
-          value={lowStockItems.length}
+          value={lowStocks?.length}
           icon={<AlertTriangle className="size-6 text-destructive" />}
-          variant={lowStockItems.length > 0 ? 'destructive' : 'default'}
+          variant={lowStocks?.length > 0 ? 'destructive' : 'default'}
         />
       </div>
 
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-6">
           <Card>
-            <InventoryTable materials={materials} />
+            <InventoryTable materials={materials} isLoading={isloadingMaterials} isError={errorFetchingMaterials} />
           </Card>
           {/* <InventoryCompositionChart materials={materials} /> */}
           {/* <SensorGraphs /> */}
         </div>
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
-          <AlertsPanel lowStockItems={lowStockItems} />
+          <AlertsPanel lowStockItems={lowStocks} isLoading={isloadinglowStock} isError={errorFetchingLowStock} />
         </div>
       </div>
     </>

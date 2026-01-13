@@ -4,7 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { MetricCard } from '@/components/dashboard/metric-card';
 import { useData } from '@/context/data-context';
-import { ClipboardList, Package, CircleDot, CheckCircle2 } from 'lucide-react';
+import { ClipboardList, Package, CircleDot, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { InventoryTable } from './inventory-table';
 import { Card } from '../ui/card';
 import { SensorGraphs } from './sensor-graphs';
@@ -70,12 +70,18 @@ export default function TechnicalDashboard() {
       <div className="grid grid-cols-12 gap-6">
         <div className="col-span-12 lg:col-span-9 flex flex-col gap-6">
           <Card>
-            <InventoryTable materials={materials} />
+            <InventoryTable materials={materials} isLoading={isloadingMaterials} isError={errorFetchingMaterials} />
           </Card>
           {/* <InventoryCompositionChart materials={materials} /> */}
           {/* <SensorGraphs /> */}
         </div>
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
+          <MetricCard
+            title="Low Stock Alerts"
+            value={lowStocks?.length}
+            icon={<AlertTriangle className="size-6 text-destructive" />}
+            variant={lowStocks?.length > 0 ? 'destructive' : 'default'}
+          />
           <AlertsPanel lowStockItems={lowStocks} isLoading={isloadinglowStock} isError={errorFetchingLowStock} />
           {/* <ReorderSuggestions materials={materials} /> */}
         </div>

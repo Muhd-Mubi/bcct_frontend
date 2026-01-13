@@ -12,11 +12,9 @@ import { InventoryCompositionChart } from './inventory-composition-chart';
 import { ReorderSuggestions } from './reorder-suggestions';
 import { AlertsPanel } from './alerts-panel';
 import { useGetWorkOrderCounts } from '@/api/react-query/queries/workOrder';
-import { useGeMaterialsCount, useGetLowStockMaterial } from '@/api/react-query/queries/material';
+import { useGeMaterialsCount, useGetDashboardMaterials, useGetLowStockMaterial } from '@/api/react-query/queries/material';
 
 export default function TechnicalDashboard() {
-  const { materials, workOrders } = useData();
-
   const { data: workOrderCountData,
     isLoading: isLoadingWorkOrderCount,
     error: errorFetchingWorkOrderCount } = useGetWorkOrderCounts();
@@ -29,23 +27,14 @@ export default function TechnicalDashboard() {
     isLoading: isloadinglowStock,
     error: errorFetchingLowStock } = useGetLowStockMaterial();
 
-  const assignedWorkOrders = workOrders; // Assuming all are assigned for now
-  const pendingCount = assignedWorkOrders.filter(
-    (wo) => wo.status === 'Pending'
-  ).length;
-  const inProgressCount = assignedWorkOrders.filter(
-    (wo) => wo.status === 'In Progress'
-  ).length;
-  const completedCount = assignedWorkOrders.filter(
-    (wo) => wo.status === 'Completed'
-  ).length;
+  const { data: materialData,
+    isLoading: isloadingMaterials,
+    error: errorFetchingMaterials } = useGetDashboardMaterials();
 
-  const lowStockItems = materials.filter(
-    (m) => (m.currentStock / m.maxStock) * 100 < m.reorderThreshold
-  );
 
   const workOrderCounts = workOrderCountData?.data
   const lowStocks = lowStockData?.data || []
+  const materials = materialData?.materials || []
 
   return (
     <>
@@ -87,7 +76,7 @@ export default function TechnicalDashboard() {
           {/* <SensorGraphs /> */}
         </div>
         <div className="col-span-12 lg:col-span-3 flex flex-col gap-6">
-          <AlertsPanel lowStockItems={lowStocks} />
+          <AlertsPanel lowStockItems={lowStocks} isLoading={isloadinglowStock} isError={errorFetchingLowStock} />
           {/* <ReorderSuggestions materials={materials} /> */}
         </div>
       </div>

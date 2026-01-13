@@ -10,6 +10,7 @@ import {
 import { Badge } from '@/components/ui/badge';
 import type { Material, QualityStatus, LiveStatus } from '@/lib/types';
 import { format, parseISO } from 'date-fns';
+import { sheetToUnitConverter } from './alerts-panel';
 
 const getQualityStatus = (stockPercentage: number): QualityStatus => {
   if (stockPercentage < 10) return 'Very Low';
@@ -45,11 +46,11 @@ const statusConfig: Record<
 };
 
 export function InventoryTable({ materials }: { materials: Material[] }) {
-    const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
-    useEffect(() => {
-        setIsClient(true);
-    }, []);
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   return (
     <div className="overflow-x-auto">
@@ -57,18 +58,24 @@ export function InventoryTable({ materials }: { materials: Material[] }) {
         <TableHeader>
           <TableRow>
             <TableHead>Material Name</TableHead>
-            <TableHead>Quality</TableHead>
+            <TableHead>Quantity</TableHead>
             <TableHead className="text-right">Current Stock</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Last Updated</TableHead>
+            <TableHead>Threshold</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {materials.map((material) => {
+            const totalSheets = material?.totalSheets
+            const sheetsPerUnit = material?.sheetsPerUnit
+            const thresholdUnits = material?.thresholdUnits
+            const thresholdSheets = thresholdUnits * sheetsPerUnit
+            const { unitQuantity, extraSheets } = sheetToUnitConverter({ totalSheets, sheetsPerUnit })
+
             const stockPercentage = (material.currentStock / material.maxStock) * 100;
-            const quality = getQualityStatus(stockPercentage);
+            const quality = totalSheets > thresholdSheets ? "Good" : "low"
             const liveStatus = getLiveStatus(stockPercentage, material.reorderThreshold);
-            
+            const currentStock = `${unitQuantity} units, ${extraSheets} sheets`
+
             return (
               <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
@@ -78,22 +85,16 @@ export function InventoryTable({ materials }: { materials: Material[] }) {
                       quality === 'Good'
                         ? 'secondary'
                         : quality === 'Low'
-                        ? 'outline'
-                        : 'destructive'
+                          ? 'outline'
+                          : 'destructive'
                     }
                   >
                     {quality}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-right">{Math.round(material.currentStock).toLocaleString()}</TableCell>
-                <TableCell>
-                  <div className="flex items-center gap-2">
-                    {statusConfig[liveStatus].icon}
-                    {liveStatus}
-                  </div>
-                </TableCell>
-                <TableCell>
-                  {isClient && material.lastUpdated ? format(parseISO(material.lastUpdated), "PPp") : 'N/A'}
+                <TableCell className="text-right text-xs">{currentStock}</TableCell>
+                <TableCell className='text-xs'>
+                  {thresholdUnits + ' units'}
                 </TableCell>
               </TableRow>
             );

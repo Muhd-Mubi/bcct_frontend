@@ -51,3 +51,10 @@ export function useGetLowStockMaterial() {
         queryFn: () => apiClient('/material/get-material-low-stock'),
     });
 }
+
+export function useGetDashboardMaterials() {
+    return useQuery({
+        queryKey: ['material'],
+        queryFn: () => apiClient('/material/get-material-dashboard'),
+    });
+}

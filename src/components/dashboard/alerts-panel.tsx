@@ -12,6 +12,8 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface AlertsPanelProps {
   lowStockItems: Material[];
+  isLoading?: boolean
+  isError?: boolean
 }
 export const sheetToUnitConverter = ({ sheetsPerUnit = 1, totalSheets = 1 }) => {
   const unitQuantity = Math.floor(totalSheets / sheetsPerUnit);
@@ -19,7 +21,7 @@ export const sheetToUnitConverter = ({ sheetsPerUnit = 1, totalSheets = 1 }) => 
   return { unitQuantity, extraSheets };
 }
 
-export function AlertsPanel({ lowStockItems }: AlertsPanelProps) {
+export function AlertsPanel({ lowStockItems, isLoading = false, isError = false }: AlertsPanelProps) {
   return (
     <Card>
       <CardHeader>
@@ -30,13 +32,13 @@ export function AlertsPanel({ lowStockItems }: AlertsPanelProps) {
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[150px] overflow-y-auto">
-          {lowStockItems.length > 0 ? (
+          {isLoading ? "Loading" : isError ? "Error" : lowStockItems.length > 0 ? (
             <ul className="space-y-3">
               {lowStockItems.map((item) => {
                 // const stockPercentage = ((item.currentStock / item.maxStock) * 100).toFixed(1);
                 const { unitQuantity, extraSheets } = sheetToUnitConverter({
-                  sheetsPerUnit : item?.measurementId?.sheetsPerUnit,
-                  totalSheets : item?.totalSheets
+                  sheetsPerUnit: item?.measurementId?.sheetsPerUnit,
+                  totalSheets: item?.totalSheets
                 })
                 const currentStock = `${unitQuantity} units, ${extraSheets} sheets`
                 return (

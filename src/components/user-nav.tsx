@@ -15,16 +15,13 @@ import {
   DropdownMenuPortal,
   DropdownMenuSubContent,
 } from '@/components/ui/dropdown-menu';
-import { User, Users, LogOut, UserCog } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { UserRole, UserRoleContext } from '@/lib/types';
-import { useAuth } from '@/context/AuthContext'
+import { useAuth } from '@/context/AuthContext';
 
 export function UserNav() {
-  const { role } = useContext(UserRoleContext);
-  const { logout } = useAuth();
+  const { logout, role } = useAuth();
   
-  const roles: UserRole[] = ['leadership', 'admin', 'technical'];
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -49,29 +46,6 @@ export function UserNav() {
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuGroup>
-          <DropdownMenuItem>
-            <User className="mr-2 h-4 w-4" />
-            <span>Profile</span>
-          </DropdownMenuItem>
-          <DropdownMenuSub>
-            <DropdownMenuSubTrigger>
-              <Users className="mr-2 h-4 w-4" />
-              <span>Switch Role</span>
-            </DropdownMenuSubTrigger>
-            <DropdownMenuPortal>
-              <DropdownMenuSubContent>
-                {roles.map((r) => (
-                  <DropdownMenuItem key={r} disabled={r === role}>
-                    <UserCog className="mr-2 h-4 w-4" />
-                    <span className="capitalize">{r}</span>
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuSubContent>
-            </DropdownMenuPortal>
-          </DropdownMenuSub>
-        </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onSelect={logout}>
             <LogOut className="mr-2 h-4 w-4" />

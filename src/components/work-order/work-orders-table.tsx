@@ -37,6 +37,9 @@ interface WorkOrdersTableProps {
   onEdit: (order: WorkOrder) => void;
   onDelete: (orderId: string) => void;
   onRevert: (orderId: string) => void;
+  currentPage: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
 }
 
 const statusVariant: Record<WorkOrderStatus, 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -51,19 +54,10 @@ const priorityVariant: Record<WorkOrderPriority, 'default' | 'secondary' | 'dest
   low: 'default',
 }
 
-export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert }: WorkOrdersTableProps) {
-  const { isLeadership, isTechnical } = useContext(UserRoleContext);
+export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, onDelete, onRevert, currentPage, totalPages, onPageChange }: WorkOrdersTableProps) {
   const pathname = usePathname();
-  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
   const { isAdmin, isUser } = useAuth()
-
-  const paginatedWorkOrders = workOrders.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  const totalPages = Math.ceil(workOrders.length / itemsPerPage);
 
   const handleRowClick = (e: React.MouseEvent, order: WorkOrder) => {
     // if ((e.target as HTMLElement).closest('[data-radix-dropdown-menu-trigger]') || (e.target as HTMLElement).tagName === 'A') {
@@ -82,7 +76,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
     const canUserUpdateStatus = isUser && (order.status !== 'completed')
     const canEdit = isAdmin && (order.status === 'pending')
     const canDelete = isAdmin && (order.status === 'pending');
-    const canRevert = isAdmin  && (order.status === 'completed');
+    const canRevert = isAdmin && (order.status === 'completed');
 
     return (
       <DropdownMenu>
@@ -163,7 +157,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
             </TableRow>
           </TableHeader>
           <TableBody>
-            {paginatedWorkOrders.map((order, index) => (
+            {workOrders?.map((order, index) => (
               <TableRow key={index} onClick={(e) => handleRowClick(e, order)} className="cursor-pointer">
                 <TableCell>{(currentPage - 1) * itemsPerPage + index + 1}</TableCell>
                 <TableCell className="font-medium">
@@ -204,12 +198,11 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
           </TableBody>
         </Table>
       </div>
-      {!isDashboard && workOrders.length > itemsPerPage && (
         <div className="flex items-center justify-end space-x-2 py-4">
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+            onClick={() => onPageChange(currentPage - 1)}
             disabled={currentPage === 1}
           >
             Previous
@@ -220,13 +213,12 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
           <Button
             variant="outline"
             size="sm"
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+            onClick={() => onPageChange(currentPage + 1)}
             disabled={currentPage === totalPages}
           >
             Next
           </Button>
         </div>
-      )}
     </div>
   );
 }

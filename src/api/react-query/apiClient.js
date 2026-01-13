@@ -1,3 +1,5 @@
+import { toast } from "react-toastify";
+
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export async function apiClient(
@@ -16,6 +18,7 @@ export async function apiClient(
 
     if (!response.ok) {
         const error = await response.json();
+        toast.error(error.message || 'Something went wrong')
         throw new Error(error.message || 'Something went wrong');
     }
 

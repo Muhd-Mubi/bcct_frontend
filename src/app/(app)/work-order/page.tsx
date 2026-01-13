@@ -216,7 +216,7 @@ export default function WorkOrdersPage() {
   const handleConfirmRevert = () => {
     if (workOrderToRevert) {
       const revertData = {
-        id : workOrderToRevert
+        id: workOrderToRevert
       }
       revertWorkOrder(revertData, {
         onSuccess: (data) => {
@@ -396,6 +396,9 @@ export default function WorkOrdersPage() {
             onEdit={handleEdit}
             onDelete={handleDelete}
             onRevert={handleRevertClick}
+            currentPage={data?.page}
+            totalPages={data?.totalPages}
+            onPageChange={setCurrentPage}
           />
         </CardContent>
       </Card>

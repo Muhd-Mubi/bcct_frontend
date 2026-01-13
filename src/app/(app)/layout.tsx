@@ -47,7 +47,7 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
               <MainNav />
             </SidebarContent>
           </Sidebar>
-          <div className="flex-1">
+          <div className="flex-1 pt-5">
             <AppHeader />
             <main className="p-4 sm:p-6 lg:p-8">{children}</main>
           </div>

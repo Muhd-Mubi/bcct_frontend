@@ -22,10 +22,10 @@ interface StockRegisterTableProps {
 }
 
 const typeVariant: Record<StockLedgerEntry['type'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
-  WORK_ORDER: 'secondary',
-  ONBOARDING: 'default',
+  WORK_ORDER: 'outline',
+  ONBOARDING: 'outline',
   ONBOARDING_REVERSAL: 'destructive',
-  WORK_ORDER_REVERSAL: 'outline',
+  WORK_ORDER_REVERSAL: 'default',
 };
 
 const typeLabel: Record<StockLedgerEntry['type'], string> = {

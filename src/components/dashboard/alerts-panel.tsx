@@ -13,6 +13,11 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 interface AlertsPanelProps {
   lowStockItems: Material[];
 }
+export const sheetToUnitConverter = ({ sheetsPerUnit = 1, totalSheets = 1 }) => {
+  const unitQuantity = Math.floor(totalSheets / sheetsPerUnit);
+  const extraSheets = totalSheets - (unitQuantity * sheetsPerUnit)
+  return { unitQuantity, extraSheets };
+}
 
 export function AlertsPanel({ lowStockItems }: AlertsPanelProps) {
   return (
@@ -24,18 +29,23 @@ export function AlertsPanel({ lowStockItems }: AlertsPanelProps) {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className="h-[150px]">
+        <ScrollArea className="h-[150px] overflow-y-auto">
           {lowStockItems.length > 0 ? (
             <ul className="space-y-3">
               {lowStockItems.map((item) => {
-                const stockPercentage = ((item.currentStock / item.maxStock) * 100).toFixed(1);
+                // const stockPercentage = ((item.currentStock / item.maxStock) * 100).toFixed(1);
+                const { unitQuantity, extraSheets } = sheetToUnitConverter({
+                  sheetsPerUnit : item?.measurementId?.sheetsPerUnit,
+                  totalSheets : item?.totalSheets
+                })
+                const currentStock = `${unitQuantity} units, ${extraSheets} sheets`
                 return (
                   <li key={item._id} className="flex items-start gap-3 text-sm">
-                    <AlertTriangle className="size-4 text-destructive mt-0.5 shrink-0" />
+                    <AlertTriangle className="size-4 text-destructive mt-1 shrink-0" />
                     <div>
                       <p className="font-semibold">{item.name}</p>
                       <p className="text-muted-foreground">
-                        Stock at {stockPercentage}%
+                        {currentStock}
                       </p>
                     </div>
                   </li>

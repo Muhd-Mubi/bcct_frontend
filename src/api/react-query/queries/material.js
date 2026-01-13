@@ -30,17 +30,24 @@ export function useEditMaterial() {
 }
 
 export function useDeleteMaterial() {
-  return useMutation({
-    mutationFn: ({ id }) =>
-      apiClient(`/material/delete-material/${id}`, {
-        method: 'DELETE',
-      }),
-  });
+    return useMutation({
+        mutationFn: ({ id }) =>
+            apiClient(`/material/delete-material/${id}`, {
+                method: 'DELETE',
+            }),
+    });
 }
 
 export function useGeMaterialsCount() {
     return useQuery({
         queryKey: ['materialCount'],
         queryFn: () => apiClient('/material/get-material-count'),
+    });
+}
+
+export function useGetLowStockMaterial() {
+    return useQuery({
+        queryKey: ['lowStockMaterials'],
+        queryFn: () => apiClient('/material/get-material-low-stock'),
     });
 }

@@ -28,9 +28,10 @@ interface MaterialsTableProps {
   data: Material[];
   onEdit: (material: Material) => void;
   onDelete: (id: string) => void;
+  isLowStock?: boolean
 }
 
-export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) {
+export function MaterialsTable({ data, onEdit, onDelete, isLowStock=false }: MaterialsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -87,12 +88,12 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
 
   return (
     <div className="space-y-4">
-      <Input
+      {!isLowStock && <Input
         placeholder="Search materials..."
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
         className="max-w-sm"
-      />
+      />}
       <div className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
@@ -101,7 +102,8 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
               <SortableHeader sortKeyName="measurement">Measurement Unit</SortableHeader>
               <SortableHeader sortKeyName="unitQuantity">Unit Quantity</SortableHeader>
               <SortableHeader sortKeyName="extraSheets">Extra Sheets</SortableHeader>
-              {isUser && <TableHead>Actions</TableHead>}
+              {isLowStock && <TableHead>Threshold Units</TableHead>}
+              {!isLowStock && isUser && <TableHead>Actions</TableHead>}
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -111,7 +113,8 @@ export function MaterialsTable({ data, onEdit, onDelete }: MaterialsTableProps) 
                 <TableCell>{material.measurement}</TableCell>
                 <TableCell>{material.unitQuantity}</TableCell>
                 <TableCell>{material.extraSheets}</TableCell>
-                {isUser && <TableCell>
+                {isLowStock && <TableCell>{material?.thresholdUnits}</TableCell>}
+                {!isLowStock && isUser && <TableCell>
                   {(canEdit || canDelete) ? (
                     <DropdownMenu>
                       <DropdownMenuTrigger asChild>

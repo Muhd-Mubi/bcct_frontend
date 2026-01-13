@@ -170,7 +170,7 @@ export function WorkOrdersTable({ workOrders, onStatusChange, onView, onEdit, on
                     {order.job}
                   </Link>
                 </TableCell>
-                <TableCell>dsa</TableCell>
+                <TableCell>{format(parseISO(String(order?.createdAt)), 'PP')}</TableCell>
                 {/* <TableCell>{format(parseISO(String(order.createdAt)), 'PP')}</TableCell> */}
                 <TableCell className="text-xs">
                   <div className="flex flex-col gap-1">

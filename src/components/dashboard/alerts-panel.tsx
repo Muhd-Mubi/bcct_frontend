@@ -37,7 +37,7 @@ export function AlertsPanel({ lowStockItems, isLoading = false, isError = false 
               {lowStockItems.map((item) => {
                 // const stockPercentage = ((item.currentStock / item.maxStock) * 100).toFixed(1);
                 const { unitQuantity, extraSheets } = sheetToUnitConverter({
-                  sheetsPerUnit: item?.measurementId?.sheetsPerUnit,
+                  sheetsPerUnit: item?.sheetsPerUnit,
                   totalSheets: item?.totalSheets
                 })
                 const currentStock = `${unitQuantity} units, ${extraSheets} sheets`

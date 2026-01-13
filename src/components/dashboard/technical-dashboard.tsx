@@ -48,14 +48,14 @@ export default function TechnicalDashboard() {
         </Link>
         <Link href="/work-order?status=In Progress">
           <MetricCard
-            title="In Progress"
+            title="In Progress Work Orders"
             value={isLoadingWorkOrderCount ? "Loading" : errorFetchingWorkOrderCount ? "Error" : workOrderCounts["in progress"]}
             icon={<CircleDot className="size-6 text-muted-foreground" />}
           />
         </Link>
         <Link href="/work-order?status=Completed">
           <MetricCard
-            title="Completed"
+            title="Completed Work Orders"
             value={isLoadingWorkOrderCount ? "Loading" : errorFetchingWorkOrderCount ? "Error" : workOrderCounts["completed"]}
             icon={<CheckCircle2 className="size-6 text-muted-foreground" />}
           />

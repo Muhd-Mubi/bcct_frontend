@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useContext } from 'react';
+import React, { useState, useMemo, useContext, Ref } from 'react';
 import {
   Table,
   TableBody,
@@ -29,9 +29,10 @@ interface MaterialsTableProps {
   onEdit: (material: Material) => void;
   onDelete: (id: string) => void;
   isLowStock?: boolean
+  tableRef?: Ref<HTMLDivElement>
 }
 
-export function MaterialsTable({ data, onEdit, onDelete, isLowStock=false }: MaterialsTableProps) {
+export function MaterialsTable({ data, onEdit, onDelete, isLowStock = false, tableRef }: MaterialsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
@@ -78,10 +79,10 @@ export function MaterialsTable({ data, onEdit, onDelete, isLowStock=false }: Mat
     <TableHead>
       <Button
         variant="ghost"
-        onClick={() => handleSort(sortKeyName)}
+        onClick={() => { }}
       >
         {children}
-        <ArrowUpDown className="ml-2 h-4 w-4" />
+        {/* <ArrowUpDown className="ml-2 h-4 w-4" /> */}
       </Button>
     </TableHead>
   );
@@ -94,14 +95,14 @@ export function MaterialsTable({ data, onEdit, onDelete, isLowStock=false }: Mat
         onChange={(e) => setSearchTerm(e.target.value)}
         className="max-w-sm"
       />}
-      <div className="rounded-md border overflow-x-auto">
+      <div ref={tableRef} className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <SortableHeader sortKeyName="name">Name</SortableHeader>
-              <SortableHeader sortKeyName="measurement">Measurement Unit</SortableHeader>
-              <SortableHeader sortKeyName="unitQuantity">Unit Quantity</SortableHeader>
-              <SortableHeader sortKeyName="extraSheets">Extra Sheets</SortableHeader>
+              <TableHead>Name</TableHead>
+              <TableHead>Measurement Unit</TableHead>
+              <TableHead>Unit Quantity</TableHead>
+              <TableHead>Extra Sheets</TableHead>
               {isLowStock && <TableHead>Threshold Units</TableHead>}
               {!isLowStock && isUser && <TableHead>Actions</TableHead>}
             </TableRow>
@@ -111,8 +112,8 @@ export function MaterialsTable({ data, onEdit, onDelete, isLowStock=false }: Mat
               <TableRow key={material._id}>
                 <TableCell className="font-medium">{material.name}</TableCell>
                 <TableCell>{material.measurement}</TableCell>
-                <TableCell>{material.unitQuantity}</TableCell>
-                <TableCell>{material.extraSheets}</TableCell>
+                <TableCell className='text-red-600 pl-8'>{material.unitQuantity}</TableCell>
+                <TableCell className='text-red-600 pl-8'>{material.extraSheets}</TableCell>
                 {isLowStock && <TableCell>{material?.thresholdUnits}</TableCell>}
                 {!isLowStock && isUser && <TableCell>
                   {(canEdit || canDelete) ? (

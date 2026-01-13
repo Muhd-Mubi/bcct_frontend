@@ -127,14 +127,6 @@ export default function StockRegisterPage() {
 
     }, [selectedMaterialId, materials, onloadings, workOrders, measurements]);
 
-    const handleDownload = () => {
-        if (!selectedMaterialId) return;
-        const material = materials.find(m => m._id === selectedMaterialId);
-        if (material) {
-            generateStockLedgerPDF(material, stockLedger);
-        }
-    };
-
     const downloadPdf = async () => {
         if (!tableRef.current) return
 
@@ -152,7 +144,6 @@ export default function StockRegisterPage() {
         pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight)
         pdf.save("stock-register.pdf")
     }
-
 
     const tableRef = useRef<HTMLDivElement>(null)
 

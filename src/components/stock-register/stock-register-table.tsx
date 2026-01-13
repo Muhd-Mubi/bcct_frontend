@@ -120,7 +120,7 @@ export function StockRegisterTable({ data, selectedMaterialId,tableRef }: StockR
                       {/* {entry.workOrderId && <div className="text-xs text-muted-foreground">{entry.workOrderId}</div>} */}
                     </TableCell>
                     <TableCell>
-                      <Badge className='flex items-center text-center' variant={typeVariant[entry.sourceType]}>{typeLabel[entry.sourceType]}</Badge>
+                      <Badge variant={typeVariant[entry.sourceType]}>{typeLabel[entry.sourceType]}</Badge>
                     </TableCell>
                     <TableCell>
                       <span className={cn(entry.type == 'IN' ? 'text-green-600' : 'text-red-600')}>

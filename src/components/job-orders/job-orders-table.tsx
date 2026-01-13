@@ -99,8 +99,8 @@ export function JobOrdersTable({ jobOrders, workOrderCounts, currentPage, totalP
             </TableRow>
           </TableHeader>
           <TableBody>
-            {jobOrders.map((job) => (
-              <TableRow key={job.id}>
+            {jobOrders.map((job, index) => (
+              <TableRow key={index}>
                 <TableCell className="font-medium">{job.job_id}</TableCell>
                 <TableCell>{job.department}</TableCell>
                 <TableCell>{format(parseISO(String(job.createdAt)), 'PP')}</TableCell>

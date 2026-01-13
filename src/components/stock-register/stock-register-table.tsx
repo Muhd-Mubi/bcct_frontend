@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { Ref, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -18,7 +18,8 @@ import { useGetInventoryTransections } from '@/api/react-query/queries/inventory
 
 interface StockRegisterTableProps {
   data: StockLedgerEntry[];
-  selectedMaterialId: string
+  selectedMaterialId: string;
+  tableRef: Ref<HTMLDivElement>
 }
 
 const typeVariant: Record<StockLedgerEntry['type'], 'default' | 'secondary' | 'destructive' | 'outline'> = {
@@ -36,7 +37,7 @@ const typeLabel: Record<StockLedgerEntry['type'], string> = {
 };
 
 
-export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTableProps) {
+export function StockRegisterTable({ data, selectedMaterialId,tableRef }: StockRegisterTableProps) {
   const [currentPage, setCurrentPage] = useState(1);
 
   const { data: inventoryTransectionData,
@@ -76,16 +77,16 @@ export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTa
 
   return (
     <div className='space-y-4'>
-      <div className="rounded-md border overflow-x-auto">
+      <div ref={tableRef} className="rounded-md border overflow-x-auto">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Source ID</TableHead>
-              <TableHead>Type</TableHead>
-              <TableHead>Unit Quantity</TableHead>
-              <TableHead>Extra Sheets</TableHead>
-              <TableHead className="text-right">Unit Price (Rs)</TableHead>
-              <TableHead className="text-right">Total Price (Rs)</TableHead>
+              <TableHead className='text-sm'>Source ID</TableHead>
+              <TableHead className='text-sm'>Type</TableHead>
+              <TableHead className='text-sm'>Unit Quantity</TableHead>
+              <TableHead className='text-sm'>Extra Sheets</TableHead>
+              <TableHead className="text-right">Unit Price</TableHead>
+              <TableHead className="text-right">Total Price</TableHead>
               <TableHead>Stock Before</TableHead>
               <TableHead>Stock After</TableHead>
               <TableHead>Date</TableHead>
@@ -119,7 +120,7 @@ export function StockRegisterTable({ data, selectedMaterialId }: StockRegisterTa
                       {/* {entry.workOrderId && <div className="text-xs text-muted-foreground">{entry.workOrderId}</div>} */}
                     </TableCell>
                     <TableCell>
-                      <Badge variant={typeVariant[entry.sourceType]}>{typeLabel[entry.sourceType]}</Badge>
+                      <Badge className='flex items-center text-center' variant={typeVariant[entry.sourceType]}>{typeLabel[entry.sourceType]}</Badge>
                     </TableCell>
                     <TableCell>
                       <span className={cn(entry.type == 'IN' ? 'text-green-600' : 'text-red-600')}>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import {
     Select,
@@ -16,12 +16,14 @@ import { StockLedgerEntry, Material } from '@/lib/types';
 import { StockRegisterTable } from '@/components/stock-register/stock-register-table';
 import { generateStockLedgerPDF } from '@/lib/report-generator';
 import { useGeMaterials } from '@/api/react-query/queries/material';
+import jsPDF from "jspdf"
+import html2canvas from "html2canvas"
 
 export default function StockRegisterPage() {
     const { materials, onloadings, workOrders, measurements } = useData();
     const [selectedMaterialId, setSelectedMaterialId] = useState<string | null>(null);
 
-    const { data: materialData, isLoading : isLoadingMaterial, error : errorFetchingMateiral } = useGeMaterials();
+    const { data: materialData, isLoading: isLoadingMaterial, error: errorFetchingMateiral } = useGeMaterials();
 
     const stockLedger = useMemo(() => {
         if (!selectedMaterialId) return [];
@@ -133,6 +135,27 @@ export default function StockRegisterPage() {
         }
     };
 
+    const downloadPdf = async () => {
+        if (!tableRef.current) return
+
+        const canvas = await html2canvas(tableRef.current, {
+            scale: 2,
+            useCORS: true
+        })
+
+        const imgData = canvas.toDataURL("image/png")
+
+        const pdf = new jsPDF("l", "mm", "a4")
+        const pdfWidth = pdf.internal.pageSize.getWidth()
+        const pdfHeight = (canvas.height * pdfWidth) / canvas.width
+
+        pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight)
+        pdf.save("stock-register.pdf")
+    }
+
+
+    const tableRef = useRef<HTMLDivElement>(null)
+
     return (
         <div className="space-y-6">
             <h1 className="text-3xl font-bold font-headline">Stock Register</h1>
@@ -155,7 +178,7 @@ export default function StockRegisterPage() {
                                 ))}
                             </SelectContent>
                         </Select>
-                        <Button onClick={handleDownload} disabled={!selectedMaterialId}>
+                        <Button onClick={downloadPdf} disabled={!selectedMaterialId}>
                             <Download className="mr-2 h-4 w-4" />
                             Download PDF
                         </Button>
@@ -163,7 +186,7 @@ export default function StockRegisterPage() {
                 </CardHeader>
                 <CardContent>
                     {selectedMaterialId ? (
-                        <StockRegisterTable data={stockLedger} selectedMaterialId={selectedMaterialId}/>
+                        <StockRegisterTable data={stockLedger} selectedMaterialId={selectedMaterialId} tableRef={tableRef} />
                     ) : (
                         <div className="flex items-center justify-center h-48 border-2 border-dashed rounded-lg">
                             <p className="text-muted-foreground">Please select a material to see its register.</p>

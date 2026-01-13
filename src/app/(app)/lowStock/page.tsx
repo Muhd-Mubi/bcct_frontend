@@ -34,7 +34,7 @@ export default function MaterialsPage() {
         const pdfHeight = (canvas.height * pdfWidth) / canvas.width
 
         pdf.addImage(imgData, "PNG", 0, 10, pdfWidth, pdfHeight)
-        pdf.save("stock-register.pdf")
+        pdf.save("low-stocks.pdf")
     }
 
 

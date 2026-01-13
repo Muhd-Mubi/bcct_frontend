@@ -11,7 +11,7 @@ import { JobOrdersTable } from '@/components/job-orders/job-orders-table';
 import { CreateJobOrderDialog } from '@/components/job-orders/create-job-order-dialog';
 import { DeleteJobOrderDialog } from '@/components/job-orders/delete-job-order-dialog';
 import { useRouter } from 'next/navigation';
-import { useDeleteJob, useCreateJob, useEditJob, useGetJobs } from '@/api/react-query/queries/jobOrder'
+import { useDeleteJob, useCreateJob, useEditJob, useGetJobs, useGetJobById } from '@/api/react-query/queries/jobOrder'
 import { toast } from 'react-toastify';
 import { useAuth } from '@/context/AuthContext';
 
@@ -35,7 +35,9 @@ export default function JobOrdersPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const jobsPerPage = 10;
 
-  const { data, isLoading, error, refetch } = useGetJobs(currentPage);
+  let { data, isLoading, error, refetch } = useGetJobs(currentPage);
+  let { data: searchedJobData, isLoading: isLoadingSeach, error: errorSearchingJob, refetch: searchJob } = useGetJobById(searchTerm);
+
   const {
     mutate: createJob,
     isPending: creatingJob,
@@ -146,10 +148,16 @@ export default function JobOrdersPage() {
     );
   }, [jobOrders, searchTerm]);
 
+  const handleSearch = () => {
+    searchJob()
+  }
+
   if (isLoading) return <p>Loading...</p>;
   if (error) return <p>{error.message}</p>;
 
   const disableButton = creatingJob || updatingJob || deletingJob
+  const searchedJob = searchedJobData?.job ? [searchedJobData?.job] :[]
+  const isSearched = searchedJob?.length && searchTerm
 
   return (
     <div className="space-y-6">
@@ -163,7 +171,7 @@ export default function JobOrdersPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"
             />
-            <Button size="sm" onClick={()=>{}}>
+            <Button size="sm" onClick={handleSearch}>
               <Search />
               Search
             </Button>
@@ -175,7 +183,7 @@ export default function JobOrdersPage() {
         </CardHeader>
         <CardContent>
           <JobOrdersTable
-            jobOrders={data?.jobs || []}
+            jobOrders={isSearched ? searchedJob : data?.jobs || []}
             workOrderCounts={jobWorkOrderCounts}
             currentPage={data?.page}
             totalPages={data?.totalPages}

@@ -50,6 +50,7 @@ const jobItemSchema = z.object({
 const formSchema = z.object({
   _id: z.string().optional(),
   job: z.any(),
+  work_id: z.string(),
   tasks: z.array(jobItemSchema).min(1, 'Please select at least one task for the work order.'),
   description: z.string().optional(),
   priority: z.enum(['high', 'medium', 'low']),
@@ -72,11 +73,11 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder,
   const { workOrders } = useData();
   const isEditing = !!workOrder;
 
-  const { data: searchedJob, isLoading, isRefetching, error, refetch } = useGetJobById(isEditing ? workOrder?.job: searchId);
+  const { data: searchedJob, isLoading, isRefetching, error, refetch } = useGetJobById(isEditing ? workOrder?.job : searchId);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    defaultValues: { job: '', tasks: [], description: '', priority: 'medium' },
+    defaultValues: { job: '', work_id: '', tasks: [], description: '', priority: 'medium' },
   });
 
   let selectedJobId = form.watch('job');
@@ -109,6 +110,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder,
         form.reset({
           _id: workOrder?._id,
           job: workOrder.job,
+          work_id: workOrder?.work_id,
           tasks: workOrder.tasks,
           priority: workOrder.priority,
           description: workOrder.description,
@@ -117,7 +119,7 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder,
         selectedJobId = workOrder?.job
         refetch()
       } else {
-        form.reset({ job: '', tasks: [], description: '', priority: 'medium' });
+        form.reset({ job: '', work_id: '', tasks: [], description: '', priority: 'medium' });
       }
     }
   }, [isOpen, form, isEditing, workOrder]);
@@ -225,6 +227,20 @@ export function CreateWorkOrderDialog({ isOpen, onOpenChange, onSave, workOrder,
                           <Button onClick={handleJobSearch} className='ml-4 my-4'>Find</Button>
                         </PopoverContent>
                       </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="work_id"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Work Order ID</FormLabel>
+                      <FormControl>
+                        <Input {...field} disabled={disableButtons || isEditing} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}

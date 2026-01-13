@@ -324,7 +324,7 @@ export default function WorkOrdersPage() {
           <CardTitle className="font-headline">Work Orders</CardTitle>
           <div className="flex items-center gap-2">
             <Input
-              placeholder="Search by Job Order ID..."
+              placeholder="Search by Work Order ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="max-w-sm"

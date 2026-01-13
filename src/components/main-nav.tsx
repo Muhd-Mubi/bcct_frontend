@@ -16,7 +16,8 @@ import {
   FileSearch,
   Briefcase,
   FileCheck,
-  Ruler
+  Ruler,
+  AlertTriangle
 } from 'lucide-react';
 import { useContext } from 'react';
 import { UserRoleContext } from '@/lib/types';
@@ -30,7 +31,8 @@ export function MainNav() {
   const allNavItems = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['superAdmin', 'admin', 'user'] },
     { href: '/measurement', label: 'Measurement', icon: Ruler, roles: ['superAdmin', 'user'] },
-    { href: '/materials', label: 'Inventory', icon: Package, roles: ['superAdmin','admin', 'user'] },
+    { href: '/materials', label: 'Inventory', icon: Package, roles: ['superAdmin', 'admin', 'user'] },
+    { href: '/materials/low-stock', label: 'Low Stock Inventory', icon: AlertTriangle, roles: ['superAdmin', 'admin', 'user'] },
     { href: '/job-orders', label: 'Job Orders', icon: Briefcase, roles: ['superAdmin', 'admin'] },
     { href: '/work-order', label: 'Work Orders', icon: FileCheck, roles: ['superAdmin', 'admin', 'user'] },
     { href: '/onboarding', label: 'Onboarding', icon: PackagePlus, roles: ['superAdmin', 'user'] },
